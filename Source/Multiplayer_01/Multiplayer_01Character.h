@@ -27,6 +27,10 @@ class AMultiplayer_01Character : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UEquipmentComponent* EquipmentComponent;
 
+	/** Health component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UHealthComponent* HealthComponent;
+
 public:
 
 	AMultiplayer_01Character();
@@ -51,6 +55,8 @@ protected:
 	void MoveRight(float Value);
 
 	void Roll();
+	void Sprint();
+	float SprintRollPressedTime = 0.0f;
 
 	void Attack01();
 	void Attack02();

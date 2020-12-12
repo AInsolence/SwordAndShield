@@ -65,7 +65,7 @@ protected:
 	void SimulatedTick(float DeltaTime);
 	//
 	UFUNCTION(BlueprintCallable, Category = "Animation")
-		void SetServerActionState(const FServerActionState& _ServerActionState);
+	void SetServerActionState(const FServerActionState& _ServerActionState);
 	UFUNCTION(BlueprintCallable, Category = "Animation")
 	const FServerActionState CreateServerActionState(bool _bCanAct,
 													 bool _bAnimStart,

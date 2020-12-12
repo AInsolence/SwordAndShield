@@ -11,6 +11,7 @@
 
 #include "Components/CombatComponent.h"
 #include "Components/EquipmentComponent.h"
+#include "Components/HealthComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,12 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	{
 		EquipmentComponent->SetIsReplicated(true);
 	}
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
+	if (HealthComponent)
+	{
+		HealthComponent->SetIsReplicated(true);
+	}
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -72,6 +79,7 @@ void AMultiplayer_01Character::SetupPlayerInputComponent(class UInputComponent* 
 	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	
+	PlayerInputComponent->BindAction("Roll", IE_Pressed, this, &AMultiplayer_01Character::Sprint);
 	PlayerInputComponent->BindAction("Roll", IE_Released, this, &AMultiplayer_01Character::Roll);
 	PlayerInputComponent->BindAction("Attack01", IE_Pressed, this, &AMultiplayer_01Character::Attack01);
 	PlayerInputComponent->BindAction("Attack02", IE_Pressed, this, &AMultiplayer_01Character::Attack02);
@@ -158,11 +166,26 @@ void AMultiplayer_01Character::MoveRight(float Value)
 void AMultiplayer_01Character::Roll()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Character Roll() called"))
-	if (!CombatComponent)
+	if (!CombatComponent || !HealthComponent)
 	{
 		return;
 	}
-	CombatComponent->Roll();
+	HealthComponent->SetIsSprinting(false);
+	if (GetWorld()->GetTimeSeconds() < SprintRollPressedTime + 0.3f)
+	{
+		CombatComponent->Roll();
+	}
+	SprintRollPressedTime = 0.0f;
+}
+
+void AMultiplayer_01Character::Sprint()
+{
+	SprintRollPressedTime = GetWorld()->GetTimeSeconds();
+	if (!HealthComponent)
+	{
+		return;
+	}
+	HealthComponent->SetIsSprinting(true);
 }
 
 void AMultiplayer_01Character::Attack01()
