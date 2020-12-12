@@ -19,6 +19,7 @@ enum class EActionType : uint8
 	RightHandAction_02,
 	LeftHandAction_01,
 	LeftHandAction_02,
+	SwapWeapon
 };
 
 USTRUCT(BlueprintType)
@@ -67,25 +68,23 @@ protected:
 		void SetServerActionState(const FServerActionState& _ServerActionState);
 	UFUNCTION(BlueprintCallable, Category = "Animation")
 	const FServerActionState CreateServerActionState(bool _bCanAct,
-			bool _bAnimStart,
-			FString _ActionState,
-			EActionType _ActionType);
+													 bool _bAnimStart,
+													 FString _ActionState,
+													 EActionType _ActionType);
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void SwapWeaponEquip();
 
 	/** AnimMontages to play */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* Attack01Animation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* Attack02Animation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* Block01Animation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* Block02Animation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class UAnimMontage* RollAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* SwapWeaponAnimation;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	class UEquipmentComponent* EquipmentComponent = nullptr;
 
 	// API
 
@@ -94,11 +93,11 @@ public:
 	void Attack02();
 	void Block01();
 	void Block02();
+	void SwapWeapon();
 
 private:
 
 	class ACharacter* Owner = nullptr;
 	void PlayActionAnimation();
 	void PlayAnimation(UAnimMontage* ActionAnimation, float StartTime);
-
 };

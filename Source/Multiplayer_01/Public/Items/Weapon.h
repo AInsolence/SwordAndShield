@@ -29,6 +29,15 @@ public:
 	virtual void Use() override;
 	virtual class USkeletalMeshComponent* GetItemMesh() override;
 	virtual class UImage* GetItemImage() override;
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* UseAnimation_01;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* UseAnimation_02;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* UseAnimation_03;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* UseAnimation_04;
 
 	// Weapon components
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WeaponComponents")

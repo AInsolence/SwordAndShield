@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/EquipmentComponent.h"
 
 
 // Sets default values for this component's properties
@@ -24,6 +25,14 @@ void UCombatComponent::BeginPlay()
 	Super::BeginPlay();
 	// Set owner reference
 	Owner = Cast<ACharacter>(GetOwner());
+	if (Owner)
+	{
+		auto EquipmentCompObject = GetOwner()->GetDefaultSubobjectByName("EquipmentComponent");
+		if (EquipmentCompObject)
+		{
+			EquipmentComponent = Cast<UEquipmentComponent>(EquipmentCompObject);
+		}
+	}
 }
 
 // Called every frame
@@ -84,6 +93,15 @@ void UCombatComponent::SetServerActionState(const FServerActionState& _ServerAct
 	ServerActionState = _ServerActionState;
 }
 
+void UCombatComponent::SwapWeaponEquip()
+{
+	if (EquipmentComponent)
+	{	
+		// Call equipment swap logic in the middle of animation
+		EquipmentComponent->SwapWeapon();
+	}
+}
+
 const FServerActionState UCombatComponent::CreateServerActionState(bool _bCanAct, bool _bAnimStart, FString _ActionState, EActionType _ActionType)
 {
 	FServerActionState State;
@@ -102,6 +120,11 @@ void UCombatComponent::OnRep_ServerActionState()
 
 void UCombatComponent::PlayActionAnimation()
 {
+	if (!EquipmentComponent)
+	{
+		return;
+	}
+	
 	switch (ServerActionState.ActionType)
 	{
 	case EActionType::None:
@@ -117,16 +140,35 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::Action_02:
 		break;
 	case EActionType::RightHandAction_01:
-		PlayAnimation(Attack01Animation, 0.0f);
+		if (EquipmentComponent->RightHandItem)
+		{
+			PlayAnimation(EquipmentComponent->RightHandItem->UseAnimation_01, 0.0f);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("NO RIGHT HAND ITEM"))
+		}
 		break;
 	case EActionType::RightHandAction_02:
-		PlayAnimation(Attack02Animation, 0.0f);
+		if (EquipmentComponent->RightHandItem)
+		{
+			PlayAnimation(EquipmentComponent->RightHandItem->UseAnimation_02, 0.0f);
+		}
 		break;
 	case EActionType::LeftHandAction_01:
-		PlayAnimation(Block01Animation, 0.0f);
+		if (EquipmentComponent->LeftHandItem)
+		{
+			PlayAnimation(EquipmentComponent->LeftHandItem->UseAnimation_01, 0.0f);
+		}
 		break;
 	case EActionType::LeftHandAction_02:
-		PlayAnimation(Block02Animation, 0.0f);
+		if (EquipmentComponent->LeftHandItem)
+		{
+			PlayAnimation(EquipmentComponent->LeftHandItem->UseAnimation_02, 0.0f);
+		}
+		break;
+	case EActionType::SwapWeapon:
+		PlayAnimation(SwapWeaponAnimation, 0.0f);
 		break;
 	default:
 		break;
@@ -137,6 +179,9 @@ void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartT
 {
 	if (!Owner || !ActionAnimation)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Play anim no animation"))
+		auto DeclineStateChange = CreateServerActionState(true, false, "NONE", EActionType::None);
+		SetServerActionState(DeclineStateChange);
 		return;
 	}
 
@@ -156,8 +201,8 @@ void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
 	}
 	if (ServerActionState.ActionType == EActionType::None && ServerActionState.bCanAct)
 	{
-		auto PrepareToRollState = CreateServerActionState(false, true, "Action", _ActionType);
-		SetServerActionState(PrepareToRollState);
+		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
+		SetServerActionState(PrepareToChangeState);
 		// Play animation on the server for this client
 		PlayActionAnimation();
 	}
@@ -191,4 +236,9 @@ void UCombatComponent::Block01()
 void UCombatComponent::Block02()
 {
 	Server_Act(EActionType::LeftHandAction_02);
+}
+
+void UCombatComponent::SwapWeapon()
+{
+	Server_Act(EActionType::SwapWeapon);
 }

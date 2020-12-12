@@ -56,6 +56,7 @@ protected:
 	void Attack02();
 	void Block01();
 	void Block02();
+	void SwapWeapon();
 
 	/** 
 	 * Called via input to turn at a given rate. 

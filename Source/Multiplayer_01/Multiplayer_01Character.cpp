@@ -77,6 +77,7 @@ void AMultiplayer_01Character::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Attack02", IE_Pressed, this, &AMultiplayer_01Character::Attack02);
 	PlayerInputComponent->BindAction("Block01", IE_Pressed, this, &AMultiplayer_01Character::Block01);
 	PlayerInputComponent->BindAction("Block02", IE_Pressed, this, &AMultiplayer_01Character::Block02);
+	PlayerInputComponent->BindAction("SwapWeapon", IE_Pressed, this, &AMultiplayer_01Character::SwapWeapon);
 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMultiplayer_01Character::MoveForward);
@@ -198,4 +199,12 @@ void AMultiplayer_01Character::Block02()
 		return;
 	}
 	CombatComponent->Block02();
+}
+
+void AMultiplayer_01Character::SwapWeapon()
+{
+	if (CombatComponent)
+	{
+		CombatComponent->SwapWeapon();
+	}
 }

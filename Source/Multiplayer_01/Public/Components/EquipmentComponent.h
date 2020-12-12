@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Items/Weapon.h"
 #include "EquipmentComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -28,23 +29,25 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	class AWeapon* RightHandItem;
-	class AWeapon* LeftHandItem;
-	class AWeapon* BeltPlaceItem;
-	class AWeapon* BackPlaceItem;
-
 	UPROPERTY(EditAnywhere, Category = "TEST Weapon")
-	TSubclassOf<class AWeapon> BaseTestWeapon;
+	TSubclassOf<AWeapon> BaseTestWeapon;
 	UPROPERTY(EditAnywhere, Category = "TEST Weapon")
-	TSubclassOf<class AWeapon> BaseTestShield;
+	TSubclassOf<AWeapon> BaseTestShield;
 	UPROPERTY(EditAnywhere, Category = "TEST Weapon")
-	TSubclassOf<class AWeapon> BeltTestWeapon;
+	TSubclassOf<AWeapon> BeltTestWeapon;
 	UPROPERTY(EditAnywhere, Category = "TEST Weapon")
-	TSubclassOf<class AWeapon> BackTestWeapon;
+	TSubclassOf<AWeapon> BackTestWeapon;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	void EquipItem(EItemSlot ItemSlot, TSubclassOf<class AWeapon> SlotWeapon);
+	AWeapon* RightHandItem;
+	AWeapon* LeftHandItem;
+	AWeapon* BeltPlaceItem;
+	AWeapon* BackPlaceItem;
+
+	void EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
+	void SwapWeapon();
+
 };

@@ -3,7 +3,6 @@
 
 #include "Components/EquipmentComponent.h"
 #include "Components/InteractableItemInterface.h"
-#include "Items/Weapon.h"
 #include "GameFramework/Character.h"
 
 // Sets default values for this component's properties
@@ -73,5 +72,27 @@ void UEquipmentComponent::EquipItem(EItemSlot ItemSlot, TSubclassOf<class AWeapo
 		default:
 			break;
 	}
+}
+
+void UEquipmentComponent::SwapWeapon()
+{
+	if (!RightHandItem || !BeltPlaceItem)
+	{
+		return;
+	}
+
+	auto TempWeapon = RightHandItem;
+
+	RightHandItem->Destroy();
+	RightHandItem = GetWorld()->SpawnActor<AWeapon>(BeltPlaceItem->GetClass());
+	RightHandItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
+					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+					FName("RightHandWeaponSocket"));
+	
+	BeltPlaceItem->Destroy();
+	BeltPlaceItem = GetWorld()->SpawnActor<AWeapon>(TempWeapon->GetClass());
+	BeltPlaceItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
+					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+					FName("BeltWeaponSocket"));
 }
 
