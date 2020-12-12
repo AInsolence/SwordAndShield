@@ -34,7 +34,7 @@ protected:
 	// Sprint variables
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "Sprint")
 	bool bIsSprinting = false;
-	float BaseWalkingSpeed = 600.f;
+	float BaseWalkingSpeed = 500.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float BaseSprintMultiplier = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")

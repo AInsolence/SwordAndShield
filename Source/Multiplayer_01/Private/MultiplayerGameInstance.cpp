@@ -182,7 +182,7 @@ void UMultiplayerGameInstance::OnCreateSessionComplete(FName SessionName, bool S
 	UWorld* World = GetWorld();
 	if (ensure(World))
 	{
-		World->ServerTravel("/Game/Maps/Lobby?listen");
+		World->ServerTravel("/Game/Maps/Level_01?listen");
 		auto PlayerController = GetFirstLocalPlayerController(World);
 		if (ensure(PlayerController))
 		{// Set input mode game only and hide mouse cursor in the game

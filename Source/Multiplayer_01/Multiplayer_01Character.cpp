@@ -50,21 +50,8 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 
 	// Create combat component
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>("CombatComponent");
-	if (CombatComponent)
-	{
-		CombatComponent->SetIsReplicated(true);
-	}	
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>("EquipmentComponent");
-	if (EquipmentComponent)
-	{
-		EquipmentComponent->SetIsReplicated(true);
-	}
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
-	if (HealthComponent)
-	{
-		HealthComponent->SetIsReplicated(true);
-	}
-
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
