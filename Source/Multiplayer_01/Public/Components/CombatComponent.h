@@ -19,7 +19,9 @@ enum class EActionType : uint8
 	RightHandAction_02,
 	LeftHandAction_01,
 	LeftHandAction_02,
-	SwapWeapon
+	SwapWeapon,
+	Hitted,
+	Death
 };
 
 USTRUCT(BlueprintType)
@@ -79,6 +81,10 @@ protected:
 	class UAnimMontage* RollAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class UAnimMontage* SwapWeaponAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* HittedAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* DeathAnimation;
 
 public:	
 	// Called every frame
@@ -94,6 +100,8 @@ public:
 	void Block01();
 	void Block02();
 	void SwapWeapon();
+	void Hitted();
+	void Death();
 
 private:
 

@@ -4,6 +4,8 @@
 #include "Components/HealthComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/CombatComponent.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -64,6 +66,12 @@ void UHealthComponent::BeginPlay()
 	Owner = Cast<ACharacter>(GetOwner());
 	if (Owner)
 	{
+		// Set combat component to call animations
+		auto CombatCompObject = GetOwner()->GetDefaultSubobjectByName("CombatComponent");
+		if (CombatCompObject)
+		{
+			CombatComponent = Cast<UCombatComponent>(CombatCompObject);
+		}
 		// set base speed sprint variables
 		ServerState.BaseWalkingSpeed = Owner->GetCharacterMovement()->MaxWalkSpeed;
 		//
@@ -103,5 +111,41 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AController* InstigatedBy,
 									AActor* DamageCauser)
 {
+	if (!CombatComponent)
+	{
+		return;
+	}
 	ServerState.CurrentHealth = FMath::Clamp(ServerState.CurrentHealth - Damage, 0.0f, ServerState.DefaultHealth);
+	CombatComponent->Hitted();
+	//Update HUD health status
+	/*if (GetPlayerHUD())
+	{
+		GetPlayerHUD()->UpdateHealthState(HealthComponent->GetCurrentHealth() /
+			HealthComponent->GetDefaultHealth());
+	}*/
+
+	//*** DEATH ***//
+	if (GetCurrentHealth() <= 0)
+	{
+		CombatComponent->Death();
+		// Disable collision capsule if the character is dead
+		auto Capsule = DamagedActor->FindComponentByClass<UCapsuleComponent>();
+		if (Capsule)
+		{
+			Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+		// Disable controller
+		AController* CurrentController = Owner->GetController();
+		if (CurrentController) {
+			// stop movement so the death animation plays immediately
+			CurrentController->StopMovement();
+			//Owner->GetMesh()->bPauseAnims = true;
+			/* AI logic option */
+			// un-possess to stop AI
+			CurrentController->UnPossess();
+			// destroy the controller, since it's not part of the enemy anymore
+			//CurrentController->Destroy();
+		}
+	}
+	// *** DEATH END *** //
 }

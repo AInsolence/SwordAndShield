@@ -170,6 +170,12 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::SwapWeapon:
 		PlayAnimation(SwapWeaponAnimation, 0.0f);
 		break;
+	case EActionType::Hitted:
+		PlayAnimation(HittedAnimation, 0.0f);
+		break;
+	case EActionType::Death:
+		PlayAnimation(DeathAnimation, 0.0f);
+		break;
 	default:
 		break;
 	}
@@ -200,6 +206,14 @@ void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
 		return;
 	}
 	if (ServerActionState.ActionType == EActionType::None && ServerActionState.bCanAct)
+	{
+		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
+		SetServerActionState(PrepareToChangeState);
+		// Play animation on the server for this client
+		PlayActionAnimation();
+	}
+	// Hitted and Death animations break other animations
+	if (ServerActionState.ActionType == EActionType::Hitted || ServerActionState.ActionType == EActionType::Death)
 	{
 		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
 		SetServerActionState(PrepareToChangeState);
@@ -241,4 +255,14 @@ void UCombatComponent::Block02()
 void UCombatComponent::SwapWeapon()
 {
 	Server_Act(EActionType::SwapWeapon);
+}
+
+void UCombatComponent::Hitted()
+{
+	Server_Act(EActionType::Hitted);
+}
+
+void UCombatComponent::Death()
+{
+	Server_Act(EActionType::Death);
 }

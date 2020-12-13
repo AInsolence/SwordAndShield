@@ -50,7 +50,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float TimeToMaxSprintSpeed = 2.0f;
 
-	UPROPERTY(ReplicatedUsing = OnRep_ServerState, EditDefaultsOnly, BlueprintReadWrite, Category = "ServerState")
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "ServerState")
 	FServerState ServerState;
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "ServerState")
@@ -64,7 +64,6 @@ protected:
 					const class UDamageType* DamageType,
 					class AController* InstigatedBy,
 					AActor* DamageCauser);
-
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -81,4 +80,5 @@ public:
 
 private:
 	class ACharacter* Owner = nullptr;
+	class UCombatComponent* CombatComponent = nullptr;
 };

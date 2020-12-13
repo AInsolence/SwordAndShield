@@ -4,6 +4,7 @@
 #include "Items/Weapon.h"
 #include "Components/Image.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -28,6 +29,13 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	if (!DamageCollisionBox)
+	{
+		return;
+	}
+	// set up a notification for when this component hits something blocking
+	DamageCollisionBox->OnComponentHit.AddDynamic(this, &AWeapon::OnHit);
+	DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlap);
 }
 
 // Called every frame
@@ -55,4 +63,42 @@ USkeletalMeshComponent* AWeapon::GetItemMesh()
 UImage* AWeapon::GetItemImage()
 {
 	return nullptr;
+}
+
+void AWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+}
+
+void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent, 
+						AActor* OtherActor,
+						UPrimitiveComponent* OtherComp,
+						int32 OtherBodyIndex,
+						bool bFromSweep,
+						const FHitResult& SweepResult)
+{
+	if (WeaponOwner)
+	{
+		if (WeaponOwner == OtherActor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OVERLAP EVENT CALL ON WEAPON and : Overlap itself"))
+		}
+		else if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OVERLAP EVENT CALL ON WEAPON and : %s"), *OtherActor->GetClass()->GetName());
+			float DamageAmount = 30.f;
+			// Create a damage event  
+			TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
+			FDamageEvent DamageEvent(ValidDamageTypeClass);
+			if (GetWorld())
+			{
+				if (GetWorld()->GetFirstPlayerController())
+				{
+					OtherActor->TakeDamage(DamageAmount,
+						DamageEvent,
+						GetWorld()->GetFirstPlayerController(),
+						this);
+				}
+			}
+		}
+	}
 }
