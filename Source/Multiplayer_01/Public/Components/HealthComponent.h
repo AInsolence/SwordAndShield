@@ -8,6 +8,26 @@
 #include "DrawDebugHelpers.h"
 #include "HealthComponent.generated.h"
 
+USTRUCT(BlueprintType)
+struct FServerState
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float DefaultHealth = 100.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float DefaultStamina = 100.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentStamina;
+	// Sprint variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	bool bIsSprinting = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	float BaseWalkingSpeed = 500.f;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYER_01_API UHealthComponent : public UActorComponent
@@ -22,19 +42,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float DefaultHealth = 100.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float CurrentHealth;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float DefaultStamina = 100.f;
-	UPROPERTY(BlueprintReadWrite, Category = "Health")
-	float CurrentStamina;
-
-	// Sprint variables
-	UPROPERTY(Replicated, VisibleAnywhere, Category = "Sprint")
-	bool bIsSprinting = false;
-	float BaseWalkingSpeed = 500.f;
+	// Sprint helper variables
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float BaseSprintMultiplier = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
@@ -42,37 +50,34 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float TimeToMaxSprintSpeed = 2.0f;
 
+	UPROPERTY(ReplicatedUsing = OnRep_ServerState, EditDefaultsOnly, BlueprintReadWrite, Category = "ServerState")
+	FServerState ServerState;
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "ServerState")
+	void Server_ChangeState(bool IsSprinting);
+	void Server_ChangeState_Implementation(bool IsSprinting);
+	bool Server_ChangeState_Validate(bool IsSprinting);
+
 	UFUNCTION(BlueprintCallable)
 	void TakeDamage(AActor* DamagedActor,
 					float Damage,
 					const class UDamageType* DamageType,
 					class AController* InstigatedBy,
 					AActor* DamageCauser);
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	FORCEINLINE float GetDefaultHealth() const { return DefaultHealth; };
-	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; };
-	FORCEINLINE float GetDefaultStamina() const { return DefaultStamina; };
-	FORCEINLINE float GetCurrentStamina() const { return CurrentStamina; };
+	FORCEINLINE float GetDefaultHealth() const { return ServerState.DefaultHealth; };
+	FORCEINLINE float GetCurrentHealth() const { return ServerState.CurrentHealth; };
+	FORCEINLINE float GetDefaultStamina() const { return ServerState.DefaultStamina; };
+	FORCEINLINE float GetCurrentStamina() const { return ServerState.CurrentStamina; };
 
 	UFUNCTION(BlueprintCallable)
 	void ChangeCurrentStaminaTo(float StaminaCost);
 	UFUNCTION(BlueprintCallable)
-	void SetIsSprinting(bool IsSprinting)
-	{
-		bIsSprinting = IsSprinting;
-		if (bIsSprinting)
-		{
-			DrawDebugString(GetWorld(),
-				FVector(0, 0, 30),
-				"RUN",
-				GetOwner(),
-				FColor::Blue,
-				1.0f);
-		}
-	}
+	void SetIsSprinting(bool IsSprinting);
 
 private:
 	class ACharacter* Owner = nullptr;

@@ -13,8 +13,8 @@ UHealthComponent::UHealthComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 
-	CurrentHealth = DefaultHealth;
-	CurrentStamina = DefaultStamina;
+	ServerState.CurrentHealth = ServerState.DefaultHealth;
+	ServerState.CurrentStamina = ServerState.DefaultStamina;
 }
 
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -26,7 +26,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	/**  Sprint logic */
 	float RampThisFrame = (DeltaTime / TimeToMaxSprintSpeed) * MaxSprintMultiplier;
 	// check if sprint input pressed, is character has enough stamina and is he moves
-	if (bIsSprinting && !Owner->GetVelocity().IsZero() &&
+	if (ServerState.bIsSprinting && !Owner->GetVelocity().IsZero() &&
 		GetCurrentStamina() > 0.5f)
 	{
 		BaseSprintMultiplier += RampThisFrame;
@@ -51,7 +51,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}*/
 	}
 	BaseSprintMultiplier = FMath::Clamp(BaseSprintMultiplier, 1.0f, MaxSprintMultiplier);
-	Owner->GetCharacterMovement()->MaxWalkSpeed = BaseWalkingSpeed * BaseSprintMultiplier;
+	Owner->GetCharacterMovement()->MaxWalkSpeed = ServerState.BaseWalkingSpeed * BaseSprintMultiplier;
 	/**  Sprint logic end */
 }
 
@@ -65,7 +65,7 @@ void UHealthComponent::BeginPlay()
 	if (Owner)
 	{
 		// set base speed sprint variables
-		BaseWalkingSpeed = Owner->GetCharacterMovement()->MaxWalkSpeed;
+		ServerState.BaseWalkingSpeed = Owner->GetCharacterMovement()->MaxWalkSpeed;
 		//
 		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	}
@@ -74,12 +74,27 @@ void UHealthComponent::BeginPlay()
 void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME_CONDITION(UHealthComponent, bIsSprinting, COND_None);
+	DOREPLIFETIME_CONDITION(UHealthComponent, ServerState, COND_None);
 }
 
 void UHealthComponent::ChangeCurrentStaminaTo(float StaminaCost)
 {
-	CurrentStamina = FMath::Clamp(CurrentStamina + StaminaCost, 0.0f, DefaultStamina);
+	ServerState.CurrentStamina = FMath::Clamp(ServerState.CurrentStamina + StaminaCost, 0.0f, ServerState.DefaultStamina);
+}
+
+void UHealthComponent::SetIsSprinting(bool IsSprinting)
+{
+	Server_ChangeState(IsSprinting);
+}
+
+void UHealthComponent::Server_ChangeState_Implementation(bool IsSprinting)
+{
+	ServerState.bIsSprinting = IsSprinting;
+}
+
+bool UHealthComponent::Server_ChangeState_Validate(bool IsSprinting)
+{
+	return true; // Change to anti-cheat function
 }
 
 void UHealthComponent::TakeDamage(AActor* DamagedActor,
@@ -88,5 +103,5 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AController* InstigatedBy,
 									AActor* DamageCauser)
 {
-	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, DefaultHealth);
+	ServerState.CurrentHealth = FMath::Clamp(ServerState.CurrentHealth - Damage, 0.0f, ServerState.DefaultHealth);
 }
