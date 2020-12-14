@@ -47,6 +47,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WeaponComponents")
 	class UBoxComponent* PickUpCollisionBox = nullptr;
 
+	void SetWeaponOwner(AActor* _WeaponOwner);
+
 	/** called when projectile hits something */
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -57,6 +59,8 @@ public:
 										int32 OtherBodyIndex,
 										bool bFromSweep, 
 										const FHitResult& SweepResult);
-
+private:
+	
 	class AActor* WeaponOwner = nullptr;
+	class UCombatComponent* OwnerCombatComponent = nullptr;
 };

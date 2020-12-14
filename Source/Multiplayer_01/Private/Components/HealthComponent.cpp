@@ -7,6 +7,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/CombatComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
+#include "GameFramework/GameModeBase.h"
+
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
@@ -142,7 +146,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 			//Owner->GetMesh()->bPauseAnims = true;
 			/* AI logic option */
 			// un-possess to stop AI
-			CurrentController->UnPossess();
+			//CurrentController->UnPossess();
 			// destroy the controller, since it's not part of the enemy anymore
 			//CurrentController->Destroy();
 		}

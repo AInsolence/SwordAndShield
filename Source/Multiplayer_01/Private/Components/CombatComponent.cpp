@@ -88,6 +88,34 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION(UCombatComponent, ServerActionState, COND_None);
 }
 
+void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
+{
+	if (!Owner)
+	{
+		return;
+	}
+	if (ServerActionState.ActionType == EActionType::None && ServerActionState.bCanAct)
+	{
+		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
+		SetServerActionState(PrepareToChangeState);
+		// Play animation on the server for this client
+		PlayActionAnimation();
+	}
+	// Hitted and Death animations break other animations
+	if (ServerActionState.ActionType == EActionType::Hitted || ServerActionState.ActionType == EActionType::Death)
+	{
+		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
+		SetServerActionState(PrepareToChangeState);
+		// Play animation on the server for this client
+		PlayActionAnimation();
+	}
+}
+
+bool UCombatComponent::Server_Act_Validate(EActionType _ActionType)
+{
+	return true; // TODO anti-cheat implementation
+}
+
 void UCombatComponent::SetServerActionState(const FServerActionState& _ServerActionState)
 {
 	ServerActionState = _ServerActionState;
@@ -199,34 +227,6 @@ void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartT
 	}
 }
 
-void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
-{
-	if (!Owner)
-	{
-		return;
-	}
-	if (ServerActionState.ActionType == EActionType::None && ServerActionState.bCanAct)
-	{
-		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
-		SetServerActionState(PrepareToChangeState);
-		// Play animation on the server for this client
-		PlayActionAnimation();
-	}
-	// Hitted and Death animations break other animations
-	if (ServerActionState.ActionType == EActionType::Hitted || ServerActionState.ActionType == EActionType::Death)
-	{
-		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
-		SetServerActionState(PrepareToChangeState);
-		// Play animation on the server for this client
-		PlayActionAnimation();
-	}
-}
-
-bool UCombatComponent::Server_Act_Validate(EActionType _ActionType)
-{
-	return true; // TODO anti-cheat implementation
-}
-
 void UCombatComponent::Roll()
 {
 	Server_Act(EActionType::Roll);
@@ -265,4 +265,10 @@ void UCombatComponent::Hitted()
 void UCombatComponent::Death()
 {
 	Server_Act(EActionType::Death);
+}
+
+EActionType UCombatComponent::GetActionType() const
+{
+	UE_LOG(LogTemp, Warning, TEXT("Action is : %i"), ServerActionState.ActionType)
+	return ServerActionState.ActionType;
 }

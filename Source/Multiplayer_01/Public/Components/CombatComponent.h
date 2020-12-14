@@ -103,6 +103,8 @@ public:
 	void Hitted();
 	void Death();
 
+	EActionType GetActionType() const;
+
 private:
 
 	class ACharacter* Owner = nullptr;
