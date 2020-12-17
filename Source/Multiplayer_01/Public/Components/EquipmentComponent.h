@@ -28,7 +28,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
+	//
 	UPROPERTY(EditAnywhere, Category = "TEST Weapon")
 	TSubclassOf<AWeapon> BaseTestWeapon;
 	UPROPERTY(EditAnywhere, Category = "TEST Weapon")
@@ -38,10 +38,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "TEST Weapon")
 	TSubclassOf<AWeapon> BackTestWeapon;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+public:
 	AWeapon* RightHandItem;
 	AWeapon* LeftHandItem;
 	AWeapon* BeltPlaceItem;
@@ -50,4 +47,6 @@ public:
 	void EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
 	void SwapWeapon();
 
+private:
+	AWeapon* CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, FName SocketName);
 };

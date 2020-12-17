@@ -4,6 +4,7 @@
 #include "Components/EquipmentComponent.h"
 #include "Components/InteractableItemInterface.h"
 #include "GameFramework/Character.h"
+#include "Engine/World.h"
 
 // Sets default values for this component's properties
 UEquipmentComponent::UEquipmentComponent()
@@ -14,12 +15,10 @@ UEquipmentComponent::UEquipmentComponent()
 	SetIsReplicatedByDefault(true);
 }
 
-
 // Called when the game starts
 void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	//TODO Change to appropriate after test
 	if (BaseTestWeapon && BaseTestShield)
 	{
@@ -33,43 +32,21 @@ void UEquipmentComponent::BeginPlay()
 	}
 }
 
-// Called every frame
-void UEquipmentComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
 void UEquipmentComponent::EquipItem(EItemSlot ItemSlot, TSubclassOf<class AWeapon> SlotWeapon)
 {
 	switch (ItemSlot)
 	{
 		case EItemSlot::RightHandItem:
-			RightHandItem = GetWorld()->SpawnActor<AWeapon>(SlotWeapon);
-			RightHandItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
-							FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-							FName("RightHandWeaponSocket"));
-			RightHandItem->SetOwner(GetOwner());
+			RightHandItem = CreateWeaponOnSocket(SlotWeapon, "RightHandWeaponSocket");
 			break;
 		case EItemSlot::LeftHandItem:
-			LeftHandItem = GetWorld()->SpawnActor<AWeapon>(SlotWeapon);
-			LeftHandItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
-							FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-							FName("LeftHandWeaponSocket"));
-			LeftHandItem->SetOwner(GetOwner());
+			LeftHandItem = CreateWeaponOnSocket(SlotWeapon, "LeftHandWeaponSocket");
 			break;
 		case EItemSlot::BeltPlaceItem:
-			BeltPlaceItem = GetWorld()->SpawnActor<AWeapon>(SlotWeapon);
-			BeltPlaceItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
-							FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-							FName("BeltWeaponSocket"));
+			BeltPlaceItem = CreateWeaponOnSocket(SlotWeapon, "BeltWeaponSocket");
 			break;
 		case EItemSlot::BackPlaceItem:
-			BackPlaceItem = GetWorld()->SpawnActor<AWeapon>(SlotWeapon);
-			BackPlaceItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
-				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-				FName("BackWeaponSocket"));
+			BackPlaceItem = CreateWeaponOnSocket(SlotWeapon, "BackWeaponSocket");
 			break;
 		default:
 			break;
@@ -82,20 +59,23 @@ void UEquipmentComponent::SwapWeapon()
 	{
 		return;
 	}
-
-	auto TempWeapon = RightHandItem;
-
+	auto TempWeapon = RightHandItem->GetClass();
+	//
 	RightHandItem->Destroy();
-	RightHandItem = GetWorld()->SpawnActor<AWeapon>(BeltPlaceItem->GetClass());
-	RightHandItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
-					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-					FName("RightHandWeaponSocket"));
-	RightHandItem->SetOwner(GetOwner());
-
+	RightHandItem = CreateWeaponOnSocket(BeltPlaceItem->GetClass(), "RightHandWeaponSocket");
+	//
 	BeltPlaceItem->Destroy();
-	BeltPlaceItem = GetWorld()->SpawnActor<AWeapon>(TempWeapon->GetClass());
-	BeltPlaceItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
-					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-					FName("BeltWeaponSocket"));
+	BeltPlaceItem = CreateWeaponOnSocket(TempWeapon, "BeltWeaponSocket");
 }
 
+AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, 
+												   FName SocketName)
+{
+	AWeapon* Item = GetWorld()->SpawnActor<AWeapon>(WeaponClass);
+	Item->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
+							FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+							SocketName);
+	// TODO change to set owner in pick up weapon function
+	Item->SetOwner(GetOwner());
+	return Item;
+}
