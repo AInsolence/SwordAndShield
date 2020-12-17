@@ -11,37 +11,23 @@ UCLASS()
 class MULTIPLAYER_01_API AWeapon : public AActor, public IInteractableItemInterface
 {
 	GENERATED_BODY()
-	
 public:	
 	// Sets default values for this actor's properties
 	AWeapon();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
+	float Damage = 30.0f;
 
 	// Interactable interface implementation
-
 	virtual void SetOwner(AActor* _Owner);
 	virtual AActor* GetOwner();
 	virtual void PickUp() override;
 	virtual void Use() override;
 	virtual class USkeletalMeshComponent* GetItemMesh() override;
 	virtual class UImage* GetItemImage() override;
-
-	// Weapon use animations
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* UseAnimation_01;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* UseAnimation_02;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* UseAnimation_03;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* UseAnimation_04;
 
 	// Weapon components
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WeaponComponents")
@@ -51,9 +37,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WeaponComponents")
 	class UBoxComponent* PickUpCollisionBox = nullptr;
 
-	/** called when projectile hits something */
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	// Weapon using animations
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* UseAnimation_01;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* UseAnimation_02;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* UseAnimation_03;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* UseAnimation_04;
+
+	/** Called when a weapon hits something */
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent,
 										AActor* OtherActor,
@@ -62,7 +56,6 @@ public:
 										bool bFromSweep, 
 										const FHitResult& SweepResult);
 private:
-	
 	class AActor* WeaponOwner = nullptr;
 	bool bActivated = false;
 };

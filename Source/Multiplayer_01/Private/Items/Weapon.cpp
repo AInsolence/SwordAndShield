@@ -11,7 +11,7 @@
 AWeapon::AWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
@@ -34,15 +34,8 @@ void AWeapon::BeginPlay()
 	{
 		return;
 	}
-	// set up a notification for when this component hits something blocking
-	DamageCollisionBox->OnComponentHit.AddDynamic(this, &AWeapon::OnHit);
+	// Add OnOverlap to the delegate
 	DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlap);
-}
-
-// Called every frame
-void AWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void AWeapon::SetOwner(AActor* _Owner)
@@ -77,10 +70,6 @@ UImage* AWeapon::GetItemImage()
 	return nullptr;
 }
 
-void AWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-}
-
 void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent, 
 						AActor* OtherActor,
 						UPrimitiveComponent* OtherComp,
@@ -94,6 +83,7 @@ void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		UE_LOG(LogTemp, Warning, TEXT("Right hand weapon is not activated"))
 		return;
 	}
+	// 
 	if (WeaponOwner)
 	{
 		// Check for self-overlapping
@@ -104,23 +94,16 @@ void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		// Check is overlap character
 		else if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("OVERLAP EVENT CALL WITH : %s"), *OtherActor->GetClass()->GetName());
-			float DamageAmount = 30.f;
 			// Create a damage event  
 			TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
 			FDamageEvent DamageEvent(ValidDamageTypeClass);
-			if (GetWorld())
-			{
-				if (GetWorld()->GetFirstPlayerController())
-				{
-					OtherActor->TakeDamage(DamageAmount,
-											DamageEvent,
-											GetWorld()->GetFirstPlayerController(),
-											this);
-					// Take damage only once
-					bActivated = false;
-				}
-			}
+			// Take damage to the overlapped actor
+			OtherActor->TakeDamage(Damage,
+									DamageEvent,
+									GetInstigatorController(),
+									this);
+			// Deactivate weapon after damage was caused
+			bActivated = false;
 		}
 	}
 }
