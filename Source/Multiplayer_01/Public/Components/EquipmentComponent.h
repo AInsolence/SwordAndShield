@@ -39,9 +39,13 @@ protected:
 	TSubclassOf<AWeapon> BackTestWeapon;
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
 	AWeapon* RightHandItem;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
 	AWeapon* LeftHandItem;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
 	AWeapon* BeltPlaceItem;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
 	AWeapon* BackPlaceItem;
 
 	void EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);

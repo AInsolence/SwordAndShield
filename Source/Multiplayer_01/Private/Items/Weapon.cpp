@@ -50,14 +50,13 @@ AActor* AWeapon::GetOwner()
 
 void AWeapon::PickUp()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Interactable item picked up"))
+	UE_LOG(LogTemp, Warning, TEXT("Weapon picked up"))
 	Destroy();
 }
 
 void AWeapon::Use()
 {
 	bActivated = true;
-	UE_LOG(LogTemp, Warning, TEXT("Interactable item used"))
 }
 
 USkeletalMeshComponent* AWeapon::GetItemMesh()
@@ -80,7 +79,6 @@ void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 	// Check is weapon active
 	if (!bActivated)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Right hand weapon is not activated"))
 		return;
 	}
 	// 
