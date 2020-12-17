@@ -124,8 +124,7 @@ void UCombatComponent::SetServerActionState(const FServerActionState& _ServerAct
 void UCombatComponent::SwapWeaponEquip()
 {
 	if (EquipmentComponent)
-	{	
-		// Call equipment swap logic in the middle of animation
+	{// Call equipment swap logic in the middle of animation
 		EquipmentComponent->SwapWeapon();
 	}
 }
@@ -143,7 +142,6 @@ const FServerActionState UCombatComponent::CreateServerActionState(bool _bCanAct
 void UCombatComponent::OnRep_ServerActionState()
 {	
 	PlayActionAnimation();
-	return;
 }
 
 void UCombatComponent::PlayActionAnimation()
@@ -152,11 +150,10 @@ void UCombatComponent::PlayActionAnimation()
 	{
 		return;
 	}
-	
+
 	switch (ServerActionState.ActionType)
 	{
 	case EActionType::None:
-		return;
 		break;
 	case EActionType::Roll:
 		PlayAnimation(RollAnimation, 0.5f);
@@ -172,10 +169,6 @@ void UCombatComponent::PlayActionAnimation()
 		{
 			EquipmentComponent->RightHandItem->Use();
 			PlayAnimation(EquipmentComponent->RightHandItem->UseAnimation_01, 0.0f);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("NO RIGHT HAND ITEM"))
 		}
 		break;
 	case EActionType::RightHandAction_02:

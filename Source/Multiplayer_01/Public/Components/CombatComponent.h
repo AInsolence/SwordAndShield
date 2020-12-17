@@ -45,30 +45,26 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYER_01_API UCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
 public:	
 	// Sets default values for this component's properties
 	UCombatComponent();
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
+	//
 	UPROPERTY(ReplicatedUsing = OnRep_ServerActionState, VisibleAnywhere, Category = "ServerActionState")
 	FServerActionState ServerActionState;
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Replication")
 	void OnRep_ServerActionState();
 	//
-	UFUNCTION(Server, Reliable, WithValidation)
+	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
 	void Server_Act(EActionType _ActionType);
 	void Server_Act_Implementation(EActionType _ActionType);
 	bool Server_Act_Validate(EActionType _ActionType);
-
-	void SimulatedTick(float DeltaTime);
 	//
-	UFUNCTION(BlueprintCallable, Category = "Animation")
+	UFUNCTION(BlueprintCallable, Category = "Replication")
 	void SetServerActionState(const FServerActionState& _ServerActionState);
-	UFUNCTION(BlueprintCallable, Category = "Animation")
+	UFUNCTION(BlueprintCallable, Category = "Replication")
 	const FServerActionState CreateServerActionState(bool _bCanAct,
 													 bool _bAnimStart,
 													 FString _ActionState,
@@ -89,11 +85,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	class UEquipmentComponent* EquipmentComponent = nullptr;
-
 	// API
-
 	void Roll();
 	void Attack01();
 	void Attack02();
@@ -102,12 +94,12 @@ public:
 	void SwapWeapon();
 	void Hitted();
 	void Death();
-
 	EActionType GetActionType() const;
 
 private:
-
 	class ACharacter* Owner = nullptr;
+	class UEquipmentComponent* EquipmentComponent = nullptr;
+	void SimulatedTick(float DeltaTime);
 	void PlayActionAnimation();
 	void PlayAnimation(UAnimMontage* ActionAnimation, float StartTime);
 };
