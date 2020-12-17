@@ -29,6 +29,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 		return;
 	}
+
 	/**  Sprint logic */
 	float RampThisFrame = (DeltaTime / TimeToMaxSprintSpeed) * MaxSprintMultiplier;
 	// check if sprint input pressed, is character has enough stamina and is he moves
@@ -70,16 +71,14 @@ void UHealthComponent::BeginPlay()
 	Owner = Cast<ACharacter>(GetOwner());
 	if (Owner)
 	{
+		// Add Take damage to the delegate
+		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 		// Set combat component to call animations
 		auto CombatCompObject = GetOwner()->GetDefaultSubobjectByName("CombatComponent");
 		if (CombatCompObject)
 		{
 			CombatComponent = Cast<UCombatComponent>(CombatCompObject);
 		}
-		// set base speed sprint variables
-		ServerState.BaseWalkingSpeed = Owner->GetCharacterMovement()->MaxWalkSpeed;
-		//
-		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	}
 }
 
@@ -115,10 +114,6 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AController* InstigatedBy,
 									AActor* DamageCauser)
 {
-	if (!CombatComponent)
-	{
-		return;
-	}
 	ServerState.CurrentHealth = FMath::Clamp(ServerState.CurrentHealth - Damage, 0.0f, ServerState.DefaultHealth);
 	CombatComponent->Hitted();
 	//Update HUD health status
@@ -127,29 +122,34 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		GetPlayerHUD()->UpdateHealthState(HealthComponent->GetCurrentHealth() /
 			HealthComponent->GetDefaultHealth());
 	}*/
-
-	//*** DEATH ***//
 	if (GetCurrentHealth() <= 0)
 	{
-		CombatComponent->Death();
-		// Disable collision capsule if the character is dead
-		auto Capsule = DamagedActor->FindComponentByClass<UCapsuleComponent>();
-		if (Capsule)
-		{
-			Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		}
-		// Disable controller
-		AController* CurrentController = Owner->GetController();
-		if (CurrentController) {
-			// stop movement so the death animation plays immediately
-			CurrentController->StopMovement();
-			//Owner->GetMesh()->bPauseAnims = true;
-			/* AI logic option */
-			// un-possess to stop AI
-			//CurrentController->UnPossess();
-			// destroy the controller, since it's not part of the enemy anymore
-			//CurrentController->Destroy();
-		}
+		Death();
 	}
-	// *** DEATH END *** //
+}
+
+void UHealthComponent::Death()
+{
+	if (CombatComponent)
+	{// Play death animation
+		CombatComponent->Death();
+	}
+	// Disable collision capsule if the character is dead
+	auto Capsule = Owner->FindComponentByClass<UCapsuleComponent>();
+	if (Capsule)
+	{
+		Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	// Disable controller
+	AController* CurrentController = Owner->GetController();
+	if (CurrentController) {
+		// stop movement so the death animation plays immediately
+		CurrentController->StopMovement();
+		//Owner->GetMesh()->bPauseAnims = true;
+		/* AI logic option */
+		// un-possess to stop AI
+		//CurrentController->UnPossess();
+		// destroy the controller, since it's not part of the enemy anymore
+		//CurrentController->Destroy();
+	}
 }

@@ -26,18 +26,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
 	bool bIsSprinting = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
-	float BaseWalkingSpeed = 500.f;
+	float BaseWalkingSpeed = 600.f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYER_01_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
 public:	
 	// Sets default values for this component's properties
 	UHealthComponent();
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -81,4 +79,5 @@ public:
 private:
 	class ACharacter* Owner = nullptr;
 	class UCombatComponent* CombatComponent = nullptr;
+	void Death();
 };
