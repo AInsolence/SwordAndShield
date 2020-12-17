@@ -75,6 +75,8 @@ public:
 	void ChangeCurrentStaminaTo(float StaminaCost);
 	UFUNCTION(BlueprintCallable)
 	void SetIsSprinting(bool IsSprinting);
+	UFUNCTION(BlueprintCallable)
+	void PauseAnimation(bool bPauseAnimation);
 
 private:
 	class ACharacter* Owner = nullptr;

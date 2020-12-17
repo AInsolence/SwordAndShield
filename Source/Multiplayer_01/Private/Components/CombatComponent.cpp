@@ -94,15 +94,15 @@ void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
 	{
 		return;
 	}
-	if (ServerActionState.ActionType == EActionType::None && ServerActionState.bCanAct)
+	// Hitted and Death animations break other animations
+	if (ServerActionState.ActionType == EActionType::Hitted || ServerActionState.ActionType == EActionType::Death)
 	{
-		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
+		auto PrepareToChangeState = CreateServerActionState(false, true, "Hitted or Dead", _ActionType);
 		SetServerActionState(PrepareToChangeState);
 		// Play animation on the server for this client
 		PlayActionAnimation();
 	}
-	// Hitted and Death animations break other animations
-	if (ServerActionState.ActionType == EActionType::Hitted || ServerActionState.ActionType == EActionType::Death)
+	else if (ServerActionState.ActionType == EActionType::None && ServerActionState.bCanAct)
 	{
 		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
 		SetServerActionState(PrepareToChangeState);

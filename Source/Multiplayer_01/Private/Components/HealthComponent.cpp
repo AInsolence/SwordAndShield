@@ -98,6 +98,21 @@ void UHealthComponent::SetIsSprinting(bool IsSprinting)
 	Server_ChangeState(IsSprinting);
 }
 
+void UHealthComponent::PauseAnimation(bool bPauseAnimation)
+{
+	if (!Owner->HasAuthority())
+	{
+		return;
+	}
+	if (Owner)
+	{
+		auto PlayerController = Owner->GetController();
+		auto PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(PlayerController, "");
+		GetWorld()->GetAuthGameMode()->RestartPlayerAtPlayerStart(PlayerController, PlayerStart);
+		ServerState.CurrentHealth = 100.f;
+	}
+}
+
 void UHealthComponent::Server_ChangeState_Implementation(bool IsSprinting)
 {
 	ServerState.bIsSprinting = IsSprinting;
@@ -135,16 +150,16 @@ void UHealthComponent::Death()
 		CombatComponent->Death();
 	}
 	// Disable collision capsule if the character is dead
-	auto Capsule = Owner->FindComponentByClass<UCapsuleComponent>();
+	/*auto Capsule = Owner->FindComponentByClass<UCapsuleComponent>();
 	if (Capsule)
 	{
 		Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	}*/
 	// Disable controller
 	AController* CurrentController = Owner->GetController();
 	if (CurrentController) {
 		// stop movement so the death animation plays immediately
-		CurrentController->StopMovement();
+		//CurrentController->StopMovement();
 		//Owner->GetMesh()->bPauseAnims = true;
 		/* AI logic option */
 		// un-possess to stop AI
