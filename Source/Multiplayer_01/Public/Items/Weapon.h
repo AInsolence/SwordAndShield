@@ -25,11 +25,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Interactable interface implementation
+
+	virtual void SetOwner(AActor* _Owner);
+	virtual AActor* GetOwner();
 	virtual void PickUp() override;
 	virtual void Use() override;
 	virtual class USkeletalMeshComponent* GetItemMesh() override;
 	virtual class UImage* GetItemImage() override;
-	//
+
+	// Weapon use animations
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class UAnimMontage* UseAnimation_01;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
@@ -47,8 +51,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WeaponComponents")
 	class UBoxComponent* PickUpCollisionBox = nullptr;
 
-	void SetWeaponOwner(AActor* _WeaponOwner);
-
 	/** called when projectile hits something */
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -62,5 +64,5 @@ public:
 private:
 	
 	class AActor* WeaponOwner = nullptr;
-	class UCombatComponent* OwnerCombatComponent = nullptr;
+	bool bActivated = false;
 };

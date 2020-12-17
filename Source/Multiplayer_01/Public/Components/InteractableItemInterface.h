@@ -23,6 +23,8 @@ class MULTIPLAYER_01_API IInteractableItemInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	
+	virtual void SetOwner(AActor* Owner) = 0;
+	virtual AActor* GetOwner() = 0;
 	virtual void PickUp() = 0;
 	virtual void Use() = 0;
 	virtual class USkeletalMeshComponent* GetItemMesh() = 0;

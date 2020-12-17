@@ -45,6 +45,16 @@ void AWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AWeapon::SetOwner(AActor* _Owner)
+{
+	WeaponOwner = _Owner;
+}
+
+AActor* AWeapon::GetOwner()
+{
+	return WeaponOwner;
+}
+
 void AWeapon::PickUp()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Interactable item picked up"))
@@ -53,6 +63,7 @@ void AWeapon::PickUp()
 
 void AWeapon::Use()
 {
+	bActivated = true;
 	UE_LOG(LogTemp, Warning, TEXT("Interactable item used"))
 }
 
@@ -66,20 +77,6 @@ UImage* AWeapon::GetItemImage()
 	return nullptr;
 }
 
-void AWeapon::SetWeaponOwner(AActor* _WeaponOwner)
-{
-	WeaponOwner = _WeaponOwner;
-	if (WeaponOwner)
-	{
-		// Set combat component to call animations
-		auto CombatCompObject = WeaponOwner->GetDefaultSubobjectByName("CombatComponent");
-		if (CombatCompObject)
-		{
-			OwnerCombatComponent = Cast<UCombatComponent>(CombatCompObject);
-		}
-	}
-}
-
 void AWeapon::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 }
@@ -91,12 +88,14 @@ void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 						bool bFromSweep,
 						const FHitResult& SweepResult)
 {
+	// Check is weapon active
+	if (!bActivated)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Right hand weapon is not activated"))
+		return;
+	}
 	if (WeaponOwner)
 	{
-		if (!OwnerCombatComponent)
-		{
-			return;
-		}
 		// Check for self-overlapping
 		if (WeaponOwner == OtherActor)
 		{
@@ -106,13 +105,6 @@ void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 		else if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("OVERLAP EVENT CALL WITH : %s"), *OtherActor->GetClass()->GetName());
-			// Check is weapon of causer is active
-			if (OwnerCombatComponent->GetActionType() != EActionType::RightHandAction_01 &&
-				OwnerCombatComponent->GetActionType() != EActionType::RightHandAction_02)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Right hand weapon is not activated"))
-				return;
-			}
 			float DamageAmount = 30.f;
 			// Create a damage event  
 			TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
@@ -125,6 +117,8 @@ void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 											DamageEvent,
 											GetWorld()->GetFirstPlayerController(),
 											this);
+					// Take damage only once
+					bActivated = false;
 				}
 			}
 		}

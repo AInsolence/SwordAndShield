@@ -170,6 +170,7 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::RightHandAction_01:
 		if (EquipmentComponent->RightHandItem)
 		{
+			EquipmentComponent->RightHandItem->Use();
 			PlayAnimation(EquipmentComponent->RightHandItem->UseAnimation_01, 0.0f);
 		}
 		else
@@ -180,6 +181,7 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::RightHandAction_02:
 		if (EquipmentComponent->RightHandItem)
 		{
+			EquipmentComponent->RightHandItem->Use();
 			PlayAnimation(EquipmentComponent->RightHandItem->UseAnimation_02, 0.0f);
 		}
 		break;
@@ -213,7 +215,6 @@ void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartT
 {
 	if (!Owner || !ActionAnimation)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Play anim no animation"))
 		auto DeclineStateChange = CreateServerActionState(true, false, "NONE", EActionType::None);
 		SetServerActionState(DeclineStateChange);
 		return;
@@ -269,6 +270,5 @@ void UCombatComponent::Death()
 
 EActionType UCombatComponent::GetActionType() const
 {
-	UE_LOG(LogTemp, Warning, TEXT("Action is : %i"), ServerActionState.ActionType)
 	return ServerActionState.ActionType;
 }

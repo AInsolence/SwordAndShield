@@ -50,14 +50,14 @@ void UEquipmentComponent::EquipItem(EItemSlot ItemSlot, TSubclassOf<class AWeapo
 			RightHandItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
 							FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 							FName("RightHandWeaponSocket"));
-			RightHandItem->SetWeaponOwner(GetOwner());
+			RightHandItem->SetOwner(GetOwner());
 			break;
 		case EItemSlot::LeftHandItem:
 			LeftHandItem = GetWorld()->SpawnActor<AWeapon>(SlotWeapon);
 			LeftHandItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
 							FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 							FName("LeftHandWeaponSocket"));
-			LeftHandItem->SetWeaponOwner(GetOwner());
+			LeftHandItem->SetOwner(GetOwner());
 			break;
 		case EItemSlot::BeltPlaceItem:
 			BeltPlaceItem = GetWorld()->SpawnActor<AWeapon>(SlotWeapon);
@@ -90,7 +90,7 @@ void UEquipmentComponent::SwapWeapon()
 	RightHandItem->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
 					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 					FName("RightHandWeaponSocket"));
-	RightHandItem->SetWeaponOwner(GetOwner());
+	RightHandItem->SetOwner(GetOwner());
 
 	BeltPlaceItem->Destroy();
 	BeltPlaceItem = GetWorld()->SpawnActor<AWeapon>(TempWeapon->GetClass());
