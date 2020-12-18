@@ -167,14 +167,12 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::RightHandAction_01:
 		if (EquipmentComponent->RightHandItem)
 		{
-			EquipmentComponent->RightHandItem->Use();
 			PlayAnimation(EquipmentComponent->RightHandItem->UseAnimation_01, 0.0f);
 		}
 		break;
 	case EActionType::RightHandAction_02:
 		if (EquipmentComponent->RightHandItem)
 		{
-			EquipmentComponent->RightHandItem->Use();
 			PlayAnimation(EquipmentComponent->RightHandItem->UseAnimation_02, 0.0f);
 		}
 		break;
