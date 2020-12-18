@@ -145,14 +145,23 @@ bool UHealthComponent::Server_ChangeState_Validate(bool IsSprinting)
 	return true; // Change to anti-cheat function
 }
 
+void UHealthComponent::SetVulnerability(bool IsVulnerable)
+{
+	bIsVulnerable = IsVulnerable;
+}
+
 void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									float Damage,
 									const UDamageType* DamageType,
 									AController* InstigatedBy,
 									AActor* DamageCauser)
 {
+	// Character may be invulnerable e.g. while rolling or use protection magic
+	if (bIsVulnerable)
+	{
+		return;
+	}
 	ServerState.CurrentHealth = FMath::Clamp(ServerState.CurrentHealth - Damage, 0.0f, ServerState.DefaultHealth);
-	CombatComponent->Hitted();
 	//Update HUD health status
 	/*if (GetPlayerHUD())
 	{
@@ -163,30 +172,16 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	{
 		Death();
 	}
+	else
+	{
+		CombatComponent->Hitted();
+	}
 }
 
 void UHealthComponent::Death()
 {
 	if (CombatComponent)
-	{// Play death animation
-		CombatComponent->Death();
-	}
-	// Disable collision capsule if the character is dead
-	/*auto Capsule = Owner->FindComponentByClass<UCapsuleComponent>();
-	if (Capsule)
 	{
-		Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}*/
-	// Disable controller
-	AController* CurrentController = Owner->GetController();
-	if (CurrentController) {
-		// stop movement so the death animation plays immediately
-		//CurrentController->StopMovement();
-		//Owner->GetMesh()->bPauseAnims = true;
-		/* AI logic option */
-		// un-possess to stop AI
-		//CurrentController->UnPossess();
-		// destroy the controller, since it's not part of the enemy anymore
-		//CurrentController->Destroy();
+		CombatComponent->Death();
 	}
 }

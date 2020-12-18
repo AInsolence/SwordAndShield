@@ -56,7 +56,10 @@ protected:
 	void Server_ChangeState_Implementation(bool IsSprinting);
 	bool Server_ChangeState_Validate(bool IsSprinting);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
+	void SetVulnerability(bool IsVulnerable);
+
+	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void TakeDamage(AActor* DamagedActor,
 					float Damage,
 					const class UDamageType* DamageType,
@@ -81,5 +84,6 @@ public:
 private:
 	class ACharacter* Owner = nullptr;
 	class UCombatComponent* CombatComponent = nullptr;
+	bool bIsVulnerable = false;
 	void Death();
 };

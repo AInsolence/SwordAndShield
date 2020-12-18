@@ -95,9 +95,9 @@ void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
 		return;
 	}
 	// Hitted and Death animations break other animations
-	if (ServerActionState.ActionType == EActionType::Hitted || ServerActionState.ActionType == EActionType::Death)
+	if (_ActionType == EActionType::Hitted || _ActionType == EActionType::Death)
 	{
-		auto PrepareToChangeState = CreateServerActionState(false, true, "Hitted or Dead", _ActionType);
+		auto PrepareToChangeState = CreateServerActionState(false, true, "Hitted or Dead", _ActionType);		
 		SetServerActionState(PrepareToChangeState);
 		// Play animation on the server for this client
 		PlayActionAnimation();
@@ -206,6 +206,7 @@ void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartT
 {
 	if (!Owner || !ActionAnimation)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot find animation"))
 		auto DeclineStateChange = CreateServerActionState(true, false, "NONE", EActionType::None);
 		SetServerActionState(DeclineStateChange);
 		return;
