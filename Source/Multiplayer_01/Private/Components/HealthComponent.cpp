@@ -8,6 +8,7 @@
 #include "Components/CombatComponent.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerStart.h"
 #include "Engine/World.h"
 #include "GameFramework/GameModeBase.h"
 
@@ -98,7 +99,7 @@ void UHealthComponent::SetIsSprinting(bool IsSprinting)
 	Server_ChangeState(IsSprinting);
 }
 
-void UHealthComponent::PauseAnimation(bool bPauseAnimation)
+void UHealthComponent::RespawnPlayer()
 {
 	if (!Owner->HasAuthority())
 	{
@@ -106,10 +107,31 @@ void UHealthComponent::PauseAnimation(bool bPauseAnimation)
 	}
 	if (Owner)
 	{
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundActors);
+		auto PlayerStart = Cast<APlayerStart>(FoundActors[0]);
+		
 		auto PlayerController = Owner->GetController();
-		auto PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(PlayerController, "");
-		GetWorld()->GetAuthGameMode()->RestartPlayerAtPlayerStart(PlayerController, PlayerStart);
-		ServerState.CurrentHealth = 100.f;
+		PlayerController->UnPossess();
+
+		auto PlayerClass = Owner->GetClass();
+		
+		UE_LOG(LogTemp, Warning, TEXT("Player start location %s"), *PlayerStart->GetActorLocation().ToString());
+		UE_LOG(LogTemp, Warning, TEXT("Player location %s"), *Owner->GetActorLocation().ToString());
+
+		auto NewCharacter = GetWorld()->SpawnActor<AActor>(PlayerClass, PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
+		//GetWorld()->GetAuthGameMode()->RestartPlayerAtPlayerStart(PlayerController, PlayerStart);
+		
+		if (NewCharacter)
+		{
+			auto CharacterToPossess = Cast<ACharacter>(NewCharacter);
+			if (CharacterToPossess)
+			{
+				PlayerController->Possess(CharacterToPossess);
+				Owner->Destroy();
+			}
+		}
+		//ServerState.CurrentHealth = 100.f;
 	}
 }
 

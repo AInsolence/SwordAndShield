@@ -76,7 +76,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetIsSprinting(bool IsSprinting);
 	UFUNCTION(BlueprintCallable)
-	void PauseAnimation(bool bPauseAnimation);
+	void RespawnPlayer();
 
 private:
 	class ACharacter* Owner = nullptr;
