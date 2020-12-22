@@ -9,10 +9,8 @@ UInteractionComponent::UInteractionComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	SetIsReplicatedByDefault(true);
 }
-
 
 // Called when the game starts
 void UInteractionComponent::BeginPlay()
@@ -24,6 +22,19 @@ void UInteractionComponent::BeginPlay()
 
 	this->OnComponentBeginOverlap.AddDynamic(this, &UInteractionComponent::OnBeginOverlap);
 	this->OnComponentEndOverlap.AddDynamic(this, &UInteractionComponent::OnEndOverlap);
+}
+
+void UInteractionComponent::Server_PickUp_Implementation()
+{
+	if (InteractableItem)
+	{
+		InteractableItem->PickUp();
+	}
+}
+
+bool UInteractionComponent::Server_PickUp_Validate()
+{
+	return true; // TODO set anti-cheat protection
 }
 
 void UInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
@@ -63,9 +74,5 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UInteractionComponent::Interact()
 {
-	if (InteractableItem)
-	{
-		InteractableItem->PickUp();
-	}
+	Server_PickUp();
 }
-
