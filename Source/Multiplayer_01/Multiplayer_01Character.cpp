@@ -12,6 +12,7 @@
 #include "Components/CombatComponent.h"
 #include "Components/EquipmentComponent.h"
 #include "Components/HealthComponent.h"
+#include "Components/InteractionComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -48,10 +49,16 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Create combat component
+	// Create components
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>("CombatComponent");
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>("EquipmentComponent");
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
+	// Attach interactable sphere component
+	if (InteractionComponent)
+	{
+		InteractionComponent->SetupAttachment(RootComponent);
+	}
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -73,6 +80,7 @@ void AMultiplayer_01Character::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Block01", IE_Pressed, this, &AMultiplayer_01Character::Block01);
 	PlayerInputComponent->BindAction("Block02", IE_Pressed, this, &AMultiplayer_01Character::Block02);
 	PlayerInputComponent->BindAction("SwapWeapon", IE_Pressed, this, &AMultiplayer_01Character::SwapWeapon);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMultiplayer_01Character::Interact);
 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMultiplayer_01Character::MoveForward);
@@ -216,5 +224,13 @@ void AMultiplayer_01Character::SwapWeapon()
 	if (CombatComponent)
 	{
 		CombatComponent->SwapWeapon();
+	}
+}
+
+void AMultiplayer_01Character::Interact()
+{
+	if (InteractionComponent)
+	{
+		InteractionComponent->Interact();
 	}
 }

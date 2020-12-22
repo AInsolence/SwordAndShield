@@ -32,6 +32,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UHealthComponent* HealthComponent;
 
+	/** Interaction component */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UInteractionComponent* InteractionComponent;
+
 public:
 
 	AMultiplayer_01Character();
@@ -64,6 +68,7 @@ protected:
 	void Block01();
 	void Block02();
 	void SwapWeapon();
+	void Interact();
 
 	/** 
 	 * Called via input to turn at a given rate. 
