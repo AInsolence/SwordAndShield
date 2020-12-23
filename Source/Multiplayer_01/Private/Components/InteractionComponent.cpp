@@ -37,7 +37,7 @@ void UInteractionComponent::Server_PickUp_Implementation()
 {
 	if (InteractableItem && EquipmentComponent)
 	{
-		//EquipmentComponent->RightHandItem->Drop(Owner->GetActorLocation());
+		EquipmentComponent->DropWeapon();
 		auto ItemClass = InteractableItem->PickUp();
 		if (ItemClass->IsChildOf(AWeapon::StaticClass()))
 		{

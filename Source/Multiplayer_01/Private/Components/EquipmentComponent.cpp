@@ -19,6 +19,8 @@ UEquipmentComponent::UEquipmentComponent()
 void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Owner = GetOwner();
 	//TODO Change to appropriate after test
 	if (BaseTestWeapon && BaseTestShield)
 	{
@@ -77,6 +79,27 @@ void UEquipmentComponent::SwapWeapon()
 	//
 	BeltPlaceItem->Destroy();
 	BeltPlaceItem = CreateWeaponOnSocket(TempWeapon, "BeltWeaponSocket");
+}
+
+void UEquipmentComponent::DropWeapon()
+{
+	auto World = GetWorld();
+	if (World)
+	{
+		if (Owner->HasAuthority())
+		{
+			if (RightHandItem)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("TRY TO SPAWN DROPPED WEAPON"))
+				/*FVector SpawnLocation = FVector(Owner->GetActorLocation().X + 200,
+												Owner->GetActorLocation().Y,
+												Owner->GetActorLocation().Z);*/
+				FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector()*200;
+				World->SpawnActor<AWeapon>(RightHandItem->GetClass(), SpawnLocation, Owner->GetActorRotation());
+				RightHandItem->DestroyNetworkActorHandled();
+			}
+		}
+	}
 }
 
 AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, 
