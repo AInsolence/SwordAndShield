@@ -81,7 +81,7 @@ void UEquipmentComponent::SwapWeapon()
 	BeltPlaceItem = CreateWeaponOnSocket(TempWeapon, "BeltWeaponSocket");
 }
 
-void UEquipmentComponent::DropWeapon()
+void UEquipmentComponent::DropWeapon(FVector SpawnLocation)
 {
 	auto World = GetWorld();
 	if (World)
@@ -91,10 +91,6 @@ void UEquipmentComponent::DropWeapon()
 			if (RightHandItem)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("TRY TO SPAWN DROPPED WEAPON"))
-				/*FVector SpawnLocation = FVector(Owner->GetActorLocation().X + 200,
-												Owner->GetActorLocation().Y,
-												Owner->GetActorLocation().Z);*/
-				FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector()*200;
 				World->SpawnActor<AWeapon>(RightHandItem->GetClass(), SpawnLocation, Owner->GetActorRotation());
 				RightHandItem->DestroyNetworkActorHandled();
 			}

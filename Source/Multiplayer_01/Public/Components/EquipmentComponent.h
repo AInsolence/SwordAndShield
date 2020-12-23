@@ -50,7 +50,7 @@ public:
 
 	void EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
 	void SwapWeapon();
-	void DropWeapon();
+	void DropWeapon(FVector SpawnLocation);
 
 private:
 	AWeapon* CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, FName SocketName);
