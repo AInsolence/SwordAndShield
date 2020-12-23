@@ -45,9 +45,11 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void Interact();
+	IInteractableItemInterface* InteractableItem;
+
 private:
 	UWorld* World = nullptr;
 	APawn* Owner = nullptr;
-	IInteractableItemInterface* InteractableItem;
 	bool bIsInteractionActivated = false;
+	class UEquipmentComponent* EquipmentComponent = nullptr;
 };

@@ -24,7 +24,7 @@ public:
 	// Interactable interface implementation
 	virtual void SetOwner(AActor* _Owner);
 	virtual AActor* GetOwner();
-	virtual void PickUp() override;
+	virtual UClass* PickUp() override;
 	virtual void Use() override;
 	virtual class USkeletalMeshComponent* GetItemMesh() override;
 	virtual class UImage* GetItemImage() override;

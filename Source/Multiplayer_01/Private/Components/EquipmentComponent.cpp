@@ -34,9 +34,20 @@ void UEquipmentComponent::BeginPlay()
 
 void UEquipmentComponent::EquipItem(EItemSlot ItemSlot, TSubclassOf<class AWeapon> SlotWeapon)
 {
+	if (!SlotWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NOT slot weapon"))
+		return;
+	}
+
 	switch (ItemSlot)
 	{
 		case EItemSlot::RightHandItem:
+			if (RightHandItem)
+			{
+				RightHandItem->Destroy();
+				RightHandItem = nullptr;
+			}
 			RightHandItem = CreateWeaponOnSocket(SlotWeapon, "RightHandWeaponSocket");
 			break;
 		case EItemSlot::LeftHandItem:

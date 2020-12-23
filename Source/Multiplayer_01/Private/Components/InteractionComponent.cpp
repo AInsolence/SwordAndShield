@@ -1,15 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Components/InteractionComponent.h"
-#include "DrawDebugHelpers.h"
+#include "Components/EquipmentComponent.h"
 
 // Sets default values for this component's properties
 UInteractionComponent::UInteractionComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
+	SetRelativeScale3D(FVector(3.0f));
 }
 
 // Called when the game starts
@@ -19,6 +20,14 @@ void UInteractionComponent::BeginPlay()
 
 	World = GetWorld();
 	Owner = Cast<APawn>(GetOwner());
+	if (Owner)
+	{
+		auto EquipmentCompObject = GetOwner()->GetDefaultSubobjectByName("EquipmentComponent");
+		if (EquipmentCompObject)
+		{
+			EquipmentComponent = Cast<UEquipmentComponent>(EquipmentCompObject);
+		}
+	}
 
 	this->OnComponentBeginOverlap.AddDynamic(this, &UInteractionComponent::OnBeginOverlap);
 	this->OnComponentEndOverlap.AddDynamic(this, &UInteractionComponent::OnEndOverlap);
@@ -26,9 +35,14 @@ void UInteractionComponent::BeginPlay()
 
 void UInteractionComponent::Server_PickUp_Implementation()
 {
-	if (InteractableItem)
+	if (InteractableItem && EquipmentComponent)
 	{
-		InteractableItem->PickUp();
+		//EquipmentComponent->RightHandItem->Drop(Owner->GetActorLocation());
+		auto ItemClass = InteractableItem->PickUp();
+		if (ItemClass->IsChildOf(AWeapon::StaticClass()))
+		{
+			EquipmentComponent->EquipItem(EItemSlot::RightHandItem, ItemClass);
+		}
 	}
 }
 

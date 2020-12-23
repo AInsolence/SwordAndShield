@@ -12,7 +12,7 @@ AWeapon::AWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	SetReplicates(true);
+	bReplicates = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
@@ -49,10 +49,16 @@ AActor* AWeapon::GetOwner()
 	return WeaponOwner;
 }
 
-void AWeapon::PickUp()
+UClass* AWeapon::PickUp()
 {
+	auto ItemClass = GetClass();
 	UE_LOG(LogTemp, Warning, TEXT("Weapon picked up"))
-	Destroy();
+	if (HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Weapon try to SERVER on MAP destroy"))
+		Destroy();
+	}
+	return ItemClass;
 }
 
 void AWeapon::Use()

@@ -28,7 +28,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "InteractableInterface")
 	virtual AActor* GetOwner() = 0;
 	UFUNCTION(BlueprintCallable, Category = "InteractableInterface")
-	virtual void PickUp() = 0;
+	virtual UClass* PickUp() = 0;
 	UFUNCTION(BlueprintCallable, Category = "InteractableInterface")
 	virtual void Use() = 0;
 	UFUNCTION(BlueprintCallable, Category = "InteractableInterface")
