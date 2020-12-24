@@ -51,8 +51,12 @@ public:
 	void EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
 	void SwapWeapon();
 	void DropWeapon(FVector SpawnLocation);
+	void DropAllItems();
 
 private:
-	AWeapon* CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, FName SocketName);
 	AActor* Owner = nullptr;
+	UWorld* World = nullptr;
+	//
+	AWeapon* CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, FName SocketName);
+	void SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocation);
 };
