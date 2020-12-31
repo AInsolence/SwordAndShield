@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Items/Weapon.h"
+#include "Net/UnrealNetwork.h"
 #include "EquipmentComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -39,17 +40,26 @@ protected:
 	TSubclassOf<AWeapon> BackTestWeapon;
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
-	AWeapon* RightHandItem;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
-	AWeapon* LeftHandItem;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
-	AWeapon* BeltPlaceItem;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
-	AWeapon* BackPlaceItem;
+	
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
+	TArray<AWeapon*> Equipment;
 
-	void EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
-	void SwapWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	AWeapon* GetRightHandWeapon()
+	{
+		return Equipment[0];
+	}
+
+	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
+	void Server_EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
+	void Server_EquipItem_Implementation(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
+	bool Server_EquipItem_Validate(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
+
+	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
+	void Server_SwapWeapon();
+	void Server_SwapWeapon_Implementation();
+	bool Server_SwapWeapon_Validate();
+
 	void DropWeapon(FVector SpawnLocation);
 	void DropAllItems();
 

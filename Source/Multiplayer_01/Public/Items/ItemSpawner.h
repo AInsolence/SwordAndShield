@@ -22,7 +22,6 @@ protected:
 	UClass* SpawnItemInRandomLocation(UClass* Item);
 	UClass* SpawnItemInFrontOf(UClass* Item, float Distance);
 
-
 private:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* SpawnerVolume;

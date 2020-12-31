@@ -30,11 +30,11 @@ protected:
 	/** Called when a interaction sphere start overlaps something */
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-					AActor* OtherActor,
-					UPrimitiveComponent* OtherComp,
-					int32 OtherBodyIndex,
-					bool bFromSweep,
-					const FHitResult& SweepResult);
+						AActor* OtherActor,
+						UPrimitiveComponent* OtherComp,
+						int32 OtherBodyIndex,
+						bool bFromSweep,
+						const FHitResult& SweepResult);
 	/** Called when a interaction sphere end overlapping */
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, 

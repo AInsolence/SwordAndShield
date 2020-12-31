@@ -23,69 +23,104 @@ void UEquipmentComponent::BeginPlay()
 	Owner = GetOwner();
 	World = GetWorld();
 
+	Equipment.Init(nullptr, 4);
+
 	//TODO Change to appropriate after test
 	if (BaseTestWeapon && BaseTestShield)
 	{
-		EquipItem(EItemSlot::RightHandItem, BaseTestWeapon);
-		EquipItem(EItemSlot::LeftHandItem, BaseTestShield);
+		Server_EquipItem(EItemSlot::RightHandItem, BaseTestWeapon);
+		Server_EquipItem(EItemSlot::LeftHandItem, BaseTestShield);
 		if (BeltTestWeapon && BackTestWeapon)
 		{
-			EquipItem(EItemSlot::BeltPlaceItem, BeltTestWeapon);
-			EquipItem(EItemSlot::BackPlaceItem, BackTestWeapon);
+			Server_EquipItem(EItemSlot::BeltPlaceItem, BeltTestWeapon);
+			Server_EquipItem(EItemSlot::BackPlaceItem, BackTestWeapon);
 		}
 	}
 }
 
-void UEquipmentComponent::EquipItem(EItemSlot ItemSlot, TSubclassOf<class AWeapon> SlotWeapon)
+void UEquipmentComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(UEquipmentComponent, Equipment, COND_None);
+}
+
+void UEquipmentComponent::Server_EquipItem_Implementation(EItemSlot ItemSlot, TSubclassOf<class AWeapon> SlotWeapon)
 {
 	if (!SlotWeapon)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NOT slot weapon"))
 		return;
 	}
-
+	// Create new weapon in an appropriate socket
 	switch (ItemSlot)
 	{
 		case EItemSlot::RightHandItem:
-			if (RightHandItem)
+			if (Equipment[0])
 			{
-				RightHandItem->Destroy();
-				RightHandItem = nullptr;
+				Equipment[0]->Destroy();
+				Equipment[0] = nullptr;
 			}
-			RightHandItem = CreateWeaponOnSocket(SlotWeapon, "RightHandWeaponSocket");
+			Equipment[0] = CreateWeaponOnSocket(SlotWeapon, "RightHandWeaponSocket");
 			break;
 		case EItemSlot::LeftHandItem:
-			LeftHandItem = CreateWeaponOnSocket(SlotWeapon, "LeftHandWeaponSocket");
+			if (Equipment[1])
+			{
+				Equipment[1]->Destroy();
+				Equipment[1] = nullptr;
+			}
+			Equipment[1] = CreateWeaponOnSocket(SlotWeapon, "LeftHandWeaponSocket");
 			break;
 		case EItemSlot::BeltPlaceItem:
-			BeltPlaceItem = CreateWeaponOnSocket(SlotWeapon, "BeltWeaponSocket");
+			if (Equipment[2])
+			{
+				Equipment[2]->Destroy();
+				Equipment[2] = nullptr;
+			}
+			Equipment[2] = CreateWeaponOnSocket(SlotWeapon, "BeltWeaponSocket");
 			break;
 		case EItemSlot::BackPlaceItem:
-			BackPlaceItem = CreateWeaponOnSocket(SlotWeapon, "BackWeaponSocket");
+			if (Equipment[3])
+			{
+				Equipment[3]->Destroy();
+				Equipment[3] = nullptr;
+			}
+			Equipment[3] = CreateWeaponOnSocket(SlotWeapon, "BackWeaponSocket");
 			break;
 		default:
 			break;
 	}
 }
 
-void UEquipmentComponent::SwapWeapon()
+bool UEquipmentComponent::Server_EquipItem_Validate(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon)
 {
-	if (!RightHandItem || !BeltPlaceItem)
+	return true;
+}
+
+void UEquipmentComponent::Server_SwapWeapon_Implementation()
+{
+	if (Equipment[0] == nullptr || 
+		Equipment[2] == nullptr)
 	{
 		return;
 	}
-	auto TempWeapon = RightHandItem->GetClass();
+	auto TempWeapon = Equipment[0]->GetClass();
 	//
-	RightHandItem->Destroy();
-	RightHandItem = CreateWeaponOnSocket(BeltPlaceItem->GetClass(), "RightHandWeaponSocket");
+	Equipment[0]->Destroy();
+	Equipment[0] = CreateWeaponOnSocket(Equipment[2]->GetClass(), "RightHandWeaponSocket");
 	//
-	BeltPlaceItem->Destroy();
-	BeltPlaceItem = CreateWeaponOnSocket(TempWeapon, "BeltWeaponSocket");
+	Equipment[2]->Destroy();
+	Equipment[2] = CreateWeaponOnSocket(TempWeapon, "BeltWeaponSocket");
+}
+
+bool UEquipmentComponent::Server_SwapWeapon_Validate()
+{
+	return true;
 }
 
 void UEquipmentComponent::DropWeapon(FVector SpawnLocation)
 {
-	SpawnItemInAWorld(RightHandItem, SpawnLocation);
+	SpawnItemInAWorld(Equipment[0], SpawnLocation);
 }
 
 void UEquipmentComponent::SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocation)

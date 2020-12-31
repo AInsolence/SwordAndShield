@@ -42,7 +42,7 @@ void UInteractionComponent::Server_PickUp_Implementation()
 		{
 			FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 200;
 			EquipmentComponent->DropWeapon(SpawnLocation);
-			EquipmentComponent->EquipItem(EItemSlot::RightHandItem, ItemClass);
+			EquipmentComponent->Server_EquipItem(EItemSlot::RightHandItem, ItemClass);
 		}
 	}
 }

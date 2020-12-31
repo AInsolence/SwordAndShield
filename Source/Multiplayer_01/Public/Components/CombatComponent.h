@@ -69,8 +69,10 @@ protected:
 													 bool _bAnimStart,
 													 FString _ActionState,
 													 EActionType _ActionType);
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	void SwapWeaponEquip();
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Replication")
+	void Server_SwapWeaponEquip();
+	void Server_SwapWeaponEquip_Implementation();
+	bool Server_SwapWeaponEquip_Validate();
 
 	/** AnimMontages to play */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
