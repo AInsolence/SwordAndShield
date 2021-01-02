@@ -11,6 +11,7 @@
 #include "GameFramework/PlayerStart.h"
 #include "Engine/World.h"
 #include "GameFramework/GameModeBase.h"
+#include "HUD/HUD_Multiplayer.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -21,6 +22,7 @@ UHealthComponent::UHealthComponent()
 	SetIsReplicatedByDefault(true);
 
 	ServerState.CurrentHealth = ServerState.DefaultHealth;
+	LocalCurrentHealth = ServerState.CurrentHealth;
 	ServerState.CurrentStamina = ServerState.DefaultStamina;
 }
 
@@ -30,7 +32,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 		return;
 	}
-
+	
 	/**  Sprint logic */
 	float RampThisFrame = (DeltaTime / TimeToMaxSprintSpeed) * MaxSprintMultiplier;
 	// check if sprint input pressed, is character has enough stamina and is he moves
@@ -40,23 +42,21 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		BaseSprintMultiplier += RampThisFrame;
 		// change stamina bar percentage
 		ChangeCurrentStaminaTo(-0.5f);
-		/*
+		
 		if (GetPlayerHUD() != nullptr)
 		{
-			GetPlayerHUD()->UpdateStaminaState(HealthComponent->GetCurrentStamina() /
-			HealthComponent->GetDefaultStamina());
-		}*/
+			GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina()/GetDefaultStamina());
+		}
 	}
 	else
 	{
 		BaseSprintMultiplier -= RampThisFrame;
 		// change stamina bar percentage
 		ChangeCurrentStaminaTo(0.1f);
-		/*if (GetPlayerHUD() != nullptr)
+		if (GetPlayerHUD() != nullptr)
 		{
-			GetPlayerHUD()->UpdateStaminaState(HealthComponent->GetCurrentStamina() /
-				HealthComponent->GetDefaultStamina());
-		}*/
+			GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
+		}
 	}
 	BaseSprintMultiplier = FMath::Clamp(BaseSprintMultiplier, 1.0f, MaxSprintMultiplier);
 	Owner->GetCharacterMovement()->MaxWalkSpeed = ServerState.BaseWalkingSpeed * BaseSprintMultiplier;
@@ -99,29 +99,48 @@ void UHealthComponent::SetIsSprinting(bool IsSprinting)
 	Server_ChangeState(IsSprinting);
 }
 
+void UHealthComponent::OnRep_StateChanged()
+{
+	// Update health state
+	if (GetPlayerHUD())
+	{
+		if (LocalCurrentHealth != ServerState.CurrentHealth)
+		{
+			GetPlayerHUD()->UpdateHealthState(GetCurrentHealth() / GetDefaultHealth());
+			LocalCurrentHealth = ServerState.CurrentHealth;
+		}
+
+	}
+}
+
 void UHealthComponent::RespawnPlayer()
 {
+	// Update HUD with 100% state
+	if (GetPlayerHUD() != nullptr)
+	{
+		GetPlayerHUD()->UpdateHealthState(GetDefaultHealth());
+		GetPlayerHUD()->UpdateStaminaState(GetDefaultStamina());
+	}
 	if (!Owner->HasAuthority())
 	{
 		return;
 	}
 	if (Owner)
 	{
+		// Get random start position
 		TArray<AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundActors);
-		auto PlayerStart = Cast<APlayerStart>(FoundActors[0]);
-		
+		auto RandomStartPlaceIndex = FMath::RandRange(0, FoundActors.Num() - 1);
+		auto PlayerStart = Cast<APlayerStart>(FoundActors[RandomStartPlaceIndex]);
+		// Unpossess an old pawn
 		auto PlayerController = Owner->GetController();
 		PlayerController->UnPossess();
-
+		// Spawn new pawn
 		auto PlayerClass = Owner->GetClass();
-		
-		UE_LOG(LogTemp, Warning, TEXT("Player start location %s"), *PlayerStart->GetActorLocation().ToString());
-		UE_LOG(LogTemp, Warning, TEXT("Player location %s"), *Owner->GetActorLocation().ToString());
-
 		auto NewCharacter = GetWorld()->SpawnActor<AActor>(PlayerClass, PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
 		//GetWorld()->GetAuthGameMode()->RestartPlayerAtPlayerStart(PlayerController, PlayerStart);
 		
+		// Possess new pawn if exists
 		if (NewCharacter)
 		{
 			auto CharacterToPossess = Cast<ACharacter>(NewCharacter);
@@ -131,7 +150,6 @@ void UHealthComponent::RespawnPlayer()
 				Owner->Destroy();
 			}
 		}
-		//ServerState.CurrentHealth = 100.f;
 	}
 }
 
@@ -163,11 +181,10 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	}
 	ServerState.CurrentHealth = FMath::Clamp(ServerState.CurrentHealth - Damage, 0.0f, ServerState.DefaultHealth);
 	//Update HUD health status
-	/*if (GetPlayerHUD())
+	if (GetPlayerHUD())
 	{
-		GetPlayerHUD()->UpdateHealthState(HealthComponent->GetCurrentHealth() /
-			HealthComponent->GetDefaultHealth());
-	}*/
+		GetPlayerHUD()->UpdateHealthState(GetCurrentHealth()/GetDefaultHealth());
+	}
 	if (GetCurrentHealth() <= 0)
 	{
 		bIsDead = true;
@@ -185,4 +202,25 @@ void UHealthComponent::Death()
 	{
 		CombatComponent->Death();
 	}
+}
+
+AHUD_Multiplayer* UHealthComponent::GetPlayerHUD()
+{
+	if (Owner)
+	{
+		// We only want locally controlled and controlled by player, not AI
+		if (!Owner->IsLocallyControlled())
+		{
+			return nullptr;
+		}
+
+		auto PlayerController = Cast<APlayerController>(Owner->GetController());
+		if (!PlayerController)
+		{
+			return nullptr;
+		}
+		auto HUD = PlayerController->GetHUD();
+		return Cast<AHUD_Multiplayer>(HUD);
+	}
+	return nullptr;
 }

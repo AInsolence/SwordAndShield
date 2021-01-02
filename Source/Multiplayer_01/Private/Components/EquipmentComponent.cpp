@@ -31,9 +31,12 @@ void UEquipmentComponent::BeginPlay()
 	{
 		Server_EquipItem(EItemSlot::RightHandItem, BaseTestWeapon);
 		Server_EquipItem(EItemSlot::LeftHandItem, BaseTestShield);
-		if (BeltTestWeapon && BackTestWeapon)
+		if (BeltTestWeapon)
 		{
 			Server_EquipItem(EItemSlot::BeltPlaceItem, BeltTestWeapon);
+		}
+		if (BackTestWeapon)
+		{
 			Server_EquipItem(EItemSlot::BackPlaceItem, BackTestWeapon);
 		}
 	}
@@ -145,7 +148,7 @@ void UEquipmentComponent::DropAllItems()
 	{
 		return;
 	}
-
+	// TODO spawn only right hand weapon
 	auto ItemSpawner = GetWorld()->SpawnActor<AItemSpawner>(
 												Owner->GetActorLocation(),
 												Owner->GetActorRotation());
@@ -157,21 +160,21 @@ void UEquipmentComponent::DropAllItems()
 	}
 	if (Equipment[1])
 	{
-		ItemSpawner->SpawnItemInRandomLocation(Equipment[1]->GetClass());
+		//ItemSpawner->SpawnItemInRandomLocation(Equipment[1]->GetClass());
 		UE_LOG(LogTemp, Warning, TEXT("Try to destroy left hand weapon"))
 		Equipment[1]->Destroy();
 	}
 	if (Equipment[2])
 	{
-		ItemSpawner->SpawnItemInRandomLocation(Equipment[2]->GetClass());
+		//ItemSpawner->SpawnItemInRandomLocation(Equipment[2]->GetClass());
 		Equipment[2]->Destroy();
 	}
 	if (Equipment[3])
 	{
-		ItemSpawner->SpawnItemInRandomLocation(Equipment[3]->GetClass());
+		//ItemSpawner->SpawnItemInRandomLocation(Equipment[3]->GetClass());
 		Equipment[3]->Destroy();
 	}
-	//ItemSpawner->DestroyNetworkActorHandled();
+	ItemSpawner->DestroyNetworkActorHandled();
 }
 
 AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, 

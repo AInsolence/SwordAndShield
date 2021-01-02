@@ -1,0 +1,38 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/HUD.h"
+#include "HUD_Multiplayer.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class MULTIPLAYER_01_API AHUD_Multiplayer : public AHUD
+{
+	GENERATED_BODY()
+
+public:
+    // Constructor
+    AHUD_Multiplayer(const FObjectInitializer& ObjectInitializer);
+
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
+    virtual void DrawHUD() override;
+
+    // Binding property in "meta" to prohibit compiling the HUD without appropriate widgets
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+    TSubclassOf<class UPlayerStateInfoWidget> PlayerStateInfoWidgetClass;
+
+    class UPlayerStateInfoWidget* PlayerStateInfoWidget;
+
+    /// *** API *** ///
+    UFUNCTION()
+    void UpdateHealthState(float CurrentHealth);
+    UFUNCTION()
+    void UpdateStaminaState(float CurrentStamina);
+    UFUNCTION()
+    void SetPickUpTipVisibility(bool Show);
+};

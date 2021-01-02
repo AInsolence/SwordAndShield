@@ -48,8 +48,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float TimeToMaxSprintSpeed = 2.0f;
 
-	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "ServerState")
+	UPROPERTY(ReplicatedUsing = OnRep_StateChanged, EditDefaultsOnly, BlueprintReadWrite, Category = "ServerState")
 	FServerState ServerState;
+	UFUNCTION(BlueprintCallable, Category = "Replication")
+	void OnRep_StateChanged();
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "ServerState")
 	void Server_ChangeState(bool IsSprinting);
@@ -84,7 +86,9 @@ public:
 private:
 	class ACharacter* Owner = nullptr;
 	class UCombatComponent* CombatComponent = nullptr;
+	float LocalCurrentHealth;
 	bool bIsVulnerable = false;
 	bool bIsDead = false;
 	void Death();
+	class AHUD_Multiplayer* GetPlayerHUD();
 };

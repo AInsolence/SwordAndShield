@@ -39,30 +39,10 @@ void UCombatComponent::BeginPlay()
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	//
 	if (ServerActionState.ActionType == EActionType::Roll)
 	{
 		Owner->AddMovementInput(Owner->GetActorForwardVector(), 1.0f, true);
-	}
-	//
-	if (GetOwnerRole() == ROLE_Authority)
-	{
-		DrawDebugString(GetWorld(),
-			FVector(0, 0, 150),
-			ServerActionState.ActionState,
-			GetOwner(),
-			FColor::White,
-			0.1f);
-	}
-	// 
-	if (GetOwnerRole() == ROLE_AutonomousProxy)
-	{
-		DrawDebugString(GetWorld(),
-			FVector(0, 0, 150),
-			ServerActionState.ActionState,
-			GetOwner(),
-			FColor::White,
-			0.1f);
 	}
 	//
 	if (GetOwnerRole() == ROLE_SimulatedProxy)
@@ -73,12 +53,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UCombatComponent::SimulatedTick(float DeltaTime)
 {
-	DrawDebugString(GetWorld(),
-		FVector(0, 0, 150),
-		ServerActionState.ActionState,
-		GetOwner(),
-		FColor::White,
-		0.1f);
+	// Simulated actions here
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
