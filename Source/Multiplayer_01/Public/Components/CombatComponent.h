@@ -99,5 +99,5 @@ private:
 	class UEquipmentComponent* EquipmentComponent = nullptr;
 	void SimulatedTick(float DeltaTime);
 	void PlayActionAnimation();
-	void PlayAnimation(UAnimMontage* ActionAnimation, float StartTime);
+	void PlayAnimation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
 };

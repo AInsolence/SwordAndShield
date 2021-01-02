@@ -134,25 +134,29 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::RightHandAction_01:
 		if (EquipmentComponent->Equipment[0])
 		{
-			PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_01, 0.0f);
+			PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_01, 0.0f,
+						  EquipmentComponent->Equipment[0]->SpeedOfAttack);
 		}
 		break;
 	case EActionType::RightHandAction_02:
 		if (EquipmentComponent->Equipment[0])
 		{
-			PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_02, 0.0f);
+			PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_02, 0.0f,
+						  EquipmentComponent->Equipment[0]->SpeedOfAttack);
 		}
 		break;
 	case EActionType::LeftHandAction_01:
 		if (EquipmentComponent->Equipment[1])
 		{
-			PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_01, 0.0f);
+			PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_01, 0.0f,
+						  EquipmentComponent->Equipment[1]->SpeedOfAttack);
 		}
 		break;
 	case EActionType::LeftHandAction_02:
 		if (EquipmentComponent->Equipment[1])
 		{
-			PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_02, 0.0f);
+			PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_02, 0.0f,
+						  EquipmentComponent->Equipment[1]->SpeedOfAttack);
 		}
 		break;
 	case EActionType::SwapWeapon:
@@ -169,7 +173,7 @@ void UCombatComponent::PlayActionAnimation()
 	}
 }
 
-void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartTime)
+void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate)
 {
 	if (!Owner || !ActionAnimation)
 	{
@@ -183,7 +187,7 @@ void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartT
 	if (AnimInstance)
 	{
 		ServerActionState.bAnimStarted = true;
-		AnimInstance->Montage_Play(ActionAnimation, 1.0f, EMontagePlayReturnType::MontageLength, StartTime);
+		AnimInstance->Montage_Play(ActionAnimation, InPlayRate, EMontagePlayReturnType::MontageLength, StartTime);
 	}
 }
 

@@ -14,6 +14,8 @@ UEquipmentComponent::UEquipmentComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
+
+	Equipment.Init(nullptr, 4);
 }
 
 // Called when the game starts
@@ -23,8 +25,6 @@ void UEquipmentComponent::BeginPlay()
 
 	Owner = GetOwner();
 	World = GetWorld();
-
-	Equipment.Init(nullptr, 4);
 
 	//TODO Change to appropriate after test
 	if (BaseTestWeapon && BaseTestShield)

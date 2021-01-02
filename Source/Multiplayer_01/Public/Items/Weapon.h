@@ -18,6 +18,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 public:
+	// Weapon Stats
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	float SpeedOfAttack = 1.0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
 	float Damage = 30.0f;
 
