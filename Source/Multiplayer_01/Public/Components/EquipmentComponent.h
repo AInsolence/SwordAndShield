@@ -60,7 +60,11 @@ public:
 	void Server_SwapWeapon_Implementation();
 	bool Server_SwapWeapon_Validate();
 
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void SwapWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void DropWeapon(FVector SpawnLocation);
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void DropAllItems();
 
 private:

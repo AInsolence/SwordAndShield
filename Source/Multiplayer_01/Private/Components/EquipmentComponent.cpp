@@ -5,6 +5,7 @@
 #include "Components/InteractableItemInterface.h"
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
+#include "Items/ItemSpawner.h"
 
 // Sets default values for this component's properties
 UEquipmentComponent::UEquipmentComponent()
@@ -118,6 +119,11 @@ bool UEquipmentComponent::Server_SwapWeapon_Validate()
 	return true;
 }
 
+void UEquipmentComponent::SwapWeapon()
+{
+	Server_SwapWeapon();
+}
+
 void UEquipmentComponent::DropWeapon(FVector SpawnLocation)
 {
 	SpawnItemInAWorld(Equipment[0], SpawnLocation);
@@ -135,7 +141,37 @@ void UEquipmentComponent::SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocati
 
 void UEquipmentComponent::DropAllItems()
 {
-	
+	if (!World)
+	{
+		return;
+	}
+
+	auto ItemSpawner = GetWorld()->SpawnActor<AItemSpawner>(
+												Owner->GetActorLocation(),
+												Owner->GetActorRotation());
+	if (Equipment[0])
+	{
+		ItemSpawner->SpawnItemInRandomLocation(Equipment[0]->GetClass());
+		UE_LOG(LogTemp, Warning, TEXT("Try to destroy right hand weapon"))
+		Equipment[0]->Destroy();
+	}
+	if (Equipment[1])
+	{
+		ItemSpawner->SpawnItemInRandomLocation(Equipment[1]->GetClass());
+		UE_LOG(LogTemp, Warning, TEXT("Try to destroy left hand weapon"))
+		Equipment[1]->Destroy();
+	}
+	if (Equipment[2])
+	{
+		ItemSpawner->SpawnItemInRandomLocation(Equipment[2]->GetClass());
+		Equipment[2]->Destroy();
+	}
+	if (Equipment[3])
+	{
+		ItemSpawner->SpawnItemInRandomLocation(Equipment[3]->GetClass());
+		Equipment[3]->Destroy();
+	}
+	//ItemSpawner->DestroyNetworkActorHandled();
 }
 
 AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, 

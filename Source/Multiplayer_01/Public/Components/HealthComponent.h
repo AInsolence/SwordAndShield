@@ -85,5 +85,6 @@ private:
 	class ACharacter* Owner = nullptr;
 	class UCombatComponent* CombatComponent = nullptr;
 	bool bIsVulnerable = false;
+	bool bIsDead = false;
 	void Death();
 };

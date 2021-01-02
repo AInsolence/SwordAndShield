@@ -157,7 +157,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AActor* DamageCauser)
 {
 	// Character may be invulnerable e.g. while rolling or use protection magic
-	if (bIsVulnerable)
+	if (bIsVulnerable || bIsDead)
 	{
 		return;
 	}
@@ -170,6 +170,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	}*/
 	if (GetCurrentHealth() <= 0)
 	{
+		bIsDead = true;
 		Death();
 	}
 	else

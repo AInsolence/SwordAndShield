@@ -10,9 +10,10 @@ AItemSpawner::AItemSpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	bReplicates = false;
+	bReplicates = true;
 	// create spawner volume box
 	SpawnerVolume = CreateDefaultSubobject<UBoxComponent>("SpawnerVolume");
+	SpawnerVolume->SetRelativeScale3D(FVector(5, 5, 0));
 	RootComponent = SpawnerVolume;
 }
 
@@ -27,8 +28,8 @@ UClass* AItemSpawner::SpawnItemInRandomLocation(UClass* Item)
 	if (HasAuthority())
 	{
 		FVector Location = GetRandomPointInVolume();
-		auto SpawnedItem = GetWorld()->SpawnActor<UClass>(Item, Location, FRotator::ZeroRotator);
-		return SpawnedItem;
+		auto SpawnedItem = GetWorld()->SpawnActor<AActor>(Item, Location, FRotator::ZeroRotator);
+		return SpawnedItem->GetClass();
 	}
 	else
 	{
@@ -41,8 +42,8 @@ UClass* AItemSpawner::SpawnItemInFrontOf(UClass* Item, float Distance)
 	if (HasAuthority())
 	{
 		FVector Location = GetActorLocation() + GetActorForwardVector() * Distance;
-		auto SpawnedItem = GetWorld()->SpawnActor<UClass>(Item, Location, FRotator::ZeroRotator);
-		return SpawnedItem;
+		auto SpawnedItem = GetWorld()->SpawnActor<AActor>(Item, Location, FRotator::ZeroRotator);
+		return SpawnedItem->GetClass();
 	}
 	else
 	{

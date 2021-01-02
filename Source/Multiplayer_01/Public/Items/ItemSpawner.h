@@ -14,13 +14,13 @@ class MULTIPLAYER_01_API AItemSpawner : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AItemSpawner();
+	//
+	UClass* SpawnItemInRandomLocation(UClass* Item);
+	UClass* SpawnItemInFrontOf(UClass* Item, float Distance);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	//
-	UClass* SpawnItemInRandomLocation(UClass* Item);
-	UClass* SpawnItemInFrontOf(UClass* Item, float Distance);
 
 private:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Spawning", meta = (AllowPrivateAccess = "true"))

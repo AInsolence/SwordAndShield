@@ -121,19 +121,6 @@ void UCombatComponent::SetServerActionState(const FServerActionState& _ServerAct
 	ServerActionState = _ServerActionState;
 }
 
-void UCombatComponent::Server_SwapWeaponEquip_Implementation()
-{
-	if (EquipmentComponent && Owner->IsLocallyControlled())
-	{// Call equipment swap logic in the middle of animation
-		EquipmentComponent->Server_SwapWeapon();
-	}
-}
-
-bool UCombatComponent::Server_SwapWeaponEquip_Validate()
-{
-	return true;
-}
-
 const FServerActionState UCombatComponent::CreateServerActionState(bool _bCanAct, bool _bAnimStart, FString _ActionState, EActionType _ActionType)
 {
 	FServerActionState State;
