@@ -123,7 +123,7 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::None:
 		break;
 	case EActionType::Roll:
-		PlayAnimation(RollAnimation, 0.5f);
+		PlayAnimation(RollAnimation, 0.3f);
 		break;
 	case EActionType::Interact:
 		break;

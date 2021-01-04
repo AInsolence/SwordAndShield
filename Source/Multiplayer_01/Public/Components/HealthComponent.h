@@ -27,6 +27,9 @@ public:
 	bool bIsSprinting = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
 	float BaseWalkingSpeed = 600.f;
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	bool bIsVulnerable = false;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -87,7 +90,6 @@ private:
 	class ACharacter* Owner = nullptr;
 	class UCombatComponent* CombatComponent = nullptr;
 	float LocalCurrentHealth;
-	bool bIsVulnerable = false;
 	bool bIsDead = false;
 	void Death();
 	class AHUD_Multiplayer* GetPlayerHUD();

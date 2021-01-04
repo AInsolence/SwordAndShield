@@ -165,7 +165,11 @@ bool UHealthComponent::Server_ChangeState_Validate(bool IsSprinting)
 
 void UHealthComponent::SetVulnerability(bool IsVulnerable)
 {
-	bIsVulnerable = IsVulnerable;
+	if (Owner->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Vulnerability set on server side"))
+		ServerState.bIsVulnerable = IsVulnerable;
+	}
 }
 
 void UHealthComponent::TakeDamage(AActor* DamagedActor,
@@ -175,7 +179,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AActor* DamageCauser)
 {
 	// Character may be invulnerable e.g. while rolling or use protection magic
-	if (bIsVulnerable || bIsDead)
+	if (ServerState.bIsVulnerable || bIsDead)
 	{
 		return;
 	}

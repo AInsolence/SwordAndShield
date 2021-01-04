@@ -160,11 +160,11 @@ void AMultiplayer_01Character::MoveRight(float Value)
 
 void AMultiplayer_01Character::Roll()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Character Roll() called"))
 	if (!CombatComponent || !HealthComponent)
 	{
 		return;
 	}
+	//
 	HealthComponent->SetIsSprinting(false);
 	if (GetWorld()->GetTimeSeconds() < SprintRollPressedTime + 0.3f)
 	{

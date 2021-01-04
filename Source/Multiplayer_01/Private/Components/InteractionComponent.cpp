@@ -70,7 +70,7 @@ void UInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 		{
 			if (!_InteractableItem->GetOwner())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Overlapped item"))
+				//UE_LOG(LogTemp, Warning, TEXT("Overlapped item"))
 				// TODO show hint about item
 				InteractableItem = _InteractableItem;
 			}
