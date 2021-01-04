@@ -37,6 +37,11 @@ void UInteractionComponent::Server_PickUp_Implementation()
 {
 	if (InteractableItem && EquipmentComponent)
 	{
+		if (InteractableItem->GetOwner() != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Item already has owner"))
+			return;
+		}
 		auto ItemClass = InteractableItem->PickUp();
 		if (ItemClass->IsChildOf(AWeapon::StaticClass()))
 		{
@@ -63,7 +68,7 @@ void UInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 		auto _InteractableItem = Cast<IInteractableItemInterface>(OtherActor);
 		if (_InteractableItem)
 		{
-			if (_InteractableItem->GetOwner() == nullptr)
+			if (!_InteractableItem->GetOwner())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Overlapped item"))
 				// TODO show hint about item

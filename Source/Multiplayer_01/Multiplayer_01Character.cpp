@@ -231,6 +231,16 @@ void AMultiplayer_01Character::Interact()
 {
 	if (InteractionComponent)
 	{
-		InteractionComponent->Interact();
+		if (CombatComponent)
+		{
+			if (CombatComponent->bCanCharacterAct())
+			{
+				InteractionComponent->Interact();
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Cannot interact now"))
+			}
+		}
 	}
 }

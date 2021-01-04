@@ -53,7 +53,6 @@ void UEquipmentComponent::Server_EquipItem_Implementation(EItemSlot ItemSlot, TS
 {
 	if (!SlotWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("NOT slot weapon"))
 		return;
 	}
 	// Create new weapon in an appropriate socket

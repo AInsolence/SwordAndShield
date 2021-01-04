@@ -92,7 +92,9 @@ public:
 	void SwapWeapon();
 	void Hitted();
 	void Death();
+	//
 	EActionType GetActionType() const;
+	bool bCanCharacterAct() const;
 
 private:
 	class ACharacter* Owner = nullptr;

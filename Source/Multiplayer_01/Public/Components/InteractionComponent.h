@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
 #include "Components/InteractableItemInterface.h"
-
 #include "InteractionComponent.generated.h"
 
 

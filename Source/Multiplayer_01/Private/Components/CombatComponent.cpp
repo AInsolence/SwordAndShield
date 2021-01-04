@@ -235,3 +235,8 @@ EActionType UCombatComponent::GetActionType() const
 {
 	return ServerActionState.ActionType;
 }
+
+bool UCombatComponent::bCanCharacterAct() const
+{
+	return ServerActionState.bCanAct;
+}
