@@ -42,21 +42,12 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		BaseSprintMultiplier += RampThisFrame;
 		// change stamina bar percentage
 		ChangeCurrentStaminaTo(-0.5f);
-		
-		if (GetPlayerHUD() != nullptr)
-		{
-			GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina()/GetDefaultStamina());
-		}
 	}
 	else
 	{
 		BaseSprintMultiplier -= RampThisFrame;
 		// change stamina bar percentage
-		ChangeCurrentStaminaTo(0.1f);
-		if (GetPlayerHUD() != nullptr)
-		{
-			GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
-		}
+		ChangeCurrentStaminaTo(0.15f);
 	}
 	BaseSprintMultiplier = FMath::Clamp(BaseSprintMultiplier, 1.0f, MaxSprintMultiplier);
 	Owner->GetCharacterMovement()->MaxWalkSpeed = ServerState.BaseWalkingSpeed * BaseSprintMultiplier;
@@ -92,6 +83,10 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void UHealthComponent::ChangeCurrentStaminaTo(float StaminaCost)
 {
 	ServerState.CurrentStamina = FMath::Clamp(ServerState.CurrentStamina + StaminaCost, 0.0f, ServerState.DefaultStamina);
+	if (GetPlayerHUD() != nullptr)
+	{
+		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
+	}
 }
 
 void UHealthComponent::SetIsSprinting(bool IsSprinting)

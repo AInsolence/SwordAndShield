@@ -8,6 +8,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/EquipmentComponent.h"
+#include "Components/HealthComponent.h"
 
 
 // Sets default values for this component's properties
@@ -31,6 +32,12 @@ void UCombatComponent::BeginPlay()
 		if (EquipmentCompObject)
 		{
 			EquipmentComponent = Cast<UEquipmentComponent>(EquipmentCompObject);
+		}
+		//
+		auto HealthCompObject = GetOwner()->GetDefaultSubobjectByName("HealthComponent");
+		if (HealthCompObject)
+		{
+			HealthComponent = Cast<UHealthComponent>(HealthCompObject);
 		}
 	}
 }
@@ -123,6 +130,17 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::None:
 		break;
 	case EActionType::Roll:
+		if (HealthComponent)
+		{
+			if (HealthComponent->GetCurrentStamina() < 20)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Not enough stamina"))
+				auto DeclineStateChange = CreateServerActionState(true, false, "NONE", EActionType::None);
+				SetServerActionState(DeclineStateChange);
+				return;
+			}
+			HealthComponent->ChangeCurrentStaminaTo(-20.f);
+		}
 		PlayAnimation(RollAnimation, 0.3f);
 		break;
 	case EActionType::Interact:
@@ -134,6 +152,17 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::RightHandAction_01:
 		if (EquipmentComponent->Equipment[0])
 		{
+			if (HealthComponent)
+			{
+				if (HealthComponent->GetCurrentStamina() < 20)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Not enough stamina"))
+					auto DeclineStateChange = CreateServerActionState(true, false, "NONE", EActionType::None);
+					SetServerActionState(DeclineStateChange);
+					return;
+				}
+				HealthComponent->ChangeCurrentStaminaTo(-20.f);
+			}
 			PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_01, 0.0f,
 						  EquipmentComponent->Equipment[0]->SpeedOfAttack);
 		}
@@ -141,6 +170,17 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::RightHandAction_02:
 		if (EquipmentComponent->Equipment[0])
 		{
+			if (HealthComponent)
+			{
+				if (HealthComponent->GetCurrentStamina() < 30)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Not enough stamina"))
+					auto DeclineStateChange = CreateServerActionState(true, false, "NONE", EActionType::None);
+					SetServerActionState(DeclineStateChange);
+					return;
+				}
+				HealthComponent->ChangeCurrentStaminaTo(-30.f);
+			}
 			PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_02, 0.0f,
 						  EquipmentComponent->Equipment[0]->SpeedOfAttack);
 		}

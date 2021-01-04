@@ -99,6 +99,7 @@ public:
 private:
 	class ACharacter* Owner = nullptr;
 	class UEquipmentComponent* EquipmentComponent = nullptr;
+	class UHealthComponent* HealthComponent = nullptr;
 	void SimulatedTick(float DeltaTime);
 	void PlayActionAnimation();
 	void PlayAnimation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
