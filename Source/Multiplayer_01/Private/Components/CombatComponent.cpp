@@ -98,6 +98,21 @@ bool UCombatComponent::Server_Act_Validate(EActionType _ActionType)
 	return true; // TODO anti-cheat implementation
 }
 
+void UCombatComponent::Server_SetBlocking_Implementation(bool IsBlocking)
+{
+	ServerActionState.bIsBlocking = IsBlocking;
+}
+
+bool UCombatComponent::Server_SetBlocking_Validate(bool IsBlocking)
+{
+	return true;
+}
+
+bool UCombatComponent::bIsBlocking() const
+{
+	return ServerActionState.bIsBlocking;
+}
+
 void UCombatComponent::SetServerActionState(const FServerActionState& _ServerActionState)
 {
 	ServerActionState = _ServerActionState;
@@ -213,9 +228,9 @@ void UCombatComponent::Attack02()
 	Server_Act(EActionType::RightHandAction_02);
 }
 
-void UCombatComponent::Block01()
+void UCombatComponent::Block01(bool IsBlocking)
 {
-	Server_Act(EActionType::LeftHandAction_01);
+	Server_SetBlocking(IsBlocking);
 }
 
 void UCombatComponent::Block02()

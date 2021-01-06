@@ -66,6 +66,7 @@ protected:
 	void Attack01();
 	void Attack02();
 	void Block01();
+	void UnBlock01();
 	void Block02();
 	void SwapWeapon();
 	void Interact();

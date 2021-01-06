@@ -78,6 +78,7 @@ void AMultiplayer_01Character::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Attack01", IE_Pressed, this, &AMultiplayer_01Character::Attack01);
 	PlayerInputComponent->BindAction("Attack02", IE_Pressed, this, &AMultiplayer_01Character::Attack02);
 	PlayerInputComponent->BindAction("Block01", IE_Pressed, this, &AMultiplayer_01Character::Block01);
+	PlayerInputComponent->BindAction("Block01", IE_Released, this, &AMultiplayer_01Character::UnBlock01);
 	PlayerInputComponent->BindAction("Block02", IE_Pressed, this, &AMultiplayer_01Character::Block02);
 	PlayerInputComponent->BindAction("SwapWeapon", IE_Pressed, this, &AMultiplayer_01Character::SwapWeapon);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMultiplayer_01Character::Interact);
@@ -216,9 +217,21 @@ void AMultiplayer_01Character::Block01()
 	{
 		return;
 	}
-	if (bIsActionPossible(20.0f))
+	if (bIsActionPossible(0.0f))
 	{
-		CombatComponent->Block01();
+		CombatComponent->Block01(true);
+	}
+}
+
+void AMultiplayer_01Character::UnBlock01()
+{
+	if (!CombatComponent)
+	{
+		return;
+	}
+	if (bIsActionPossible(0.0f))
+	{
+		CombatComponent->Block01(false);
 	}
 }
 

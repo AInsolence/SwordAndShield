@@ -39,6 +39,8 @@ public:
 	FString ActionState = "NONE";
 	UPROPERTY(EditAnywhere, Category = "ServerActionState")
 	EActionType ActionType = EActionType::None;
+	UPROPERTY(EditAnywhere, Category = "ServerActionState")
+	bool bIsBlocking = false;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -61,6 +63,13 @@ protected:
 	void Server_Act(EActionType _ActionType);
 	void Server_Act_Implementation(EActionType _ActionType);
 	bool Server_Act_Validate(EActionType _ActionType);
+	//
+	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
+	void Server_SetBlocking(bool IsBlocking);
+	void Server_SetBlocking_Implementation(bool IsBlocking);
+	bool Server_SetBlocking_Validate(bool IsBlocking);
+	UFUNCTION(BlueprintCallable, Category = "Replication")
+	bool bIsBlocking() const;
 	//
 	UFUNCTION(BlueprintCallable, Category = "Replication")
 	void SetServerActionState(const FServerActionState& _ServerActionState);
@@ -87,7 +96,7 @@ public:
 	void Roll();
 	void Attack01();
 	void Attack02();
-	void Block01();
+	void Block01(bool IsBlocking);
 	void Block02();
 	void SwapWeapon();
 	void Hitted();
