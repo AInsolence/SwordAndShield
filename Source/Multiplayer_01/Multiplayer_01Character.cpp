@@ -168,7 +168,10 @@ void AMultiplayer_01Character::Roll()
 	HealthComponent->SetIsSprinting(false);
 	if (GetWorld()->GetTimeSeconds() < SprintRollPressedTime + 0.3f)
 	{
-		CombatComponent->Roll();
+		if (bIsActionPossible(30.0f))
+		{
+			CombatComponent->Roll();
+		}
 	}
 	SprintRollPressedTime = 0.0f;
 }
@@ -189,7 +192,10 @@ void AMultiplayer_01Character::Attack01()
 	{
 		return;
 	}
-	CombatComponent->Attack01();
+	if (bIsActionPossible(20.0f))
+	{
+		CombatComponent->Attack01();
+	}
 }
 
 void AMultiplayer_01Character::Attack02()
@@ -198,7 +204,10 @@ void AMultiplayer_01Character::Attack02()
 	{
 		return;
 	}
-	CombatComponent->Attack02();
+	if (bIsActionPossible(30.0f))
+	{
+		CombatComponent->Attack02();
+	}
 }
 
 void AMultiplayer_01Character::Block01()
@@ -207,7 +216,10 @@ void AMultiplayer_01Character::Block01()
 	{
 		return;
 	}
-	CombatComponent->Block01();
+	if (bIsActionPossible(20.0f))
+	{
+		CombatComponent->Block01();
+	}
 }
 
 void AMultiplayer_01Character::Block02()
@@ -216,7 +228,10 @@ void AMultiplayer_01Character::Block02()
 	{
 		return;
 	}
-	CombatComponent->Block02();
+	if (bIsActionPossible(20.0f))
+	{
+		CombatComponent->Block02();
+	}
 }
 
 void AMultiplayer_01Character::SwapWeapon()
@@ -239,8 +254,29 @@ void AMultiplayer_01Character::Interact()
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Cannot interact now"))
+				UE_LOG(LogTemp, Warning, TEXT("Cannot interact during another animation"))
 			}
 		}
+	}
+}
+
+bool AMultiplayer_01Character::bIsActionPossible(float StaminaCost)
+{
+	if (HealthComponent)
+	{
+		if (HealthComponent->GetCurrentStamina() < StaminaCost)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not enough stamina!"))
+			return false;
+		}
+		else
+		{
+			HealthComponent->ChangeCurrentStaminaTo(-StaminaCost);
+			return true;
+		}
+	}
+	else
+	{// Always possible without HealthComponent
+		return true;
 	}
 }

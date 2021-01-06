@@ -61,6 +61,11 @@ protected:
 	void Server_ChangeState_Implementation(bool IsSprinting);
 	bool Server_ChangeState_Validate(bool IsSprinting);
 
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "ServerState")
+	void Server_SetCurrentStamina(float StaminaCost);
+	void Server_SetCurrentStamina_Implementation(float StaminaCost);
+	bool Server_SetCurrentStamina_Validate(float StaminaCost);
+
 	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void SetVulnerability(bool IsVulnerable);
 

@@ -47,7 +47,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 		BaseSprintMultiplier -= RampThisFrame;
 		// change stamina bar percentage
-		ChangeCurrentStaminaTo(0.15f);
+		ChangeCurrentStaminaTo(0.2f);
 	}
 	BaseSprintMultiplier = FMath::Clamp(BaseSprintMultiplier, 1.0f, MaxSprintMultiplier);
 	Owner->GetCharacterMovement()->MaxWalkSpeed = ServerState.BaseWalkingSpeed * BaseSprintMultiplier;
@@ -82,7 +82,10 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UHealthComponent::ChangeCurrentStaminaTo(float StaminaCost)
 {
-	ServerState.CurrentStamina = FMath::Clamp(ServerState.CurrentStamina + StaminaCost, 0.0f, ServerState.DefaultStamina);
+	if (Owner->IsLocallyControlled())
+	{
+		Server_SetCurrentStamina(StaminaCost);
+	}
 	if (GetPlayerHUD() != nullptr)
 	{
 		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
@@ -156,6 +159,20 @@ void UHealthComponent::Server_ChangeState_Implementation(bool IsSprinting)
 bool UHealthComponent::Server_ChangeState_Validate(bool IsSprinting)
 {
 	return true; // Change to anti-cheat function
+}
+
+void UHealthComponent::Server_SetCurrentStamina_Implementation(float StaminaCost)
+{
+	ServerState.CurrentStamina = FMath::Clamp(ServerState.CurrentStamina + StaminaCost, 0.0f, ServerState.DefaultStamina);
+}
+
+bool UHealthComponent::Server_SetCurrentStamina_Validate(float StaminaCost)
+{
+	if (StaminaCost > ServerState.DefaultStamina)
+	{
+		return false;
+	}
+	return true;
 }
 
 void UHealthComponent::SetVulnerability(bool IsVulnerable)
