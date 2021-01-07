@@ -84,13 +84,13 @@ public:
 	FORCEINLINE float GetDefaultStamina() const { return ServerState.DefaultStamina; };
 	FORCEINLINE float GetCurrentStamina() const { return ServerState.CurrentStamina; };
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void ChangeCurrentStaminaTo(float StaminaCost);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void NotEnoughStamina();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void SetIsSprinting(bool IsSprinting);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void RespawnPlayer();
 
 private:
