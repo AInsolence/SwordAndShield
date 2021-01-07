@@ -105,7 +105,7 @@ void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 			// Take damage to the overlapped actor
 			OtherActor->TakeDamage(Damage,
 									DamageEvent,
-									GetInstigatorController(),
+									GetOwner()->GetInstigatorController(),
 									this);
 			// Deactivate weapon after damage was caused
 			bActivated = false;

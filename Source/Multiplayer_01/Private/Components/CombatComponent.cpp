@@ -187,6 +187,9 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::Hitted:
 		PlayAnimation(HittedAnimation, 0.0f);
 		break;
+	case EActionType::Blocked:
+		PlayAnimation(BlockedAnimation, 0.0f);
+		break;
 	case EActionType::Death:
 		PlayAnimation(DeathAnimation, 0.0f);
 		break;
@@ -246,6 +249,11 @@ void UCombatComponent::SwapWeapon()
 void UCombatComponent::Hitted()
 {
 	Server_Act(EActionType::Hitted);
+}
+
+void UCombatComponent::Blocked()
+{
+	Server_Act(EActionType::Blocked);
 }
 
 void UCombatComponent::Death()

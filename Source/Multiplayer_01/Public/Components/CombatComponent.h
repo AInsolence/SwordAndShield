@@ -21,6 +21,7 @@ enum class EActionType : uint8
 	LeftHandAction_02,
 	SwapWeapon,
 	Hitted,
+	Blocked,
 	Death
 };
 
@@ -68,8 +69,6 @@ protected:
 	void Server_SetBlocking(bool IsBlocking);
 	void Server_SetBlocking_Implementation(bool IsBlocking);
 	bool Server_SetBlocking_Validate(bool IsBlocking);
-	UFUNCTION(BlueprintCallable, Category = "Replication")
-	bool bIsBlocking() const;
 	//
 	UFUNCTION(BlueprintCallable, Category = "Replication")
 	void SetServerActionState(const FServerActionState& _ServerActionState);
@@ -87,6 +86,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class UAnimMontage* HittedAnimation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class UAnimMontage* BlockedAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class UAnimMontage* DeathAnimation;
 
 public:	
@@ -100,9 +101,14 @@ public:
 	void Block02();
 	void SwapWeapon();
 	void Hitted();
+	void Blocked();
 	void Death();
 	//
+	UFUNCTION(BlueprintCallable, Category = "CombatComponent")
+	bool bIsBlocking() const;
+	UFUNCTION(BlueprintCallable, Category = "CombatComponent")
 	EActionType GetActionType() const;
+	UFUNCTION(BlueprintCallable, Category = "CombatComponent")
 	bool bCanCharacterAct() const;
 
 private:

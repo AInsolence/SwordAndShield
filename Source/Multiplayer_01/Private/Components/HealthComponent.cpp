@@ -203,6 +203,22 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	{
 		return;
 	}
+	if (Owner && InstigatedBy)
+	{
+		float AngleBetweenActors = FMath::RadiansToDegrees(acosf(FVector::DotProduct(Owner->GetActorForwardVector(), 
+													InstigatedBy->GetPawn()->GetActorForwardVector())));
+		UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP: angle = %f"), AngleBetweenActors);
+		if (AngleBetweenActors > 90 && CombatComponent->bIsBlocking())
+		{// TODO Set appropriate stamina cost
+			ChangeCurrentStaminaTo(-20.f);
+			CombatComponent->Blocked();
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NO instigator"));
+	}
 	ServerState.CurrentHealth = FMath::Clamp(ServerState.CurrentHealth - Damage, 0.0f, ServerState.DefaultHealth);
 	//Update HUD health status
 	if (GetPlayerHUD())
