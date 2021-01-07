@@ -280,6 +280,7 @@ bool AMultiplayer_01Character::bIsActionPossible(float StaminaCost)
 		if (HealthComponent->GetCurrentStamina() < StaminaCost)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Not enough stamina!"))
+			HealthComponent->NotEnoughStamina();
 			return false;
 		}
 		else

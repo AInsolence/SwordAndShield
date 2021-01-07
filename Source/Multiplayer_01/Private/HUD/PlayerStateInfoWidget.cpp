@@ -17,6 +17,7 @@ void UPlayerStateInfoWidget::NativeConstruct()
 
 	HealthBarAnimation = GetAnimationByName(FName("HealthBarAnimation"));
 	StaminaBarAnimation = GetAnimationByName(FName("StaminaBarAnimation"));
+	LowStaminaAnimation = GetAnimationByName(FName("LowStaminaAnimation"));
 
 	if (HealthBar && StaminaBar && Blood && PickUpInfo)
 	{// show if hidden
@@ -48,10 +49,23 @@ void UPlayerStateInfoWidget::UpdateHealthState(float CurrentHealth)
 
 void UPlayerStateInfoWidget::UpdateStaminaState(float CurrentStamina)
 {
+	// Find stamina cost
+	float Delta = StaminaBar->Percent - CurrentStamina;
+	// Set current stamina
 	StaminaBar->SetPercent(CurrentStamina);
-	if (StaminaBarAnimation)
+	// Animate action's stamina consumption
+	if (StaminaBarAnimation && FMath::Abs(Delta) > 0.02f)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Comsume stamina!"))
 		PlayAnimation(StaminaBarAnimation, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0, false);
+	}
+}
+
+void UPlayerStateInfoWidget::NotEnoughStamina()
+{
+	if (LowStaminaAnimation)
+	{
+		PlayAnimation(LowStaminaAnimation, 0.0f, 1, EUMGSequencePlayMode::Forward, 1.0, false);
 	}
 }
 

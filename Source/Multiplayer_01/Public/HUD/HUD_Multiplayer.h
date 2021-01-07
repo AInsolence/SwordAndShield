@@ -29,10 +29,12 @@ public:
     class UPlayerStateInfoWidget* PlayerStateInfoWidget;
 
     /// *** API *** ///
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable, Category = "HUD API")
     void UpdateHealthState(float CurrentHealth);
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable, Category = "HUD API")
     void UpdateStaminaState(float CurrentStamina);
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable, Category = "HUD API")
     void SetPickUpTipVisibility(bool Show);
+    UFUNCTION(BlueprintCallable, Category = "HUD API")
+    void NotEnoughStamina();
 };

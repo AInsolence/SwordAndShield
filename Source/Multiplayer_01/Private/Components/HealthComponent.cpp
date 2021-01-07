@@ -47,7 +47,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 		BaseSprintMultiplier -= RampThisFrame;
 		// change stamina bar percentage
-		ChangeCurrentStaminaTo(0.2f);
+		ChangeCurrentStaminaTo(0.25f);
 	}
 	BaseSprintMultiplier = FMath::Clamp(BaseSprintMultiplier, 1.0f, MaxSprintMultiplier);
 	Owner->GetCharacterMovement()->MaxWalkSpeed = ServerState.BaseWalkingSpeed * BaseSprintMultiplier;
@@ -89,6 +89,14 @@ void UHealthComponent::ChangeCurrentStaminaTo(float StaminaCost)
 	if (GetPlayerHUD() != nullptr)
 	{
 		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
+	}
+}
+
+void UHealthComponent::NotEnoughStamina()
+{
+	if (GetPlayerHUD() != nullptr)
+	{
+		GetPlayerHUD()->NotEnoughStamina();
 	}
 }
 

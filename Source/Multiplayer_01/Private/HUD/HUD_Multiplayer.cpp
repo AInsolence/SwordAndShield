@@ -69,3 +69,11 @@ void AHUD_Multiplayer::SetPickUpTipVisibility(bool Show)
 		PlayerStateInfoWidget->SetPickUpTipVisibility(Show);
 	}
 }
+
+void AHUD_Multiplayer::NotEnoughStamina()
+{
+	if (PlayerStateInfoWidget)
+	{
+		PlayerStateInfoWidget->NotEnoughStamina();
+	}
+}

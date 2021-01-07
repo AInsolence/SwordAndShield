@@ -34,6 +34,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
 	void UpdateStaminaState(float CurrentStamina);
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
+	void NotEnoughStamina();
+	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
 	void SetPickUpTipVisibility(bool Show);
 
 private:
@@ -45,4 +47,6 @@ private:
 	UWidgetAnimation* HealthBarAnimation = nullptr;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	UWidgetAnimation* StaminaBarAnimation = nullptr;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	UWidgetAnimation* LowStaminaAnimation = nullptr;
 };

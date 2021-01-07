@@ -87,6 +87,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeCurrentStaminaTo(float StaminaCost);
 	UFUNCTION(BlueprintCallable)
+	void NotEnoughStamina();
+	UFUNCTION(BlueprintCallable)
 	void SetIsSprinting(bool IsSprinting);
 	UFUNCTION(BlueprintCallable)
 	void RespawnPlayer();
