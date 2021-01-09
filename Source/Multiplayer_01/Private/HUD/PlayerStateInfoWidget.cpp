@@ -87,13 +87,13 @@ void UPlayerStateInfoWidget::StoreWidgetAnimations()
 	AnimationsMap.Empty();
 
 	// get all properties from this class
-	UProperty* Property = GetClass()->PropertyLink;
+	FProperty* Property = GetClass()->PropertyLink;
 	while (Property)
 	{
 		// only deal with object properties
-		if (Property->GetClass() == UObjectProperty::StaticClass())
+		if (Property->GetClass() == FObjectProperty::StaticClass())
 		{// cast all properties to object property
-			UObjectProperty* ObjectProperty = Cast<UObjectProperty>(Property);
+			FObjectProperty* ObjectProperty = CastFieldChecked<FObjectProperty>(Property);
 			// select only widget animation props
 			if (ObjectProperty->PropertyClass == UWidgetAnimation::StaticClass())
 			{// get object from property
