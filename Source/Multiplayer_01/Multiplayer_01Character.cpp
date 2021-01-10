@@ -169,7 +169,7 @@ void AMultiplayer_01Character::Roll()
 	HealthComponent->SetIsSprinting(false);
 	if (GetWorld()->GetTimeSeconds() < SprintRollPressedTime + 0.3f)
 	{
-		if (bIsActionPossible(30.0f))
+		if (bIsActionPossible(40.0f))
 		{
 			CombatComponent->Roll();
 		}
