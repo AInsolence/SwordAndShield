@@ -207,7 +207,6 @@ void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartT
 		SetServerActionState(DeclineStateChange);
 		return;
 	}
-
 	UAnimInstance* AnimInstance = Owner->GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
