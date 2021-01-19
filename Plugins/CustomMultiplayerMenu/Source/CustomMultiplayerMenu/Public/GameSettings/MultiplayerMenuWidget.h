@@ -80,18 +80,18 @@ private:
 
     // Host menu functions
     UFUNCTION(Category = "MainMultiplayerMenu")
-        void HostOnClicked();
+    void HostOnClicked();
     UFUNCTION(Category = "MainMultiplayerMenu")
-        void HostGameOnClicked();
+    void HostGameOnClicked();
 
     // Join menu functions
     UFUNCTION(Category = "MainMultiplayerMenu")
-        void JoinOnClicked();
+    void JoinOnClicked();
     UFUNCTION(Category = "MainMultiplayerMenu")
-        void JoinInnerMenuButtonOnClicked();
+    void JoinInnerMenuButtonOnClicked();
     // For both menuse is the same cancel logic
     UFUNCTION(Category = "MainMultiplayerMenu")
-        void CancelButtonOnClicked();
+    void CancelButtonOnClicked();
     //
     TOptional<uint32> SelectedSessionIndex;
     void UpdateChildrenSelectionInfo();

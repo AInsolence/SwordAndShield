@@ -77,3 +77,13 @@ void AHUD_Multiplayer::NotEnoughStamina()
 		PlayerStateInfoWidget->NotEnoughStamina();
 	}
 }
+
+void AHUD_Multiplayer::ShowMatchStats()
+{
+	PlayerStateInfoWidget->ShowMatchStats();
+}
+
+void AHUD_Multiplayer::HideMatchStats()
+{
+	PlayerStateInfoWidget->HideMatchStats();
+}

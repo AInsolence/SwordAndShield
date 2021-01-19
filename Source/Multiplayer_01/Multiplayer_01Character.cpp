@@ -14,6 +14,7 @@
 #include "Components/HealthComponent.h"
 #include "Components/InteractionComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/StatisticsComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
 #include "HUD/HealthBarWidget.h"
@@ -58,6 +59,7 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>("HealthBarComponent");
+	StatisticsComponent = CreateDefaultSubobject<UStatisticsComponent>("StatisticsComponent");
 	// Attach interactable sphere component
 	if (InteractionComponent)
 	{
@@ -127,7 +129,8 @@ void AMultiplayer_01Character::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Block02", IE_Pressed, this, &AMultiplayer_01Character::Block02);
 	PlayerInputComponent->BindAction("SwapWeapon", IE_Pressed, this, &AMultiplayer_01Character::SwapWeapon);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMultiplayer_01Character::Interact);
-
+	PlayerInputComponent->BindAction("Statistic", IE_Pressed, this, &AMultiplayer_01Character::ShowStatistic);
+	PlayerInputComponent->BindAction("Statistic", IE_Released, this, &AMultiplayer_01Character::HideStatistic);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMultiplayer_01Character::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMultiplayer_01Character::MoveRight);
@@ -315,6 +318,22 @@ void AMultiplayer_01Character::Interact()
 				UE_LOG(LogTemp, Warning, TEXT("Cannot interact during another animation"))
 			}
 		}
+	}
+}
+
+void AMultiplayer_01Character::ShowStatistic()
+{
+	if (StatisticsComponent)
+	{
+		StatisticsComponent->ShowMatchStats();
+	}
+}
+
+void AMultiplayer_01Character::HideStatistic()
+{
+	if (StatisticsComponent)
+	{
+		StatisticsComponent->HideMatchStats();
 	}
 }
 

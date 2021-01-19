@@ -20,6 +20,7 @@ public:
 	// Native constructor
 	virtual void NativeConstruct() override;
 
+	// Inner widgets
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UProgressBar* HealthBar;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
@@ -29,6 +30,15 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* PickUpInfo = nullptr;
 
+	// Statistics widgets
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UWidgetSwitcher* StatisticSwitcher;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UWidget* EmptyScreen;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UWidget* StatisticScreen;
+
+	//API
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
 	void UpdateHealthState(float CurrentHealth);
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
@@ -37,6 +47,10 @@ public:
 	void NotEnoughStamina();
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
 	void SetPickUpTipVisibility(bool Show);
+	UFUNCTION(BlueprintCallable, Category = "HUD API")
+	void ShowMatchStats();
+	UFUNCTION(BlueprintCallable, Category = "HUD API")
+	void HideMatchStats();
 
 private:
 	void StoreWidgetAnimations();

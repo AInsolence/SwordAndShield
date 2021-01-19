@@ -40,6 +40,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* HealthBarComponent;
 
+	/** Statistics component */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UStatisticsComponent* StatisticsComponent;
+
 public:
 
 	AMultiplayer_01Character();
@@ -78,6 +82,9 @@ protected:
 	void Block02();
 	void SwapWeapon();
 	void Interact();
+
+	void ShowStatistic();
+	void HideStatistic();
 
 	bool bIsActionPossible(float StaminaCost);
 

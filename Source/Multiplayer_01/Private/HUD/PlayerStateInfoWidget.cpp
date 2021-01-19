@@ -81,6 +81,22 @@ void UPlayerStateInfoWidget::SetPickUpTipVisibility(bool Show)
 	}
 }
 
+void UPlayerStateInfoWidget::ShowMatchStats()
+{
+	if (StatisticSwitcher)
+	{
+		StatisticSwitcher->SetActiveWidget(StatisticScreen);
+	}
+}
+
+void UPlayerStateInfoWidget::HideMatchStats()
+{
+	if (StatisticSwitcher)
+	{
+		StatisticSwitcher->SetActiveWidget(EmptyScreen);
+	}
+}
+
 void UPlayerStateInfoWidget::StoreWidgetAnimations()
 {
 	// clear map before filling

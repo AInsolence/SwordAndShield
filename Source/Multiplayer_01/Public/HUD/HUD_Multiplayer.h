@@ -37,4 +37,8 @@ public:
     void SetPickUpTipVisibility(bool Show);
     UFUNCTION(BlueprintCallable, Category = "HUD API")
     void NotEnoughStamina();
+    UFUNCTION(BlueprintCallable, Category = "HUD API")
+    void ShowMatchStats();
+    UFUNCTION(BlueprintCallable, Category = "HUD API")
+    void HideMatchStats();
 };
