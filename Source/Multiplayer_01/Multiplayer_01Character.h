@@ -36,9 +36,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UInteractionComponent* InteractionComponent;
 
+	/** Health bar component which would be shown to enemies */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* HealthBarComponent;
+
 public:
 
 	AMultiplayer_01Character();
+
+	virtual void Tick(float DeltaTime);
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -49,6 +55,8 @@ public:
 	float BaseLookUpRate;
 
 protected:
+
+	virtual void BeginPlay();
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();

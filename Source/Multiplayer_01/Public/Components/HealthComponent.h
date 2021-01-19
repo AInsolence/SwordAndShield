@@ -26,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
 	bool bIsSprinting = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
-	float BaseWalkingSpeed = 600.f;
+	float BaseWalkingSpeed = 500.f;
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	bool bIsVulnerable = false;
@@ -47,7 +47,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float BaseSprintMultiplier = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
-	float MaxSprintMultiplier = 2.0f;
+	float MaxSprintMultiplier = 1.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float TimeToMaxSprintSpeed = 2.0f;
 
@@ -80,9 +80,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	FORCEINLINE float GetDefaultHealth() const { return ServerState.DefaultHealth; };
-	FORCEINLINE float GetCurrentHealth() const { return ServerState.CurrentHealth; };
+	float GetCurrentHealth() const { return ServerState.CurrentHealth; };
 	FORCEINLINE float GetDefaultStamina() const { return ServerState.DefaultStamina; };
-	FORCEINLINE float GetCurrentStamina() const { return ServerState.CurrentStamina; };
+	float GetCurrentStamina() const { return ServerState.CurrentStamina; };
 
 	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void ChangeCurrentStaminaTo(float StaminaCost);

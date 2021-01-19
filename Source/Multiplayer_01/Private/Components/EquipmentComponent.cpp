@@ -137,7 +137,10 @@ void UEquipmentComponent::SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocati
 	{
 		return;
 	}
-	World->SpawnActor<AWeapon>(Weapon->GetClass(), SpawnLocation, Owner->GetActorRotation());
+	if (!Weapon->ActorHasTag("Knife"))
+	{// Spawn any weapon but not a knife
+		World->SpawnActor<AWeapon>(Weapon->GetClass(), SpawnLocation, Owner->GetActorRotation());
+	}
 	Weapon->DestroyNetworkActorHandled();
 }
 
@@ -152,9 +155,11 @@ void UEquipmentComponent::DropAllItems()
 												Owner->GetActorLocation(),
 												Owner->GetActorRotation());
 	if (Equipment[0])
-	{
-		ItemSpawner->SpawnItemInRandomLocation(Equipment[0]->GetClass());
-		UE_LOG(LogTemp, Warning, TEXT("Try to destroy right hand weapon"))
+	{// Spawn any weapon but not a knife
+		if (!Equipment[0]->ActorHasTag("Knife"))
+		{
+			ItemSpawner->SpawnItemInRandomLocation(Equipment[0]->GetClass());			
+		}
 		Equipment[0]->Destroy();
 	}
 	if (Equipment[1])
@@ -165,7 +170,10 @@ void UEquipmentComponent::DropAllItems()
 	}
 	if (Equipment[2])
 	{
-		//ItemSpawner->SpawnItemInRandomLocation(Equipment[2]->GetClass());
+		if (!Equipment[2]->ActorHasTag("Knife"))
+		{// Spawn any weapon but not a knife
+			ItemSpawner->SpawnItemInRandomLocation(Equipment[2]->GetClass());
+		}
 		Equipment[2]->Destroy();
 	}
 	if (Equipment[3])

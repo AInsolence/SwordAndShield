@@ -13,7 +13,10 @@
 #include "Components/EquipmentComponent.h"
 #include "Components/HealthComponent.h"
 #include "Components/InteractionComponent.h"
+#include "Components/WidgetComponent.h"
 
+#include "Kismet/KismetMathLibrary.h"
+#include "HUD/HealthBarWidget.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AMultiplayer_01Character
@@ -54,13 +57,55 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>("EquipmentComponent");
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
+	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>("HealthBarComponent");
 	// Attach interactable sphere component
 	if (InteractionComponent)
 	{
 		InteractionComponent->SetupAttachment(RootComponent);
 	}
+	// Attach HealthBarComponent
+	if (HealthBarComponent)
+	{
+		HealthBarComponent->SetupAttachment(RootComponent);
+	}
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+}
+
+void AMultiplayer_01Character::BeginPlay()
+{
+	Super::BeginPlay();
+	// Do not show self health bar above the character
+	if (IsLocallyControlled())
+	{
+		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void AMultiplayer_01Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	// Rotate enemies health bars toward the first player
+	if (HealthBarComponent && !IsLocallyControlled())
+	{
+		auto FirstPlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+		if (FirstPlayerPawn)
+		{
+			auto TargetLocation = FirstPlayerPawn->GetActorLocation();
+			FRotator BarRotation = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), TargetLocation);
+			HealthBarComponent->SetWorldRotation(BarRotation);
+		}
+	}
+	// Update HealthBar
+	if (HealthComponent)
+	{
+		float HealthPoints = HealthComponent->GetCurrentHealth() / HealthComponent->GetDefaultHealth();
+		auto HealthBar = Cast<UHealthBarWidget>(HealthBarComponent->GetWidget());
+		if (HealthBar)
+		{
+			HealthBar->SetHealthBarPercentage(HealthPoints);
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

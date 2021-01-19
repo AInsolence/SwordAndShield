@@ -198,12 +198,18 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AController* InstigatedBy,
 									AActor* DamageCauser)
 {
-	// Character may be invulnerable e.g. while rolling or use protection magic
-	if (ServerState.bIsVulnerable || bIsDead)
+	// Check if the character already dead
+	if (bIsDead)
 	{
 		return;
 	}
-	if (Owner && InstigatedBy)
+	// Character may be invulnerable e.g. while rolling or use protection magic
+	if (ServerState.bIsVulnerable && GetCurrentHealth() > 0.0f)
+	{
+		return;
+	}
+	// Check if the character is blocking
+	if (Owner && CombatComponent && InstigatedBy)
 	{
 		float AngleBetweenActors = FMath::RadiansToDegrees(acosf(FVector::DotProduct(Owner->GetActorForwardVector(), 
 													InstigatedBy->GetPawn()->GetActorForwardVector())));
@@ -214,25 +220,29 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 			CombatComponent->Blocked();
 			return;
 		}
+		else
+		{
+			CombatComponent->Hitted();
+		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NO instigator"));
 	}
+	
+	// Update HP if character was damaged
 	ServerState.CurrentHealth = FMath::Clamp(ServerState.CurrentHealth - Damage, 0.0f, ServerState.DefaultHealth);
 	//Update HUD health status
 	if (GetPlayerHUD())
 	{
-		GetPlayerHUD()->UpdateHealthState(GetCurrentHealth()/GetDefaultHealth());
+		GetPlayerHUD()->UpdateHealthState(GetCurrentHealth() / GetDefaultHealth());
 	}
-	if (GetCurrentHealth() <= 0)
+	// Check if the character has 0 health points
+	if (GetCurrentHealth() <= 0.0f)
 	{
 		bIsDead = true;
 		Death();
-	}
-	else
-	{
-		CombatComponent->Hitted();
+		return;
 	}
 }
 
