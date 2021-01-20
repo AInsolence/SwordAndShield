@@ -87,13 +87,15 @@ void AMultiplayer_01Character::BeginPlay()
 void AMultiplayer_01Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	// Rotate enemies health bars toward the first player
 	if (HealthBarComponent && !IsLocallyControlled())
 	{
-		auto FirstPlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-		if (FirstPlayerPawn)
+		auto FirstPlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+		if (FirstPlayerCamera)
 		{
-			auto TargetLocation = FirstPlayerPawn->GetActorLocation();
+			
+			auto TargetLocation = FirstPlayerCamera->GetCameraLocation();
 			FRotator BarRotation = UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), TargetLocation);
 			HealthBarComponent->SetWorldRotation(BarRotation);
 		}
