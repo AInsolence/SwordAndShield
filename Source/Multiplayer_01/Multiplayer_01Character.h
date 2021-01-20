@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 #include "Multiplayer_01Character.generated.h"
 
 UCLASS(config=Game)
@@ -20,6 +21,19 @@ class AMultiplayer_01Character : public ACharacter
 	class UCameraComponent* FollowCamera;
 
 public:
+
+	AMultiplayer_01Character();
+
+	virtual void Tick(float DeltaTime);
+
+	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float BaseTurnRate;
+
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float BaseLookUpRate;
+
 	/** Combat component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UCombatComponent* CombatComponent;
@@ -44,19 +58,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UStatisticsComponent* StatisticsComponent;
 
-public:
-
-	AMultiplayer_01Character();
-
-	virtual void Tick(float DeltaTime);
-
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseTurnRate;
-
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseLookUpRate;
+	UFUNCTION(Exec)
+	void name(FString Name);
+	UFUNCTION(Server, Reliable, WithValidation, Category = "ConsoleCommands")
+	void Server_SetPlayerName(const FString& Name);
+	void Server_SetPlayerName_Implementation(const FString& Name);
+	bool Server_SetPlayerName_Validate(const FString& Name);
 
 protected:
 

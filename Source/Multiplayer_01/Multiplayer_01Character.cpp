@@ -7,6 +7,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 
 #include "Components/CombatComponent.h"
@@ -72,6 +73,25 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	}
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+}
+
+void AMultiplayer_01Character::name(FString Name)
+{
+	Server_SetPlayerName(Name);
+}
+
+void AMultiplayer_01Character::Server_SetPlayerName_Implementation(const FString& Name)
+{
+	GetPlayerState()->SetPlayerName(Name);
+}
+
+bool AMultiplayer_01Character::Server_SetPlayerName_Validate(const FString& Name)
+{
+	if (Name.Len() < 64)
+	{
+		return true;
+	}
+	return false;
 }
 
 void AMultiplayer_01Character::BeginPlay()

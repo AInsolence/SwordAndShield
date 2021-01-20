@@ -13,6 +13,7 @@ UCLASS()
 class MULTIPLAYER_01_API ACustomPlayerState : public APlayerState
 {
 	GENERATED_BODY()
+
 public:
 	int32 GetDeaths() const;
 	void SetDeaths(int32 _Deaths);
