@@ -37,6 +37,10 @@ public:
 	class UWidget* EmptyScreen;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UWidget* StatisticScreen;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UScrollBox* ScoreTable;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStateInfo")
+	TSubclassOf<class UScoreTableRowWidget> ScoreTableRowWidgetClass;
 
 	//API
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
@@ -63,4 +67,7 @@ private:
 	UWidgetAnimation* StaminaBarAnimation = nullptr;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	UWidgetAnimation* LowStaminaAnimation = nullptr;
+
+	// Update statistic information
+	void UpdateScoreTable();
 };

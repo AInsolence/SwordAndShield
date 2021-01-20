@@ -13,10 +13,10 @@ void ALobbyGameMode::PostLogin(APlayerController* PlayerController)
 	auto NumOfPlayers = GetNumPlayers();
 	UE_LOG(LogTemp, Warning, TEXT("Players at server = %d"), NumOfPlayers);
 	//
-	if (NumOfPlayers == 5)
+	/*if (NumOfPlayers == 5)
 	{
 		GetWorldTimerManager().SetTimer(GameStartTimer, this, &ALobbyGameMode::StartSession, 5.f);
-	}
+	}*/
 }
 
 void ALobbyGameMode::Logout(AController* PlayerController)

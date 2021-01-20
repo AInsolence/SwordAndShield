@@ -6,6 +6,5 @@
 
 void UHealthBarWidget::SetHealthBarPercentage(float HealthPoints)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Health bar updated = %f"), HealthPoints);
 	HealthBar->SetPercent(HealthPoints);
 }

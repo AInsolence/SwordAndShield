@@ -3,6 +3,8 @@
 
 #include "HUD/PlayerStateInfoWidget.h"
 #include "Runtime/UMG/Public/UMG.h"
+#include "HUD/ScoreTableRowWidget.h"
+#include "CustomPlayerState.h"
 
 UPlayerStateInfoWidget::UPlayerStateInfoWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
@@ -85,6 +87,7 @@ void UPlayerStateInfoWidget::ShowMatchStats()
 {
 	if (StatisticSwitcher)
 	{
+		UpdateScoreTable();
 		StatisticSwitcher->SetActiveWidget(StatisticScreen);
 	}
 }
@@ -137,4 +140,27 @@ UWidgetAnimation* const UPlayerStateInfoWidget::GetAnimationByName(FName Animati
 		return *Widgetanimation;
 	}
 	return nullptr;
+}
+
+void UPlayerStateInfoWidget::UpdateScoreTable()
+{
+	if (!ScoreTableRowWidgetClass)
+	{
+		return;
+	}
+	auto GameState = GetWorld() != nullptr ? GetWorld()->GetGameState() : nullptr;
+	if (GameState)
+	{
+		ScoreTable->ClearChildren();
+		for (auto State : GameState->PlayerArray)
+		{
+			auto PlayerState = Cast<ACustomPlayerState>(State);
+			UScoreTableRowWidget* ScoreTableRow = CreateWidget<UScoreTableRowWidget>(this, ScoreTableRowWidgetClass);
+			if (ScoreTableRow && ScoreTable)
+			{
+				ScoreTableRow->SetData(PlayerState->GetPlayerName(), PlayerState->GetScore(), PlayerState->GetDeaths());
+				ScoreTable->AddChild(ScoreTableRow);
+			}
+		}
+	}
 }

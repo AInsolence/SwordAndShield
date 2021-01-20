@@ -75,7 +75,10 @@ protected:
 					const class UDamageType* DamageType,
 					class AController* InstigatedBy,
 					AActor* DamageCauser);
-public:	
+
+	void SetScores(AController* InstigatedBy);
+
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

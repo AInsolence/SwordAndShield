@@ -141,7 +141,6 @@ void UMultiplayerGameInstance::StartSession()
 	}
 }
 
-
 void UMultiplayerGameInstance::OnStartSessionComplete(FName SessionName, bool Success)
 {
 	if (Success)

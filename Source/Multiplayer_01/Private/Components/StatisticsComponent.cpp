@@ -5,6 +5,7 @@
 
 #include "HUD/HUD_Multiplayer.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/PlayerState.h"
 
 // Sets default values for this component's properties
 UStatisticsComponent::UStatisticsComponent()
@@ -15,7 +16,6 @@ UStatisticsComponent::UStatisticsComponent()
 	SetIsReplicatedByDefault(false);
 }
 
-
 // Called when the game starts
 void UStatisticsComponent::BeginPlay()
 {
@@ -23,15 +23,6 @@ void UStatisticsComponent::BeginPlay()
 
 	// Set owner reference
 	Owner = Cast<ACharacter>(GetOwner());
-}
-
-
-// Called every frame
-void UStatisticsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UStatisticsComponent::ShowMatchStats()
