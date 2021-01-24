@@ -14,6 +14,7 @@
 #include "Net/UnrealNetwork.h"
 #include "CombatComponent.generated.h"
 
+// Player's STATES
 UENUM(BlueprintType)
 enum class EActionType : uint8
 {
