@@ -1,4 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
+
+/***
+
+	This class is an actor component which manage a player's commands and 
+	communicate with other components.
+
+***/
 
 #pragma once
 

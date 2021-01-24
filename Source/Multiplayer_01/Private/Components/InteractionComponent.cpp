@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
 
 #include "Components/InteractionComponent.h"
 #include "Components/EquipmentComponent.h"
@@ -39,7 +39,6 @@ void UInteractionComponent::Server_PickUp_Implementation()
 	{
 		if (InteractableItem->GetOwner() != nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Item already has owner"))
 			return;
 		}
 		auto ItemClass = InteractableItem->PickUp();
@@ -70,7 +69,6 @@ void UInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 		{
 			if (!_InteractableItem->GetOwner())
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("Overlapped item"))
 				// TODO show hint about item
 				InteractableItem = _InteractableItem;
 			}

@@ -13,6 +13,7 @@
 #include "Components/CombatComponent.h"
 #include "Components/EquipmentComponent.h"
 #include "Components/HealthComponent.h"
+#include "Components/StaminaComponent.h"
 #include "Components/InteractionComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/StatisticsComponent.h"
@@ -58,6 +59,7 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>("CombatComponent");
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>("EquipmentComponent");
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
+	StaminaComponent = CreateDefaultSubobject<UStaminaComponent>("StaminaComponent");
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>("HealthBarComponent");
 	StatisticsComponent = CreateDefaultSubobject<UStatisticsComponent>("StatisticsComponent");
@@ -236,7 +238,7 @@ void AMultiplayer_01Character::Roll()
 		return;
 	}
 	//
-	HealthComponent->SetIsSprinting(false);
+	StaminaComponent->SetIsSprinting(false);
 	if (GetWorld()->GetTimeSeconds() < SprintRollPressedTime + 0.3f)
 	{
 		if (bIsActionPossible(40.0f))
@@ -254,7 +256,7 @@ void AMultiplayer_01Character::Sprint()
 	{
 		return;
 	}
-	HealthComponent->SetIsSprinting(true);
+	StaminaComponent->SetIsSprinting(true);
 }
 
 void AMultiplayer_01Character::Attack01()
@@ -361,11 +363,11 @@ void AMultiplayer_01Character::HideStatistic()
 
 bool AMultiplayer_01Character::bIsActionPossible(float StaminaCost)
 {
-	if (HealthComponent)
+	if (StaminaComponent)
 	{
-		if (HealthComponent->GetCurrentStamina() < StaminaCost)
+		if (StaminaComponent->GetCurrentStamina() < StaminaCost)
 		{
-			HealthComponent->NotEnoughStamina();
+			StaminaComponent->NotEnoughStamina();
 			return false;
 		}
 		else

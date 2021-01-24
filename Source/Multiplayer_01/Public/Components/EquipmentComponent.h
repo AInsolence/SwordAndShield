@@ -1,4 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
+
+/***
+
+	This class is an actor component represents player's equipment (without inventory) and
+	an API to equip, swap and drop weapon.
+
+***/
 
 #pragma once
 
@@ -45,10 +52,7 @@ public:
 	TArray<AWeapon*> Equipment;
 
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	AWeapon* GetRightHandWeapon()
-	{
-		return Equipment[0];
-	}
+	AWeapon* GetRightHandWeapon(){ return Equipment[0]; }
 
 	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
 	void Server_EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
@@ -70,7 +74,7 @@ public:
 private:
 	AActor* Owner = nullptr;
 	UWorld* World = nullptr;
-	//
+	// Helpers
 	AWeapon* CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, FName SocketName);
 	void SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocation);
 };

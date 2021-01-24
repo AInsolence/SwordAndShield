@@ -1,4 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
+
+/***
+
+	This class represents interface for all intaractable items in the game.
+
+***/
 
 #pragma once
 

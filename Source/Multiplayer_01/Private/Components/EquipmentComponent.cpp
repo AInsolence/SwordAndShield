@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
 
 #include "Components/EquipmentComponent.h"
 #include "Components/InteractableItemInterface.h"
@@ -27,18 +26,21 @@ void UEquipmentComponent::BeginPlay()
 	World = GetWorld();
 
 	//TODO Change to appropriate after test
-	if (BaseTestWeapon && BaseTestShield)
+	if (BaseTestWeapon)
 	{
 		Server_EquipItem(EItemSlot::RightHandItem, BaseTestWeapon);
+	}
+	if (BaseTestShield)
+	{
 		Server_EquipItem(EItemSlot::LeftHandItem, BaseTestShield);
-		if (BeltTestWeapon)
-		{
-			Server_EquipItem(EItemSlot::BeltPlaceItem, BeltTestWeapon);
-		}
-		if (BackTestWeapon)
-		{
-			Server_EquipItem(EItemSlot::BackPlaceItem, BackTestWeapon);
-		}
+	}
+	if (BeltTestWeapon)
+	{
+		Server_EquipItem(EItemSlot::BeltPlaceItem, BeltTestWeapon);
+	}
+	if (BackTestWeapon)
+	{
+		Server_EquipItem(EItemSlot::BackPlaceItem, BackTestWeapon);
 	}
 }
 
@@ -102,8 +104,7 @@ bool UEquipmentComponent::Server_EquipItem_Validate(EItemSlot ItemSlot, TSubclas
 
 void UEquipmentComponent::Server_SwapWeapon_Implementation()
 {
-	if (Equipment[0] == nullptr || 
-		Equipment[2] == nullptr)
+	if (Equipment[0] == nullptr || Equipment[2] == nullptr)
 	{
 		return;
 	}
@@ -150,10 +151,9 @@ void UEquipmentComponent::DropAllItems()
 	{
 		return;
 	}
-	// TODO spawn only right hand weapon
-	auto ItemSpawner = GetWorld()->SpawnActor<AItemSpawner>(
-												Owner->GetActorLocation(),
-												Owner->GetActorRotation());
+	//
+	auto ItemSpawner = GetWorld()->SpawnActor<AItemSpawner>(Owner->GetActorLocation(),
+												            Owner->GetActorRotation());
 	if (Equipment[0])
 	{// Spawn any weapon but not a knife
 		if (!Equipment[0]->ActorHasTag("Knife"))
@@ -162,10 +162,8 @@ void UEquipmentComponent::DropAllItems()
 		}
 		Equipment[0]->Destroy();
 	}
-	if (Equipment[1])
+	if (Equipment[1]) // TODO would be changed to spawn all player's equipment
 	{
-		//ItemSpawner->SpawnItemInRandomLocation(Equipment[1]->GetClass());
-		UE_LOG(LogTemp, Warning, TEXT("Try to destroy left hand weapon"))
 		Equipment[1]->Destroy();
 	}
 	if (Equipment[2])
@@ -178,7 +176,6 @@ void UEquipmentComponent::DropAllItems()
 	}
 	if (Equipment[3])
 	{
-		//ItemSpawner->SpawnItemInRandomLocation(Equipment[3]->GetClass());
 		Equipment[3]->Destroy();
 	}
 	ItemSpawner->DestroyNetworkActorHandled();
@@ -191,7 +188,7 @@ AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponCl
 	Item->AttachToComponent(Cast<ACharacter>(GetOwner())->GetMesh(),
 							FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 							SocketName);
-	// TODO change to set owner in pick up weapon function
+	// Set weapon owner
 	Item->SetOwner(GetOwner());
 	return Item;
 }

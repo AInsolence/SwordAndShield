@@ -1,4 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
+
+/***
+
+	This class is an actor component which allows player to interact with objectson a level.
+	Used "Interactable Item" interface to work with objects on the map.
+
+***/
 
 #pragma once
 
@@ -34,15 +41,18 @@ protected:
 						int32 OtherBodyIndex,
 						bool bFromSweep,
 						const FHitResult& SweepResult);
+
 	/** Called when a interaction sphere end overlapping */
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, 
 						AActor* OtherActor,
 						UPrimitiveComponent* OtherComp, 
 						int32 OtherBodyIndex);
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	// API
 	void Interact();
 	IInteractableItemInterface* InteractableItem;
 

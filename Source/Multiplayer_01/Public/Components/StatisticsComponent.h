@@ -1,4 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
+
+/***
+
+	This class provides information about players statistic e.g. kills, deaths,
+	match states etc. by the player's request using the player's HUD. 
+
+***/
 
 #pragma once
 
@@ -26,5 +33,5 @@ public:
 
 private:
 	class ACharacter* Owner = nullptr;
-	class AHUD_Multiplayer* GetPlayerHUD() const;	
+	class AHUD_Multiplayer* GetPlayerHUD() const;
 };

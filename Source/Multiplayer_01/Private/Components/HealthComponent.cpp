@@ -1,8 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
 
 #include "Components/HealthComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CombatComponent.h"
@@ -20,40 +18,11 @@ UHealthComponent::UHealthComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
 
-	ServerState.CurrentHealth = ServerState.DefaultHealth;
-	LocalCurrentHealth = ServerState.CurrentHealth;
-	ServerState.CurrentStamina = ServerState.DefaultStamina;
-}
-
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	if (!Owner)
-	{
-		return;
-	}
-	
-	/**  Sprint logic */
-	float RampThisFrame = (DeltaTime / TimeToMaxSprintSpeed) * MaxSprintMultiplier;
-	// check if sprint input pressed, is character has enough stamina and is he moves
-	if (ServerState.bIsSprinting && !Owner->GetVelocity().IsZero() &&
-		GetCurrentStamina() > 0.5f)
-	{
-		BaseSprintMultiplier += RampThisFrame;
-		// change stamina bar percentage
-		ChangeCurrentStaminaTo(-30.0f * DeltaTime);
-	}
-	else
-	{
-		BaseSprintMultiplier -= RampThisFrame;
-		// change stamina bar percentage
-		ChangeCurrentStaminaTo(15.0f * DeltaTime);
-	}
-	BaseSprintMultiplier = FMath::Clamp(BaseSprintMultiplier, 1.0f, MaxSprintMultiplier);
-	Owner->GetCharacterMovement()->MaxWalkSpeed = ServerState.BaseWalkingSpeed * BaseSprintMultiplier;
-	/**  Sprint logic end */
+	HealthServerState.CurrentHealth = HealthServerState.DefaultHealth;
+	LocalCurrentHealth = HealthServerState.CurrentHealth;
 }
 
 // Called when the game starts
@@ -79,32 +48,7 @@ void UHealthComponent::BeginPlay()
 void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME_CONDITION(UHealthComponent, ServerState, COND_None);
-}
-
-void UHealthComponent::ChangeCurrentStaminaTo(float StaminaCost)
-{
-	if (Owner->IsLocallyControlled())
-	{
-		Server_SetCurrentStamina(StaminaCost);
-	}
-	if (GetPlayerHUD() != nullptr)
-	{
-		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
-	}
-}
-
-void UHealthComponent::NotEnoughStamina()
-{
-	if (GetPlayerHUD() != nullptr)
-	{
-		GetPlayerHUD()->NotEnoughStamina();
-	}
-}
-
-void UHealthComponent::SetIsSprinting(bool IsSprinting)
-{
-	Server_ChangeState(IsSprinting);
+	DOREPLIFETIME_CONDITION(UHealthComponent, HealthServerState, COND_None);
 }
 
 void UHealthComponent::OnRep_StateChanged()
@@ -112,10 +56,10 @@ void UHealthComponent::OnRep_StateChanged()
 	// Update health state
 	if (GetPlayerHUD())
 	{
-		if (LocalCurrentHealth != ServerState.CurrentHealth)
+		if (LocalCurrentHealth != HealthServerState.CurrentHealth)
 		{
 			GetPlayerHUD()->UpdateHealthState(GetCurrentHealth() / GetDefaultHealth());
-			LocalCurrentHealth = ServerState.CurrentHealth;
+			LocalCurrentHealth = HealthServerState.CurrentHealth;
 		}
 
 	}
@@ -127,7 +71,6 @@ void UHealthComponent::RespawnPlayer()
 	if (GetPlayerHUD() != nullptr)
 	{
 		GetPlayerHUD()->UpdateHealthState(GetDefaultHealth());
-		GetPlayerHUD()->UpdateStaminaState(GetDefaultStamina());
 	}
 	if (!Owner->HasAuthority())
 	{
@@ -161,36 +104,11 @@ void UHealthComponent::RespawnPlayer()
 	}
 }
 
-void UHealthComponent::Server_ChangeState_Implementation(bool IsSprinting)
-{
-	ServerState.bIsSprinting = IsSprinting;
-}
-
-bool UHealthComponent::Server_ChangeState_Validate(bool IsSprinting)
-{
-	return true; // Change to anti-cheat function
-}
-
-void UHealthComponent::Server_SetCurrentStamina_Implementation(float StaminaCost)
-{
-	ServerState.CurrentStamina = FMath::Clamp(ServerState.CurrentStamina + StaminaCost, 0.0f, ServerState.DefaultStamina);
-}
-
-bool UHealthComponent::Server_SetCurrentStamina_Validate(float StaminaCost)
-{
-	if (StaminaCost > ServerState.DefaultStamina)
-	{
-		return false;
-	}
-	return true;
-}
-
-void UHealthComponent::SetVulnerability(bool IsVulnerable)
+void UHealthComponent::SetVulnerability(bool IsInvulnerable)
 {
 	if (Owner->HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Vulnerability set on server side"))
-		ServerState.bIsVulnerable = IsVulnerable;
+		HealthServerState.bIsInvulnerable = IsInvulnerable;
 	}
 }
 
@@ -206,7 +124,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		return;
 	}
 	// Character may be invulnerable e.g. while rolling or use protection magic
-	if (ServerState.bIsVulnerable && GetCurrentHealth() > 0.0f)
+	if (HealthServerState.bIsInvulnerable && GetCurrentHealth() > 0.0f)
 	{
 		return;
 	}
@@ -218,7 +136,6 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP: angle = %f"), AngleBetweenActors);
 		if (AngleBetweenActors > 90 && CombatComponent->bIsBlocking())
 		{// TODO Set appropriate stamina cost
-			ChangeCurrentStaminaTo(-20.f);
 			CombatComponent->Blocked();
 			return;
 		}
@@ -233,7 +150,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	}
 	
 	// Update HP if character was damaged
-	ServerState.CurrentHealth = FMath::Clamp(ServerState.CurrentHealth - Damage, 0.0f, ServerState.DefaultHealth);
+	HealthServerState.CurrentHealth = FMath::Clamp(HealthServerState.CurrentHealth - Damage, 0.0f, HealthServerState.DefaultHealth);
 	//Update HUD health status
 	if (GetPlayerHUD())
 	{

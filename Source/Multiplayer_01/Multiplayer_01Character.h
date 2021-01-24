@@ -1,4 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright © 2021 Insolence Assets. All Rights Reserved.
+
+/***
+
+	This is a main class of a player's character. Contains all components and API to provide
+	player with controlls.
+
+***/
 
 #pragma once
 
@@ -46,6 +54,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UHealthComponent* HealthComponent;
 
+	/** Health component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UStaminaComponent* StaminaComponent;
+
 	/** Interaction component */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UInteractionComponent* InteractionComponent;
@@ -58,6 +70,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UStatisticsComponent* StatisticsComponent;
 
+	// Change player name console command
 	UFUNCTION(Exec)
 	void name(FString Name);
 	UFUNCTION(Server, Reliable, WithValidation, Category = "ConsoleCommands")
