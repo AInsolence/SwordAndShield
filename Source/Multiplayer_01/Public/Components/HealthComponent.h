@@ -2,7 +2,7 @@
 
 /***
 
-	This class is an actor component represents player's health and stamina properties.
+	This class is an actor component represents player's health properties.
 
 ***/
 
@@ -28,6 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	bool bIsInvulnerable = false;
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam (FOnDeath, AController*, InstigatedBy);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYER_01_API UHealthComponent : public UActorComponent
@@ -55,20 +57,19 @@ protected:
 					class AController* InstigatedBy,
 					AActor* DamageCauser);
 
-	void SetScores(AController* InstigatedBy);
-
 public:
 	// API
 	FORCEINLINE float GetDefaultHealth() const { return HealthServerState.DefaultHealth; };
 	float GetCurrentHealth() const { return HealthServerState.CurrentHealth; };
 	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void RespawnPlayer();
+	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
+	FOnDeath DeathEvent;
 
 private:
 	class ACharacter* Owner = nullptr;
 	class UCombatComponent* CombatComponent = nullptr;
 	float LocalCurrentHealth;
 	bool bIsDead = false;
-	void Death();
 	class AHUD_Multiplayer* GetPlayerHUD();
 };

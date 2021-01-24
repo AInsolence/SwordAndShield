@@ -80,10 +80,24 @@ void AHUD_Multiplayer::NotEnoughStamina()
 
 void AHUD_Multiplayer::ShowMatchStats()
 {
-	PlayerStateInfoWidget->ShowMatchStats();
+	if (PlayerStateInfoWidget)
+	{
+		PlayerStateInfoWidget->ShowMatchStats();
+	}
 }
 
 void AHUD_Multiplayer::HideMatchStats()
 {
-	PlayerStateInfoWidget->HideMatchStats();
+	if (PlayerStateInfoWidget)
+	{
+		PlayerStateInfoWidget->HideMatchStats();
+	}
+}
+
+void AHUD_Multiplayer::UpdateScoreTable()
+{
+	if (PlayerStateInfoWidget)
+	{
+		PlayerStateInfoWidget->UpdateScoreTable();
+	}
 }

@@ -4,7 +4,8 @@
 
 #include "HUD/HUD_Multiplayer.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/PlayerState.h"
+#include "Components/HealthComponent.h"
+#include "CustomPlayerState.h"
 
 // Sets default values for this component's properties
 UStatisticsComponent::UStatisticsComponent()
@@ -22,6 +23,19 @@ void UStatisticsComponent::BeginPlay()
 
 	// Set owner reference
 	Owner = Cast<ACharacter>(GetOwner());
+	if (Owner)
+	{
+		// Set combat component to call animations
+		auto HealthCompObject = GetOwner()->GetDefaultSubobjectByName("HealthComponent");
+		if (HealthCompObject)
+		{
+			HealthComponent = Cast<UHealthComponent>(HealthCompObject);
+			if (HealthComponent)
+			{
+				HealthComponent->DeathEvent.AddDynamic(this, &UStatisticsComponent::SetScores);
+			}
+		}
+	}
 }
 
 void UStatisticsComponent::ShowMatchStats()
@@ -61,4 +75,27 @@ AHUD_Multiplayer* UStatisticsComponent::GetPlayerHUD() const
 		return Cast<AHUD_Multiplayer>(HUD);
 	}
 	return nullptr;
+}
+
+void UStatisticsComponent::SetScores(AController* InstigatedBy)
+{
+	auto KilledBy = InstigatedBy->GetPlayerState<APlayerState>();
+	if (KilledBy)
+	{
+		KilledBy->SetScore(KilledBy->GetScore() + 1);
+	}
+	auto PlayerController = Cast<APlayerController>(Owner->GetController());
+	if (PlayerController)
+	{
+		auto PlayerState = Cast<ACustomPlayerState>(PlayerController->GetPlayerState<APlayerState>());
+		if (PlayerState)
+		{
+			PlayerState->SetDeaths(PlayerState->GetDeaths() + 1);
+		}
+	}
+	auto PlayerHUD = GetPlayerHUD();
+	if (PlayerHUD)
+	{
+		PlayerHUD->UpdateScoreTable();
+	}
 }

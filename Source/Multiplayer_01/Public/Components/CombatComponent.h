@@ -2,7 +2,7 @@
 
 /***
 
-	This class is an actor component which manage a player's commands and 
+	This class is an actor component which manage a player's combat state and 
 	communicate with other components.
 
 ***/
@@ -109,7 +109,8 @@ public:
 	void SwapWeapon();
 	void Hitted();
 	void Blocked();
-	void Death();
+	UFUNCTION(BlueprintCallable, Category = "CombatComponent")
+	void Death(AController* InstigatedBy);
 	//
 	UFUNCTION(BlueprintCallable, Category = "CombatComponent")
 	bool bIsBlocking() const;

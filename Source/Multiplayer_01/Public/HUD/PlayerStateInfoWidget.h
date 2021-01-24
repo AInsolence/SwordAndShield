@@ -55,6 +55,8 @@ public:
 	void ShowMatchStats();
 	UFUNCTION(BlueprintCallable, Category = "HUD API")
 	void HideMatchStats();
+	UFUNCTION(BlueprintCallable, Category = "HUD API")
+	void UpdateScoreTable();
 
 private:
 	void StoreWidgetAnimations();
@@ -68,6 +70,4 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	UWidgetAnimation* LowStaminaAnimation = nullptr;
 
-	// Update statistic information
-	void UpdateScoreTable();
 };

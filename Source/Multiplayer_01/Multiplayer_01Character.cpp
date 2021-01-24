@@ -100,7 +100,7 @@ void AMultiplayer_01Character::BeginPlay()
 {
 	Super::BeginPlay();
 	// Do not show self health bar above the character
-	if (IsLocallyControlled())
+	if (IsLocallyControlled() || GetLocalRole() == ROLE_Authority)
 	{
 		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::Collapsed);
 	}

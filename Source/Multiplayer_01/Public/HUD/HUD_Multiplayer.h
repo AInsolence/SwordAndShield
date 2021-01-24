@@ -41,4 +41,6 @@ public:
     void ShowMatchStats();
     UFUNCTION(BlueprintCallable, Category = "HUD API")
     void HideMatchStats();
+	UFUNCTION(BlueprintCallable, Category = "HUD API")
+	void UpdateScoreTable();
 };

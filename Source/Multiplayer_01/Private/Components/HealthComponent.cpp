@@ -11,8 +11,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "HUD/HUD_Multiplayer.h"
 
-#include "CustomPlayerState.h"
-
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
@@ -160,35 +158,8 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	if (GetCurrentHealth() <= 0.0f)
 	{
 		bIsDead = true;
-		SetScores(InstigatedBy);
-		Death();
+		DeathEvent.Broadcast(InstigatedBy);
 		return;
-	}
-}
-
-void UHealthComponent::SetScores(AController* InstigatedBy)
-{
-	auto KilledBy = InstigatedBy->GetPlayerState<APlayerState>();
-	if (KilledBy)
-	{
-		KilledBy->SetScore(KilledBy->GetScore() + 1);
-	}
-	auto PlayerController = Cast<APlayerController>(Owner->GetController());
-	if (PlayerController)
-	{
-		auto PlayerState = Cast<ACustomPlayerState>(PlayerController->GetPlayerState<APlayerState>());
-		if (PlayerState)
-		{
-			PlayerState->SetDeaths(PlayerState->GetDeaths() + 1);
-		}
-	}
-}
-
-void UHealthComponent::Death()
-{
-	if (CombatComponent)
-	{
-		CombatComponent->Death();
 	}
 }
 

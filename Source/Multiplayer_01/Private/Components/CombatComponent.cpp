@@ -37,6 +37,10 @@ void UCombatComponent::BeginPlay()
 		if (HealthCompObject)
 		{
 			HealthComponent = Cast<UHealthComponent>(HealthCompObject);
+			if (HealthComponent)
+			{
+				HealthComponent->DeathEvent.AddDynamic(this, &UCombatComponent::Death);
+			}
 		}
 	}
 }
@@ -109,7 +113,7 @@ bool UCombatComponent::Server_SetBlocking_Validate(bool IsBlocking)
 
 bool UCombatComponent::bIsBlocking() const
 {
-	return ServerActionState.bIsBlocking;
+	return ServerActionState.bIsBlocking && (ServerActionState.ActionType == EActionType::None);
 }
 
 void UCombatComponent::SetServerActionState(const FServerActionState& _ServerActionState)
@@ -124,6 +128,7 @@ const FServerActionState UCombatComponent::CreateServerActionState(bool _bCanAct
 	State.bAnimStarted = _bAnimStart;
 	State.ActionState = _ActionState;
 	State.ActionType = _ActionType;
+	State.bIsBlocking = ServerActionState.bIsBlocking;
 	return State;
 }
 
@@ -254,7 +259,7 @@ void UCombatComponent::Blocked()
 	Server_Act(EActionType::Blocked);
 }
 
-void UCombatComponent::Death()
+void UCombatComponent::Death(AController* InstigatedBy)
 {
 	Server_Act(EActionType::Death);
 }

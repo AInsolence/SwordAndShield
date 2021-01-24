@@ -2,7 +2,8 @@
 
 /***
 
-	This class is an actor component represents player's health and stamina properties.
+	This class is an actor component represents player's stamina and
+	player's sprint properties.
 
 ***/
 
@@ -75,11 +76,11 @@ public:
 	//API
 	FORCEINLINE float GetDefaultStamina() const { return StaminaServerState.DefaultStamina; };
 	float GetCurrentStamina() const { return StaminaServerState.CurrentStamina; };
-	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
+	UFUNCTION(BlueprintCallable, Category = "StaminaProperty")
 	void ChangeCurrentStaminaTo(float StaminaCost);
-	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
+	UFUNCTION(BlueprintCallable, Category = "StaminaProperty")
 	void NotEnoughStamina();
-	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
+	UFUNCTION(BlueprintCallable, Category = "StaminaProperty")
 	void SetIsSprinting(bool IsSprinting);
 
 private:

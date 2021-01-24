@@ -53,10 +53,17 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		ChangeCurrentStaminaTo(-30.0f * DeltaTime);
 	}
 	else
-	{
+	{	
 		BaseSprintMultiplier -= RampThisFrame;
-		// change stamina bar percentage
-		ChangeCurrentStaminaTo(15.0f * DeltaTime);
+		
+		if (StaminaServerState.CurrentStamina == StaminaServerState.DefaultStamina)
+		{// Stamina full
+			return;
+		}
+		else
+		{// restore stamina
+			ChangeCurrentStaminaTo(15.0f * DeltaTime);
+		}
 	}
 	BaseSprintMultiplier = FMath::Clamp(BaseSprintMultiplier, 1.0f, MaxSprintMultiplier);
 	Owner->GetCharacterMovement()->MaxWalkSpeed = StaminaServerState.BaseWalkingSpeed * BaseSprintMultiplier;

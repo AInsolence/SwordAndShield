@@ -34,4 +34,7 @@ public:
 private:
 	class ACharacter* Owner = nullptr;
 	class AHUD_Multiplayer* GetPlayerHUD() const;
+	class UHealthComponent* HealthComponent = nullptr;
+	UFUNCTION()
+	void SetScores(AController* InstigatedBy);
 };
