@@ -116,14 +116,18 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AController* InstigatedBy,
 									AActor* DamageCauser)
 {
+
+	UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP TakeDamage calls"));
 	// Check if the character already dead
 	if (bIsDead)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP actor is dead"));
 		return;
 	}
 	// Character may be invulnerable e.g. while rolling or use protection magic
 	if (HealthServerState.bIsInvulnerable && GetCurrentHealth() > 0.0f)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP actor is invulnerable"));
 		return;
 	}
 	// Check if the character is blocking

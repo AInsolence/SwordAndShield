@@ -24,6 +24,7 @@ AWeapon::AWeapon()
 	{
 		PickUpCollisionBox->SetupAttachment(WeaponMesh);
 		DamageCollisionBox->SetupAttachment(WeaponMesh);
+		DamageCollisionBox->SetIsReplicated(true);
 	}
 }
 

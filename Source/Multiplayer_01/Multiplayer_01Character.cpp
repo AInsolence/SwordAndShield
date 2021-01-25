@@ -28,6 +28,7 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetCapsuleComponent()->SetIsReplicated(true);
 
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
@@ -100,7 +101,7 @@ void AMultiplayer_01Character::BeginPlay()
 {
 	Super::BeginPlay();
 	// Do not show self health bar above the character
-	if (IsLocallyControlled() || (GetLocalRole() == ROLE_Authority && IsLocallyControlled()))
+	if (IsLocallyControlled())
 	{
 		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::Collapsed);
 	}

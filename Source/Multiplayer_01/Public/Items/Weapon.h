@@ -11,6 +11,7 @@ UCLASS()
 class MULTIPLAYER_01_API AWeapon : public AActor, public IInteractableItemInterface
 {
 	GENERATED_BODY()
+
 public:	
 	// Sets default values for this actor's properties
 	AWeapon();
