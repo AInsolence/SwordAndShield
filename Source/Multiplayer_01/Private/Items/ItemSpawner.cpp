@@ -14,6 +14,7 @@ AItemSpawner::AItemSpawner()
 	// create spawner volume box
 	SpawnerVolume = CreateDefaultSubobject<UBoxComponent>("SpawnerVolume");
 	SpawnerVolume->SetRelativeScale3D(FVector(5, 5, 0));
+	SpawnerVolume->SetGenerateOverlapEvents(false);
 	RootComponent = SpawnerVolume;
 }
 

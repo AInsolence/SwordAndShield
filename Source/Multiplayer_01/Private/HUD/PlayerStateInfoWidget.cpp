@@ -152,7 +152,27 @@ void UPlayerStateInfoWidget::UpdateScoreTable()
 	if (GameState)
 	{
 		ScoreTable->ClearChildren();
-		for (auto State : GameState->PlayerArray)
+		TArray<ACustomPlayerState*> PlayersStateArray;
+		for (auto state : GameState->PlayerArray)
+		{
+			PlayersStateArray.Add(Cast<ACustomPlayerState>(state));
+		}
+		PlayersStateArray.Sort([](const ACustomPlayerState& A, const ACustomPlayerState& B) -> bool
+		{
+			if (A.GetScore() > B.GetScore())
+			{
+				return true;
+			}
+			else if (A.GetScore() == B.GetScore())
+			{
+				return A.GetDeaths() < B.GetDeaths();
+			}
+			else
+			{
+				return false;
+			}
+		});
+		for (auto State : PlayersStateArray)
 		{
 			auto PlayerState = Cast<ACustomPlayerState>(State);
 			UScoreTableRowWidget* ScoreTableRow = CreateWidget<UScoreTableRowWidget>(this, ScoreTableRowWidgetClass);

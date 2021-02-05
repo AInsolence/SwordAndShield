@@ -48,7 +48,7 @@ void UCombatComponent::BeginPlay()
 // Called every frame
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	UActorComponent::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	//
 	if (ServerActionState.ActionType == EActionType::Roll)
 	{
@@ -82,14 +82,14 @@ void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
 	// Hitted and Death animations break other animations
 	if (_ActionType == EActionType::Hitted || _ActionType == EActionType::Death)
 	{
-		auto PrepareToChangeState = CreateServerActionState(false, true, "Hitted or Dead", _ActionType);		
+		auto PrepareToChangeState = CreateServerActionState(false, _ActionType);		
 		SetServerActionState(PrepareToChangeState);
 		// Play animation on the server for this client
 		PlayActionAnimation();
 	}
 	else if (ServerActionState.ActionType == EActionType::None && ServerActionState.bCanAct)
 	{
-		auto PrepareToChangeState = CreateServerActionState(false, true, "Action", _ActionType);
+		auto PrepareToChangeState = CreateServerActionState(false, _ActionType);
 		SetServerActionState(PrepareToChangeState);
 		// Play animation on the server for this client
 		PlayActionAnimation();
@@ -121,20 +121,17 @@ void UCombatComponent::SetServerActionState(const FServerActionState& _ServerAct
 	ServerActionState = _ServerActionState;
 }
 
-const FServerActionState UCombatComponent::CreateServerActionState(bool _bCanAct, bool _bAnimStart, FString _ActionState, EActionType _ActionType)
+const FServerActionState UCombatComponent::CreateServerActionState(bool _bCanAct, EActionType _ActionType)
 {
 	FServerActionState State;
 	State.bCanAct = _bCanAct;
-	State.bAnimStarted = _bAnimStart;
-	State.ActionState = _ActionState;
 	State.ActionType = _ActionType;
 	State.bIsBlocking = ServerActionState.bIsBlocking;
 	return State;
 }
 
 void UCombatComponent::OnRep_ServerActionState()
-{	
-	PlayActionAnimation();
+{
 }
 
 void UCombatComponent::PlayActionAnimation()
@@ -149,7 +146,7 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::None:
 		break;
 	case EActionType::Roll:
-		PlayAnimation(RollAnimation, 0.5f);
+		Multicast_PlayAnimation(RollAnimation, 0.5f);
 		break;
 	case EActionType::Interact:
 		break;
@@ -160,63 +157,67 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::RightHandAction_01:
 		if (EquipmentComponent->Equipment[0])
 		{
-			PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_01, 0.0f,
+			Multicast_PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_01, 0.0f,
 						  EquipmentComponent->Equipment[0]->SpeedOfAttack);
 		}
 		break;
 	case EActionType::RightHandAction_02:
 		if (EquipmentComponent->Equipment[0])
 		{
-			PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_02, 0.0f,
+			Multicast_PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_02, 0.0f,
 						  EquipmentComponent->Equipment[0]->SpeedOfAttack);
 		}
 		break;
 	case EActionType::LeftHandAction_01:
 		if (EquipmentComponent->Equipment[1])
 		{
-			PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_01, 0.0f,
+			Multicast_PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_01, 0.0f,
 						  EquipmentComponent->Equipment[1]->SpeedOfAttack);
 		}
 		break;
 	case EActionType::LeftHandAction_02:
 		if (EquipmentComponent->Equipment[1])
 		{
-			PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_02, 0.0f,
+			Multicast_PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_02, 0.0f,
 						  EquipmentComponent->Equipment[1]->SpeedOfAttack);
 		}
 		break;
 	case EActionType::SwapWeapon:
-		PlayAnimation(SwapWeaponAnimation, 0.0f);
+		Multicast_PlayAnimation(SwapWeaponAnimation, 0.0f);
 		break;
 	case EActionType::Hitted:
-		PlayAnimation(HittedAnimation, 0.0f);
+		Multicast_PlayAnimation(HittedAnimation, 0.0f);
 		break;
 	case EActionType::Blocked:
-		PlayAnimation(BlockedAnimation, 0.0f);
+		Multicast_PlayAnimation(BlockedAnimation, 0.0f);
 		break;
 	case EActionType::Death:
-		PlayAnimation(DeathAnimation, 0.0f);
+		Multicast_PlayAnimation(DeathAnimation, 0.0f);
 		break;
 	default:
 		break;
 	}
 }
 
-void UCombatComponent::PlayAnimation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate)
+void UCombatComponent::Multicast_PlayAnimation_Implementation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate)
 {
 	if (!Owner || !ActionAnimation)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot find animation"))
-		auto DeclineStateChange = CreateServerActionState(true, false, "NONE", EActionType::None);
+		auto DeclineStateChange = CreateServerActionState(true, EActionType::None);
 		SetServerActionState(DeclineStateChange);
 		return;
 	}
 	UAnimInstance* AnimInstance = Owner->GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
-		ServerActionState.bAnimStarted = true;
 		AnimInstance->Montage_Play(ActionAnimation, InPlayRate, EMontagePlayReturnType::MontageLength, StartTime);
 	}
+}
+
+bool UCombatComponent::Multicast_PlayAnimation_Validate(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate)
+{
+	return true;
 }
 
 void UCombatComponent::Roll()

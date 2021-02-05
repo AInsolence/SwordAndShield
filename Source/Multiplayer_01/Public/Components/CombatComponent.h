@@ -42,10 +42,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "ServerActionState")
 	bool bCanAct = true;
-	UPROPERTY(VisibleAnywhere, Category = "ServerActionState")
-	bool bAnimStarted = false;
-	UPROPERTY(EditAnywhere, Category = "ServerActionState")
-	FString ActionState = "NONE";
 	UPROPERTY(EditAnywhere, Category = "ServerActionState")
 	EActionType ActionType = EActionType::None;
 	UPROPERTY(EditAnywhere, Category = "ServerActionState")
@@ -73,6 +69,11 @@ protected:
 	void Server_Act_Implementation(EActionType _ActionType);
 	bool Server_Act_Validate(EActionType _ActionType);
 	//
+	UFUNCTION(NetMulticast, Reliable, WithValidation, Category = "Replication")
+	void Multicast_PlayAnimation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
+	void Multicast_PlayAnimation_Implementation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
+	bool Multicast_PlayAnimation_Validate(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
+	//
 	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
 	void Server_SetBlocking(bool IsBlocking);
 	void Server_SetBlocking_Implementation(bool IsBlocking);
@@ -82,8 +83,6 @@ protected:
 	void SetServerActionState(const FServerActionState& _ServerActionState);
 	UFUNCTION(BlueprintCallable, Category = "Replication")
 	const FServerActionState CreateServerActionState(bool _bCanAct,
-													 bool _bAnimStart,
-													 FString _ActionState,
 													 EActionType _ActionType);
 
 	/** AnimMontages to play */
@@ -126,5 +125,4 @@ private:
 	class UHealthComponent* HealthComponent = nullptr;
 	void SimulatedTick(float DeltaTime);
 	void PlayActionAnimation();
-	void PlayAnimation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
 };

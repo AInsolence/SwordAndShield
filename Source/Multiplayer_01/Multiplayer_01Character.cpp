@@ -78,25 +78,6 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
-void AMultiplayer_01Character::name(FString Name)
-{
-	Server_SetPlayerName(Name);
-}
-
-void AMultiplayer_01Character::Server_SetPlayerName_Implementation(const FString& Name)
-{
-	GetPlayerState()->SetPlayerName(Name);
-}
-
-bool AMultiplayer_01Character::Server_SetPlayerName_Validate(const FString& Name)
-{
-	if (Name.Len() < 64)
-	{
-		return true;
-	}
-	return false;
-}
-
 void AMultiplayer_01Character::BeginPlay()
 {
 	Super::BeginPlay();
@@ -105,6 +86,7 @@ void AMultiplayer_01Character::BeginPlay()
 	{
 		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::Collapsed);
 	}
+	bAlwaysRelevant = true;
 }
 
 void AMultiplayer_01Character::Tick(float DeltaTime)
@@ -135,6 +117,25 @@ void AMultiplayer_01Character::Tick(float DeltaTime)
 	}
 }
 
+// Set player name console command
+void AMultiplayer_01Character::name(FString Name)
+{
+	Server_SetPlayerName(Name);
+}
+
+void AMultiplayer_01Character::Server_SetPlayerName_Implementation(const FString& Name)
+{
+	GetPlayerState()->SetPlayerName(Name);
+}
+
+bool AMultiplayer_01Character::Server_SetPlayerName_Validate(const FString& Name)
+{
+	if (Name.Len() < 64)
+	{
+		return true;
+	}
+	return false;
+}
 //////////////////////////////////////////////////////////////////////////
 // Input
 

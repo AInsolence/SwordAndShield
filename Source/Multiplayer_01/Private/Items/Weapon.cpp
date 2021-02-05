@@ -11,7 +11,7 @@
 AWeapon::AWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
@@ -37,26 +37,33 @@ void AWeapon::BeginPlay()
 		return;
 	}
 	// Add OnOverlap to the delegate
-	DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlap);
+	DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
+	DamageCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnOverlapEnd);
+
+	bAlwaysRelevant = true;
+}
+
+void AWeapon::OnRep_Activated()
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Activated is called"))
 }
 
 void AWeapon::SetOwner(AActor* _Owner)
 {
-	WeaponOwner = _Owner;
+	AActor::SetOwner(_Owner);
 }
 
 AActor* AWeapon::GetOwner()
 {
-	return WeaponOwner;
+	return AActor::GetOwner();
 }
 
 UClass* AWeapon::PickUp()
 {
 	auto ItemClass = GetClass();
-	UE_LOG(LogTemp, Warning, TEXT("Weapon picked up"))
+
 	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Weapon try to SERVER on MAP destroy"))
 		Destroy();
 	}
 	return ItemClass;
@@ -64,7 +71,15 @@ UClass* AWeapon::PickUp()
 
 void AWeapon::Use()
 {
-	bActivated = true;
+	if (HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Use is called from weapon c++ class"))
+		bActivated = true;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Use has no authority"))
+	}
 }
 
 USkeletalMeshComponent* AWeapon::GetItemMesh()
@@ -77,39 +92,45 @@ UImage* AWeapon::GetItemImage()
 	return nullptr;
 }
 
-void AWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent, 
-						AActor* OtherActor,
-						UPrimitiveComponent* OtherComp,
-						int32 OtherBodyIndex,
-						bool bFromSweep,
-						const FHitResult& SweepResult)
+void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
+							 AActor* OtherActor,
+							 UPrimitiveComponent* OtherComp,
+						  	 int32 OtherBodyIndex,
+							 bool bFromSweep,
+							 const FHitResult& SweepResult)
 {
-	// Check is weapon active
-	if (!bActivated)
+	GetOverlappedEnemy(OtherActor);
+}
+
+void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
+						   AActor* OtherActor, 
+						   UPrimitiveComponent* OtherComp,
+						   int32 OtherBodyIndex)
+{
+	GetOverlappedEnemy(OtherActor);
+}
+
+void AWeapon::GetOverlappedEnemy(AActor* OtherActor)
+{
+	// Check if overlap event calls on the server 
+	if (!HasAuthority())
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("Not AUTHORITY"))
 		return;
 	}
 	// 
-	if (WeaponOwner)
+	if (GetOwner())
 	{
 		// Check for self-overlapping
-		if (WeaponOwner == OtherActor)
+		if (GetOwner() == OtherActor)
 		{
 			return;
 		}
 		// Check is overlap character
 		else if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
 		{
-			// Create a damage event  
-			TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
-			FDamageEvent DamageEvent(ValidDamageTypeClass);
-			// Take damage to the overlapped actor
-			OtherActor->TakeDamage(Damage,
-									DamageEvent,
-									GetOwner()->GetInstigatorController(),
-									this);
-			// Deactivate weapon after damage was caused
-			bActivated = false;
+			UE_LOG(LogTemp, Warning, TEXT("Broadcast begin/end with %s"), *OtherActor->GetName());
+			OnWeaponOverlap.Broadcast(OtherActor);
 		}
 	}
 }

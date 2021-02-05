@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/InteractableItemInterface.h"
+#include "Net/UnrealNetwork.h"
 #include "Weapon.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponOverlap, AActor*, OverlappedActor);
 
 UCLASS()
 class MULTIPLAYER_01_API AWeapon : public AActor, public IInteractableItemInterface
@@ -24,6 +27,10 @@ public:
 	float SpeedOfAttack = 1.0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
 	float Damage = 30.0f;
+	//UPROPERTY(ReplicatedUsing = OnRep_Activated, EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
+	bool bActivated = false;
+	UFUNCTION(BlueprintCallable)
+	void OnRep_Activated();
 
 	// Interactable interface implementation
 	virtual void SetOwner(AActor* _Owner);
@@ -36,16 +43,34 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
 	void Deactivate()
 	{
-		bActivated = false;
+		if (HasAuthority())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Deactivate is called from weapon c++ class"))
+			bActivated = false;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Deactivate has no authority"))
+		}
 	}
 	/** Called when a weapon hits something */
 	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent,
-					AActor* OtherActor,
-					UPrimitiveComponent* OtherComp,
-					int32 OtherBodyIndex,
-					bool bFromSweep,
-					const FHitResult& SweepResult);
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
+						AActor* OtherActor,
+						UPrimitiveComponent* OtherComp,
+						int32 OtherBodyIndex,
+						bool bFromSweep,
+						const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
+					  AActor* OtherActor, 
+					  UPrimitiveComponent* OtherComp,
+					  int32 OtherBodyIndex);
+					  
+	void GetOverlappedEnemy(AActor* OtherActor);
+	//
+	FOnWeaponOverlap OnWeaponOverlap;
 
 	// Weapon components
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WeaponComponents")
@@ -64,8 +89,4 @@ public:
 	class UAnimMontage* UseAnimation_03;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class UAnimMontage* UseAnimation_04;
-
-private:
-	class AActor* WeaponOwner = nullptr;
-	bool bActivated = false;
 };

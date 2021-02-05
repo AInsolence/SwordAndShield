@@ -50,26 +50,54 @@ public:
 	
 	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
 	TArray<AWeapon*> Equipment;
+	UPROPERTY(ReplicatedUsing = OnRep_DamagedActorsChanged, EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
+	TArray<FString> DamagedActors;
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void OnRep_DamagedActorsChanged();
 
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	AWeapon* GetRightHandWeapon(){ return Equipment[0]; }
-
+	//
 	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
 	void Server_EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
 	void Server_EquipItem_Implementation(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
 	bool Server_EquipItem_Validate(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
-
+	//
 	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
 	void Server_SwapWeapon();
 	void Server_SwapWeapon_Implementation();
 	bool Server_SwapWeapon_Validate();
-
+	//
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Replication")
+	void Server_SetAttack(bool IsAttack);
+	void Server_SetAttack_Implementation(bool IsAttack);
+	bool Server_SetAttack_Validate(bool IsAttack);
+	//
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Replication")
+	void Server_AddDamagedActors(const FString& ActorName);
+	void Server_AddDamagedActors_Implementation(const FString& ActorName);
+	bool Server_AddDamagedActors_Validate(const FString& ActorName);
+	//
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Replication")
+	void Server_ClearDamagedActors();
+	void Server_ClearDamagedActors_Implementation();
+	bool Server_ClearDamagedActors_Validate();
+	//
+	UPROPERTY(ReplicatedUsing = OnRep_AttackStatusChanged, VisibleAnywhere, Category = "ServerAttackState")
+	bool bIsAttack = false;
+	UFUNCTION(BlueprintCallable, Category = "Replication")
+	void OnRep_AttackStatusChanged();
+	//
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void SwapWeapon();
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void DropWeapon(FVector SpawnLocation);
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void DropAllItems();
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void OnWeaponOverlap(AActor* OverlappedActor);
+
+	void TakeDamageToOverlappedActor(AActor* OverlappedActor);
 
 private:
 	AActor* Owner = nullptr;

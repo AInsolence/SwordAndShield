@@ -10,6 +10,8 @@
 #include "Engine/World.h"
 #include "GameFramework/GameModeBase.h"
 #include "HUD/HUD_Multiplayer.h"
+#include "Items/Weapon.h"
+#include "../Multiplayer_01Character.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -116,8 +118,6 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AController* InstigatedBy,
 									AActor* DamageCauser)
 {
-
-	UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP TakeDamage calls"));
 	// Check if the character already dead
 	if (bIsDead)
 	{
@@ -130,12 +130,12 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP actor is invulnerable"));
 		return;
 	}
-	// Check if the character is blocking
+	//
 	if (Owner && CombatComponent && InstigatedBy)
 	{
+		// Check if the character is blocking
 		float AngleBetweenActors = FMath::RadiansToDegrees(acosf(FVector::DotProduct(Owner->GetActorForwardVector(), 
 													InstigatedBy->GetPawn()->GetActorForwardVector())));
-		UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP: angle = %f"), AngleBetweenActors);
 		if (AngleBetweenActors > 90 && CombatComponent->bIsBlocking())
 		{// TODO Set appropriate stamina cost
 			CombatComponent->Blocked();
@@ -143,7 +143,13 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		}
 		else
 		{
-			CombatComponent->Hitted();
+			// Update HP if character was damaged
+			HealthServerState.CurrentHealth = FMath::Clamp(HealthServerState.CurrentHealth - Damage, 0.0f, HealthServerState.DefaultHealth);
+			//Update HUD health status
+			if (GetPlayerHUD())
+			{
+				GetPlayerHUD()->UpdateHealthState(GetCurrentHealth() / GetDefaultHealth());
+			}
 		}
 	}
 	else
@@ -151,13 +157,6 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		UE_LOG(LogTemp, Warning, TEXT("NO instigator"));
 	}
 	
-	// Update HP if character was damaged
-	HealthServerState.CurrentHealth = FMath::Clamp(HealthServerState.CurrentHealth - Damage, 0.0f, HealthServerState.DefaultHealth);
-	//Update HUD health status
-	if (GetPlayerHUD())
-	{
-		GetPlayerHUD()->UpdateHealthState(GetCurrentHealth() / GetDefaultHealth());
-	}
 	// Check if the character has 0 health points
 	if (GetCurrentHealth() <= 0.0f)
 	{
