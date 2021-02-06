@@ -180,6 +180,12 @@ void UPlayerStateInfoWidget::UpdateScoreTable()
 			{
 				ScoreTableRow->SetData(PlayerState->GetPlayerName(), PlayerState->GetScore(), PlayerState->GetDeaths());
 				ScoreTable->AddChild(ScoreTableRow);
+				// Set color for self row in a table
+				if (PlayerState == GetWorld()->GetFirstPlayerController()->GetPawn()->GetPlayerState())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Local player state here"))
+					ScoreTableRow->SetColor(FColor::Emerald);
+				}
 			}
 		}
 	}

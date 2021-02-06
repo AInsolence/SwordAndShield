@@ -10,3 +10,8 @@ void UScoreTableRowWidget::SetData(FString _PlayerName, int32 _Scores, int32 _De
 	Scores->SetText(FText::AsNumber(_Scores));
 	Deaths->SetText(FText::AsNumber(_Deaths));
 }
+
+void UScoreTableRowWidget::SetColor(FColor Color)
+{
+	PlayerName->SetColorAndOpacity(FSlateColor(Color));
+}

@@ -115,6 +115,11 @@ void AMultiplayer_01Character::Tick(float DeltaTime)
 			HealthBar->SetHealthBarPercentage(HealthPoints);
 		}
 	}
+	// Hide health bar for the listen-server client
+	if (HasAuthority() && IsLocallyControlled())
+	{
+		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 // Set player name console command

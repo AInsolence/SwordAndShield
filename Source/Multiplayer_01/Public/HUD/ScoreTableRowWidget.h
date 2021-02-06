@@ -16,6 +16,7 @@ class MULTIPLAYER_01_API UScoreTableRowWidget : public UUserWidget
 
 public:
 	void SetData(FString PlayerName, int32 Scores, int32 Deaths);
+	void SetColor(FColor Color);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "ServerSessionRow", meta = (BindWidget))
