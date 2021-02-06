@@ -15,7 +15,7 @@ UEquipmentComponent::UEquipmentComponent()
 	SetIsReplicatedByDefault(true);
 
 	Equipment.Init(nullptr, 4);
-	DamagedActors.Empty();
+	ServerAttackState.DamagedActors.Empty();
 }
 
 // Called when the game starts
@@ -52,13 +52,12 @@ void UEquipmentComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UEquipmentComponent, Equipment, COND_None);
-	DOREPLIFETIME_CONDITION(UEquipmentComponent, bIsAttack, COND_None);
-	DOREPLIFETIME_CONDITION(UEquipmentComponent, DamagedActors, COND_None);
+	DOREPLIFETIME_CONDITION(UEquipmentComponent, ServerAttackState, COND_None);
 }
 
 void UEquipmentComponent::Server_AddDamagedActors_Implementation(const FString& ActorName)
 {
-	DamagedActors.Add(ActorName);
+	ServerAttackState.DamagedActors.Add(ActorName);
 }
 
 bool UEquipmentComponent::Server_AddDamagedActors_Validate(const FString& ActorName)
@@ -68,7 +67,7 @@ bool UEquipmentComponent::Server_AddDamagedActors_Validate(const FString& ActorN
 
 void UEquipmentComponent::Server_ClearDamagedActors_Implementation()
 {
-	DamagedActors.Empty();
+	ServerAttackState.DamagedActors.Empty();
 }
 
 bool UEquipmentComponent::Server_ClearDamagedActors_Validate()
@@ -76,9 +75,9 @@ bool UEquipmentComponent::Server_ClearDamagedActors_Validate()
 	return true;
 }
 
-void UEquipmentComponent::OnRep_AttackStatusChanged()
+void UEquipmentComponent::OnRep_ServerAttackStateChanged()
 {
-	if (bIsAttack)
+	if (ServerAttackState.bIsAttack)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attack status changed to  = TRUE!!!"))
 	}
@@ -88,33 +87,30 @@ void UEquipmentComponent::OnRep_AttackStatusChanged()
 		// Clear damaged actors array after the end of attack
 		if (Cast<APawn>(Owner)->IsLocallyControlled())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("DAMAGED array was CLEARED"));
-			Server_ClearDamagedActors();
+			//UE_LOG(LogTemp, Warning, TEXT("DAMAGED array was CLEARED"));
+			//Server_ClearDamagedActors();
 		}
 	}
 }
 
 void UEquipmentComponent::Server_SetAttack_Implementation(bool IsAttack)
 {
-	bIsAttack = IsAttack;
-	if (Owner->HasAuthority() && Cast<APawn>(Owner)->IsLocallyControlled())
+	ServerAttackState.bIsAttack = IsAttack;
+	/*if (Owner->HasAuthority() && Cast<APawn>(Owner)->IsLocallyControlled())
 	{
 		if (IsAttack)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("DAMAGED array was CLEARED for SERVER"));
 			Server_ClearDamagedActors();
 		}
-	}
+	}*/
+	UE_LOG(LogTemp, Warning, TEXT("DAMAGED array was CLEARED for ALL"));
+	Server_ClearDamagedActors();
 }
 
 bool UEquipmentComponent::Server_SetAttack_Validate(bool IsAttack)
 {
 	return true;
-}
-
-void UEquipmentComponent::OnRep_DamagedActorsChanged()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Damaged actors was replicated"))
 }
 
 void UEquipmentComponent::Server_EquipItem_Implementation(EItemSlot ItemSlot, TSubclassOf<class AWeapon> SlotWeapon)
@@ -251,22 +247,15 @@ void UEquipmentComponent::OnWeaponOverlap(AActor* OverlappedActor)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped actor: %s"), *OverlappedActor->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("Damage check ..."));
-	if (true)//bIsAttack)
+	if (ServerAttackState.bIsAttack && 
+			!ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
 	{
-		if (bIsAttack && !DamagedActors.Contains(OverlappedActor->GetName()))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("TAKE DAMAGE to the actor %s"), *OverlappedActor->GetName());
-			Server_AddDamagedActors(OverlappedActor->GetName());
-			TakeDamageToOverlappedActor(OverlappedActor);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("ACTOR %s IS ALREADY in damaged array"), *OverlappedActor->GetName());
-		}
+		UE_LOG(LogTemp, Warning, TEXT("TAKE DAMAGE to the actor %s"), *OverlappedActor->GetName());
+		TakeDamageToOverlappedActor(OverlappedActor);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack false"));
+		UE_LOG(LogTemp, Warning, TEXT("ACTOR %s is NOT ATTACK or IS ALREADY in damaged array"), *OverlappedActor->GetName());
 	}
 }
 
@@ -284,6 +273,7 @@ void UEquipmentComponent::TakeDamageToOverlappedActor(AActor* OverlappedActor)
 								DamageEvent,
 								GetOwner()->GetInstigatorController(),
 								Owner);
+	Server_AddDamagedActors(OverlappedActor->GetName());
 }
 
 AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, 

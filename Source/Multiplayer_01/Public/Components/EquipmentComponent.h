@@ -24,6 +24,19 @@ enum class EItemSlot : uint8
 	BackPlaceItem
 };
 
+USTRUCT(BlueprintType)
+struct FServerAttackState
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(VisibleAnywhere, Category = "ServerActionState")
+	TArray<FString> DamagedActors;
+	UPROPERTY(VisibleAnywhere, Category = "ServerActionState")
+	bool bIsAttack = false;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYER_01_API UEquipmentComponent : public UActorComponent
 {
@@ -50,10 +63,11 @@ public:
 	
 	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
 	TArray<AWeapon*> Equipment;
-	UPROPERTY(ReplicatedUsing = OnRep_DamagedActorsChanged, EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
-	TArray<FString> DamagedActors;
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	void OnRep_DamagedActorsChanged();
+	//
+	UPROPERTY(ReplicatedUsing = OnRep_ServerAttackStateChanged, VisibleAnywhere, Category = "ServerAttackState")
+	FServerAttackState ServerAttackState;
+	UFUNCTION(BlueprintCallable, Category = "Replication")
+	void OnRep_ServerAttackStateChanged();
 
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	AWeapon* GetRightHandWeapon(){ return Equipment[0]; }
@@ -82,11 +96,6 @@ public:
 	void Server_ClearDamagedActors();
 	void Server_ClearDamagedActors_Implementation();
 	bool Server_ClearDamagedActors_Validate();
-	//
-	UPROPERTY(ReplicatedUsing = OnRep_AttackStatusChanged, VisibleAnywhere, Category = "ServerAttackState")
-	bool bIsAttack = false;
-	UFUNCTION(BlueprintCallable, Category = "Replication")
-	void OnRep_AttackStatusChanged();
 	//
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void SwapWeapon();
