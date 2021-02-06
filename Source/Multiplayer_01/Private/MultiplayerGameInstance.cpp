@@ -163,6 +163,7 @@ void UMultiplayerGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDr
 {
 	// Travel to main menu
 	auto* PlayerController = GetFirstLocalPlayerController();
+
 	if (!ensureMsgf(PlayerController, TEXT("Couldn't get PlayerController object!"))) return;
 	PlayerController->ClientTravel("/CustomMultiplayerMenu/CustomMenu/MainMenu", ETravelType::TRAVEL_Absolute);
 	// Destroy session

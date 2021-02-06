@@ -54,7 +54,7 @@ public:
 		}
 	}
 	/** Called when a weapon hits something */
-	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "WeaponUsing")
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 						AActor* OtherActor,
 						UPrimitiveComponent* OtherComp,
@@ -62,11 +62,23 @@ public:
 						bool bFromSweep,
 						const FHitResult& SweepResult);
 
-	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
+	void OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "WeaponUsing")
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
 					  AActor* OtherActor, 
 					  UPrimitiveComponent* OtherComp,
 					  int32 OtherBodyIndex);
+	
+	void OnOverlapEnd_Implementation(UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex);
 					  
 	void GetOverlappedEnemy(AActor* OtherActor);
 	//

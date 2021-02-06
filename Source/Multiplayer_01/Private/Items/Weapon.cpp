@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/CombatComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -36,10 +37,24 @@ void AWeapon::BeginPlay()
 	{
 		return;
 	}
-	// Add OnOverlap to the delegate
-	DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
-	DamageCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnOverlapEnd);
 
+	if (HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SERVER ADDED DELEGATES IN A WEAPON!"))
+		DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
+		DamageCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnOverlapEnd);
+	}
+	if (Cast<APawn>(GetOwner()))
+	{
+		if (Cast<APawn>(GetOwner())->IsLocallyControlled())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ADDED DELEGATES IN A WEAPON!"))
+			// Add OnOverlap to the delegate
+			DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
+			DamageCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnOverlapEnd);
+		}
+	}
+	
 	bAlwaysRelevant = true;
 }
 
@@ -92,17 +107,54 @@ UImage* AWeapon::GetItemImage()
 	return nullptr;
 }
 
-void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
+void AWeapon::OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedComponent, 
 							 AActor* OtherActor,
 							 UPrimitiveComponent* OtherComp,
 						  	 int32 OtherBodyIndex,
 							 bool bFromSweep,
 							 const FHitResult& SweepResult)
 {
+	//if (!HasAuthority())
+	//{
+	//	//UE_LOG(LogTemp, Warning, TEXT("Not AUTHORITY for begin"))
+	//	return;
+	//}
+	//// 
+	//if (GetOwner())
+	//{
+	//	// Check for self-overlapping
+	//	if (GetOwner() == OtherActor)
+	//	{
+	//		return;
+	//	}
+	//	// Check is overlap character
+	//	else
+	//	{
+	//		auto Character = Cast<ACharacter>(OtherActor);
+	//		if (!Character)
+	//		{
+	//			return;
+	//		}
+	//		if (!Cast<UCapsuleComponent>(OtherComp))
+	//		{
+	//			UE_LOG(LogTemp, Warning, TEXT("NOT Capsule"))
+	//				return;
+	//		}
+	//		if (Cast<UCapsuleComponent>(OtherComp) == Character->GetCapsuleComponent())
+	//		{
+	//			UE_LOG(LogTemp, Warning, TEXT("Broadcast begin overlap capsule with %s"), *OtherActor->GetName());
+	//			OnWeaponOverlap.Broadcast(OtherActor);
+	//		}
+	//		else
+	//		{
+	//			UE_LOG(LogTemp, Warning, TEXT("NOT Capsule FOUNDED"))
+	//		}
+	//	}
+	//}
 	GetOverlappedEnemy(OtherActor);
 }
 
-void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
+void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* OverlappedComponent,
 						   AActor* OtherActor, 
 						   UPrimitiveComponent* OtherComp,
 						   int32 OtherBodyIndex)
@@ -115,7 +167,6 @@ void AWeapon::GetOverlappedEnemy(AActor* OtherActor)
 	// Check if overlap event calls on the server 
 	if (!HasAuthority())
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Not AUTHORITY"))
 		return;
 	}
 	// 

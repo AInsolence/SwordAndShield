@@ -4,6 +4,7 @@
 #include "Components/InteractableItemInterface.h"
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "Items/ItemSpawner.h"
 
 // Sets default values for this component's properties
@@ -84,27 +85,12 @@ void UEquipmentComponent::OnRep_ServerAttackStateChanged()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attack status changed to  = FALSE!!!"))
-		// Clear damaged actors array after the end of attack
-		if (Cast<APawn>(Owner)->IsLocallyControlled())
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("DAMAGED array was CLEARED"));
-			//Server_ClearDamagedActors();
-		}
 	}
 }
 
 void UEquipmentComponent::Server_SetAttack_Implementation(bool IsAttack)
 {
 	ServerAttackState.bIsAttack = IsAttack;
-	/*if (Owner->HasAuthority() && Cast<APawn>(Owner)->IsLocallyControlled())
-	{
-		if (IsAttack)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("DAMAGED array was CLEARED for SERVER"));
-			Server_ClearDamagedActors();
-		}
-	}*/
-	UE_LOG(LogTemp, Warning, TEXT("DAMAGED array was CLEARED for ALL"));
 	Server_ClearDamagedActors();
 }
 
@@ -207,7 +193,7 @@ void UEquipmentComponent::SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocati
 	Weapon->DestroyNetworkActorHandled();
 }
 
-void UEquipmentComponent::DropAllItems()
+void UEquipmentComponent::Server_DropAllItems_Implementation()
 {
 	if (!World)
 	{
@@ -243,19 +229,23 @@ void UEquipmentComponent::DropAllItems()
 	ItemSpawner->DestroyNetworkActorHandled();
 }
 
-void UEquipmentComponent::OnWeaponOverlap(AActor* OverlappedActor)
+void UEquipmentComponent::Server_OnWeaponOverlap_Implementation(AActor* OverlappedActor)
 {
+	if (!Owner->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No AUTHORITY On weapon Overlap equipment MAAAAN!"));
+		return;
+	}
 	UE_LOG(LogTemp, Warning, TEXT("Overlapped actor: %s"), *OverlappedActor->GetName());
 	UE_LOG(LogTemp, Warning, TEXT("Damage check ..."));
-	if (ServerAttackState.bIsAttack && 
-			!ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
+	if (ServerAttackState.bIsAttack)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TAKE DAMAGE to the actor %s"), *OverlappedActor->GetName());
 		TakeDamageToOverlappedActor(OverlappedActor);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ACTOR %s is NOT ATTACK or IS ALREADY in damaged array"), *OverlappedActor->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("ACTOR %s is NOT ATTACK"), *OverlappedActor->GetName());
 	}
 }
 
@@ -263,6 +253,11 @@ void UEquipmentComponent::TakeDamageToOverlappedActor(AActor* OverlappedActor)
 {
 	if (!Owner->HasAuthority())
 	{
+		return;
+	}
+	if (ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ENEMY already was damaged in this overlapping"));
 		return;
 	}
 	//// Create a damage event 
@@ -287,7 +282,7 @@ AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponCl
 	Item->SetOwner(GetOwner());
 	if (SocketName == FName("RightHandWeaponSocket"))
 	{
-		Item->OnWeaponOverlap.AddDynamic(this, &UEquipmentComponent::OnWeaponOverlap);
+		Item->OnWeaponOverlap.AddDynamic(this, &UEquipmentComponent::Server_OnWeaponOverlap);
 	}
 	return Item;
 }

@@ -97,14 +97,24 @@ public:
 	void Server_ClearDamagedActors_Implementation();
 	bool Server_ClearDamagedActors_Validate();
 	//
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Equipment")
+	void Server_OnWeaponOverlap(AActor* OverlappedActor);
+	void Server_OnWeaponOverlap_Implementation(AActor* OverlappedActor);
+	//
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Equipment")
+	void Server_DropAllItems();
+	void Server_DropAllItems_Implementation();
+	//
+	UFUNCTION(BlueprintCallable, Category = "Multiplayer")
+	void OnNetworkFailure(UWorld* _World,
+						  UNetDriver* NetDriver,
+						  ENetworkFailure::Type FailureType,
+						  const FString& Message);
+	//
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void SwapWeapon();
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void DropWeapon(FVector SpawnLocation);
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	void DropAllItems();
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	void OnWeaponOverlap(AActor* OverlappedActor);
 
 	void TakeDamageToOverlappedActor(AActor* OverlappedActor);
 
