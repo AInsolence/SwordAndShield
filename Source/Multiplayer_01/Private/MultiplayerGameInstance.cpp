@@ -264,7 +264,7 @@ void UMultiplayerGameInstance::LoadMainMenu()
 		{// Client Travel to main menu
 			PlayerController->ClientTravel("MainMenu", ETravelType::TRAVEL_Absolute);
 			// Set input mode game only and hide mouse cursor in the game
-			PlayerController->SetInputMode(FInputModeGameAndUI());
+			PlayerController->SetInputMode(FInputModeUIOnly());
 			PlayerController->bShowMouseCursor = true;
 		}
 	}

@@ -14,4 +14,6 @@ void UScoreTableRowWidget::SetData(FString _PlayerName, int32 _Scores, int32 _De
 void UScoreTableRowWidget::SetColor(FColor Color)
 {
 	PlayerName->SetColorAndOpacity(FSlateColor(Color));
+	Scores->SetColorAndOpacity(FSlateColor(Color));
+	Deaths->SetColorAndOpacity(FSlateColor(Color));
 }

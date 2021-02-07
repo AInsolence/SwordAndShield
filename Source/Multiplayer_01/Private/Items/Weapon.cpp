@@ -114,43 +114,6 @@ void AWeapon::OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedCompo
 							 bool bFromSweep,
 							 const FHitResult& SweepResult)
 {
-	//if (!HasAuthority())
-	//{
-	//	//UE_LOG(LogTemp, Warning, TEXT("Not AUTHORITY for begin"))
-	//	return;
-	//}
-	//// 
-	//if (GetOwner())
-	//{
-	//	// Check for self-overlapping
-	//	if (GetOwner() == OtherActor)
-	//	{
-	//		return;
-	//	}
-	//	// Check is overlap character
-	//	else
-	//	{
-	//		auto Character = Cast<ACharacter>(OtherActor);
-	//		if (!Character)
-	//		{
-	//			return;
-	//		}
-	//		if (!Cast<UCapsuleComponent>(OtherComp))
-	//		{
-	//			UE_LOG(LogTemp, Warning, TEXT("NOT Capsule"))
-	//				return;
-	//		}
-	//		if (Cast<UCapsuleComponent>(OtherComp) == Character->GetCapsuleComponent())
-	//		{
-	//			UE_LOG(LogTemp, Warning, TEXT("Broadcast begin overlap capsule with %s"), *OtherActor->GetName());
-	//			OnWeaponOverlap.Broadcast(OtherActor);
-	//		}
-	//		else
-	//		{
-	//			UE_LOG(LogTemp, Warning, TEXT("NOT Capsule FOUNDED"))
-	//		}
-	//	}
-	//}
 	GetOverlappedEnemy(OtherActor);
 }
 

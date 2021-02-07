@@ -104,12 +104,8 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Equipment")
 	void Server_DropAllItems();
 	void Server_DropAllItems_Implementation();
-	//
-	UFUNCTION(BlueprintCallable, Category = "Multiplayer")
-	void OnNetworkFailure(UWorld* _World,
-						  UNetDriver* NetDriver,
-						  ENetworkFailure::Type FailureType,
-						  const FString& Message);
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void DropAllItems();
 	//
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void SwapWeapon();

@@ -4,7 +4,6 @@
 #include "Components/InteractableItemInterface.h"
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
-#include "Kismet/GameplayStatics.h"
 #include "Items/ItemSpawner.h"
 
 // Sets default values for this component's properties
@@ -194,6 +193,11 @@ void UEquipmentComponent::SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocati
 }
 
 void UEquipmentComponent::Server_DropAllItems_Implementation()
+{
+	DropAllItems();
+}
+
+void UEquipmentComponent::DropAllItems()
 {
 	if (!World)
 	{
