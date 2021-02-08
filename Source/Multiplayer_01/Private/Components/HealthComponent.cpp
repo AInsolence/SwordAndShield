@@ -139,12 +139,15 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		if (AngleBetweenActors > 90 && CombatComponent->bIsBlocking())
 		{// TODO Set appropriate stamina cost
 			CombatComponent->Blocked();
+			OnBlocked.Broadcast();
 			return;
 		}
 		else
 		{
 			// Update HP if character was damaged
 			HealthServerState.CurrentHealth = FMath::Clamp(HealthServerState.CurrentHealth - Damage, 0.0f, HealthServerState.DefaultHealth);
+			auto HitSound = Cast<AMultiplayer_01Character>(InstigatedBy->GetPawn())->GetActiveWeaponHitSound();
+			OnHitted.Broadcast(HitSound);
 			//Update HUD health status
 			if (GetPlayerHUD())
 			{

@@ -114,6 +114,7 @@ public:
 	//
 	UFUNCTION(BlueprintCallable, Category = "CombatComponent")
 	bool bIsBlocking() const;
+
 	UFUNCTION(BlueprintCallable, Category = "CombatComponent")
 	EActionType GetActionType() const;
 	UFUNCTION(BlueprintCallable, Category = "CombatComponent")

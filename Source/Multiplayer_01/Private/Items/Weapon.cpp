@@ -40,7 +40,6 @@ void AWeapon::BeginPlay()
 
 	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SERVER ADDED DELEGATES IN A WEAPON!"))
 		DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
 		DamageCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnOverlapEnd);
 	}
@@ -48,7 +47,6 @@ void AWeapon::BeginPlay()
 	{
 		if (Cast<APawn>(GetOwner())->IsLocallyControlled())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ADDED DELEGATES IN A WEAPON!"))
 			// Add OnOverlap to the delegate
 			DamageCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
 			DamageCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnOverlapEnd);
@@ -60,7 +58,6 @@ void AWeapon::BeginPlay()
 
 void AWeapon::OnRep_Activated()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnRep_Activated is called"))
 }
 
 void AWeapon::SetOwner(AActor* _Owner)
@@ -88,12 +85,7 @@ void AWeapon::Use()
 {
 	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Use is called from weapon c++ class"))
 		bActivated = true;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Use has no authority"))
 	}
 }
 
@@ -143,7 +135,6 @@ void AWeapon::GetOverlappedEnemy(AActor* OtherActor)
 		// Check is overlap character
 		else if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Broadcast begin/end with %s"), *OtherActor->GetName());
 			OnWeaponOverlap.Broadcast(OtherActor);
 		}
 	}

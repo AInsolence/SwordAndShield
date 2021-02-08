@@ -17,6 +17,7 @@
 #include "Components/InteractionComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/StatisticsComponent.h"
+#include "Components/AudioFXComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
 #include "HUD/HealthBarWidget.h"
@@ -64,6 +65,7 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>("HealthBarComponent");
 	StatisticsComponent = CreateDefaultSubobject<UStatisticsComponent>("StatisticsComponent");
+	AudioFXComponent = CreateDefaultSubobject<UAudioFXComponent>("AudioFXComponent");
 	// Attach interactable sphere component
 	if (InteractionComponent)
 	{
@@ -87,6 +89,13 @@ void AMultiplayer_01Character::BeginPlay()
 		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	bAlwaysRelevant = true;
+	// Bind Delegates
+	if (HealthComponent && AudioFXComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ONHITTED DELEGATE BINDED"));
+		HealthComponent->OnHitted.AddDynamic(AudioFXComponent, &UAudioFXComponent::Server_PlaySoundFX);
+		HealthComponent->OnBlocked.AddDynamic(AudioFXComponent, &UAudioFXComponent::Blocked);
+	}
 }
 
 void AMultiplayer_01Character::Tick(float DeltaTime)
@@ -366,6 +375,19 @@ void AMultiplayer_01Character::HideStatistic()
 	{
 		StatisticsComponent->HideMatchStats();
 	}
+}
+
+USoundBase* AMultiplayer_01Character::GetActiveWeaponHitSound()
+{
+	if (EquipmentComponent)
+	{
+		auto Weapon = EquipmentComponent->Equipment[0];
+		if (Weapon)
+		{
+			return Weapon->Hit_SoundFX;
+		}
+	}
+	return nullptr;
 }
 
 bool AMultiplayer_01Character::bIsActionPossible(float StaminaCost)

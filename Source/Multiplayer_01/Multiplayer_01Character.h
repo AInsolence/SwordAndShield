@@ -70,6 +70,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UStatisticsComponent* StatisticsComponent;
 
+	/** Statistics component */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UAudioFXComponent* AudioFXComponent;
+
 	// Change player name console command
 	UFUNCTION(Exec)
 	void name(FString Name);
@@ -77,6 +81,8 @@ public:
 	void Server_SetPlayerName(const FString& Name);
 	void Server_SetPlayerName_Implementation(const FString& Name);
 	bool Server_SetPlayerName_Validate(const FString& Name);
+	//
+	class USoundBase* GetActiveWeaponHitSound();
 
 protected:
 
@@ -102,7 +108,7 @@ protected:
 	void Block02();
 	void SwapWeapon();
 	void Interact();
-
+	//
 	void ShowStatistic();
 	void HideStatistic();
 

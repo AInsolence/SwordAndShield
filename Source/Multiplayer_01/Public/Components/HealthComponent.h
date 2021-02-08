@@ -30,6 +30,8 @@ public:
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam (FOnDeath, AController*, InstigatedBy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHitted, USoundBase*, SoundBase);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBlocked);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYER_01_API UHealthComponent : public UActorComponent
@@ -66,6 +68,10 @@ public:
 	void RespawnPlayer();
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 	FOnDeath DeathEvent;
+	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
+	FOnHitted OnHitted;
+	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
+	FOnBlocked OnBlocked;
 
 private:
 	class ACharacter* Owner = nullptr;

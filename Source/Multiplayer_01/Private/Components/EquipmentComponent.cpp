@@ -237,19 +237,11 @@ void UEquipmentComponent::Server_OnWeaponOverlap_Implementation(AActor* Overlapp
 {
 	if (!Owner->HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No AUTHORITY On weapon Overlap equipment MAAAAN!"));
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped actor: %s"), *OverlappedActor->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("Damage check ..."));
 	if (ServerAttackState.bIsAttack)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TAKE DAMAGE to the actor %s"), *OverlappedActor->GetName());
 		TakeDamageToOverlappedActor(OverlappedActor);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ACTOR %s is NOT ATTACK"), *OverlappedActor->GetName());
 	}
 }
 
@@ -261,7 +253,6 @@ void UEquipmentComponent::TakeDamageToOverlappedActor(AActor* OverlappedActor)
 	}
 	if (ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ENEMY already was damaged in this overlapping"));
 		return;
 	}
 	//// Create a damage event 
