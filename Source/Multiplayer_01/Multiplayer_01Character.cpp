@@ -92,9 +92,14 @@ void AMultiplayer_01Character::BeginPlay()
 	// Bind Delegates
 	if (HealthComponent && AudioFXComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ONHITTED DELEGATE BINDED"));
+		UE_LOG(LogTemp, Warning, TEXT("DELEGATES BINDED"));
 		HealthComponent->OnHitted.AddDynamic(AudioFXComponent, &UAudioFXComponent::Server_PlaySoundFX);
 		HealthComponent->OnBlocked.AddDynamic(AudioFXComponent, &UAudioFXComponent::Blocked);
+		HealthComponent->DeathEvent.AddDynamic(AudioFXComponent, &UAudioFXComponent::Death);
+	}
+	if (InteractionComponent && AudioFXComponent)
+	{
+		InteractionComponent->OnPickUp.AddDynamic(AudioFXComponent, &UAudioFXComponent::PickUp);
 	}
 }
 

@@ -44,6 +44,7 @@ void UInteractionComponent::Server_PickUp_Implementation()
 		auto ItemClass = InteractableItem->PickUp();
 		if (ItemClass->IsChildOf(AWeapon::StaticClass()))
 		{
+			OnPickUp.Broadcast();
 			FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 200;
 			EquipmentComponent->DropWeapon(SpawnLocation);
 			EquipmentComponent->Server_EquipItem(EItemSlot::RightHandItem, ItemClass);

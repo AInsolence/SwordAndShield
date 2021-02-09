@@ -57,3 +57,19 @@ void UAudioFXComponent::Blocked()
 		Server_PlaySoundFX(BlockSound);
 	}
 }
+
+void UAudioFXComponent::PickUp()
+{
+	if (EquipItem_AudioFX)
+	{
+		Server_PlaySoundFX(EquipItem_AudioFX);
+	}
+}
+
+void UAudioFXComponent::Death(AController* InstigatedBy)
+{
+	if (Death_AudioFX)
+	{
+		Server_PlaySoundFX(Death_AudioFX);
+	}
+}

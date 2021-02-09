@@ -97,10 +97,6 @@ public:
 	class UAnimMontage* UseAnimation_01;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class UAnimMontage* UseAnimation_02;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* UseAnimation_03;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	class UAnimMontage* UseAnimation_04;
 
 	// SoundFX
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
@@ -111,5 +107,7 @@ public:
 	class USoundBase* SoundFX_Block_01;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class USoundBase* Hit_SoundFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	class USoundBase* Unshealth_SoundFX;
 	
 };

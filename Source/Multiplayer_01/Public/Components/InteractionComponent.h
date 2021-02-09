@@ -14,6 +14,7 @@
 #include "Components/InteractableItemInterface.h"
 #include "InteractionComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickUp);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYER_01_API UInteractionComponent : public USphereComponent
@@ -55,6 +56,8 @@ public:
 	// API
 	void Interact();
 	IInteractableItemInterface* InteractableItem;
+	//
+	FOnPickUp OnPickUp;
 
 private:
 	UWorld* World = nullptr;

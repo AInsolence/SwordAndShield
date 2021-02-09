@@ -27,11 +27,17 @@ public:
 	//
 	UFUNCTION(BlueprintCallable, Category = "Audio Component")
 	void Blocked();
+	UFUNCTION(BlueprintCallable, Category = "Audio Component")
+	void PickUp();
+	UFUNCTION(BlueprintCallable, Category = "Audio Component")
+	void Death(AController* InstigatedBy);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio Component")
 	class USoundBase* Roll_AudioFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio Component")
 	class USoundBase* EquipItem_AudioFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio Component")
+	class USoundBase* Death_AudioFX;
 
 protected:
 	// Called when the game starts
