@@ -45,6 +45,7 @@ class MULTIPLAYER_01_API UEquipmentComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UEquipmentComponent();
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 
 protected:
 	// Called when the game starts

@@ -18,6 +18,22 @@ UEquipmentComponent::UEquipmentComponent()
 	ServerAttackState.DamagedActors.Empty();
 }
 
+void UEquipmentComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+	
+	if (Equipment.Num() > 0)
+	{
+		for (auto Item : Equipment)
+		{
+			if (Item)
+			{// Destroy equipment items after component destroying
+				Item->Destroy();
+			}
+		}
+	}
+}
+
 // Called when the game starts
 void UEquipmentComponent::BeginPlay()
 {
