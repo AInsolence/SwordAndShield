@@ -64,11 +64,6 @@ public:
 	
 	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "TEST Weapon")
 	TArray<AWeapon*> Equipment;
-	//
-	UPROPERTY(ReplicatedUsing = OnRep_ServerAttackStateChanged, VisibleAnywhere, Category = "ServerAttackState")
-	FServerAttackState ServerAttackState;
-	UFUNCTION(BlueprintCallable, Category = "Replication")
-	void OnRep_ServerAttackStateChanged();
 
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	AWeapon* GetRightHandWeapon(){ return Equipment[0]; }
@@ -82,6 +77,12 @@ public:
 	void Server_SwapWeapon();
 	void Server_SwapWeapon_Implementation();
 	bool Server_SwapWeapon_Validate();
+
+	//
+	UPROPERTY(ReplicatedUsing = OnRep_ServerAttackStateChanged, VisibleAnywhere, Category = "ServerAttackState")
+	FServerAttackState ServerAttackState;
+	UFUNCTION(BlueprintCallable, Category = "Replication")
+	void OnRep_ServerAttackStateChanged();
 	//
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Replication")
 	void Server_SetAttack(bool IsAttack);
@@ -101,6 +102,7 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Equipment")
 	void Server_OnWeaponOverlap(AActor* OverlappedActor);
 	void Server_OnWeaponOverlap_Implementation(AActor* OverlappedActor);
+
 	//
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Equipment")
 	void Server_DropAllItems();

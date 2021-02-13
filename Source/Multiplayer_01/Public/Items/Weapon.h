@@ -23,14 +23,18 @@ protected:
 	virtual void BeginPlay() override;
 public:
 	// Weapon Stats
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	float SpeedOfAttack = 1.0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
-	float Damage = 30.0f;
-	//UPROPERTY(ReplicatedUsing = OnRep_Activated, EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
-	bool bActivated = false;
-	UFUNCTION(BlueprintCallable)
-	void OnRep_Activated();
+	float Damage_Attack01 = 20.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
+	float Damage_Attack02 = 30.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
+	float SpeedOfAttack01 = 1.0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
+	float SpeedOfAttack02 = 1.0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
+	float StaminaCost_Attack01 = 20.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
+	float StaminaCost_Attack02 = 30.0f;
 
 	// Interactable interface implementation
 	virtual void SetOwner(AActor* _Owner);
@@ -39,20 +43,7 @@ public:
 	virtual void Use() override;
 	virtual class USkeletalMeshComponent* GetItemMesh() override;
 	virtual class UImage* GetItemImage() override;
-	//
-	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
-	void Deactivate()
-	{
-		if (HasAuthority())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Deactivate is called from weapon c++ class"))
-			bActivated = false;
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Deactivate has no authority"))
-		}
-	}
+
 	/** Called when a weapon hits something */
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "WeaponUsing")
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
@@ -63,11 +54,11 @@ public:
 						const FHitResult& SweepResult);
 
 	void OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult);
+									   AActor* OtherActor,
+									   UPrimitiveComponent* OtherComp,
+									   int32 OtherBodyIndex,
+									   bool bFromSweep,
+									   const FHitResult& SweepResult);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "WeaponUsing")
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
@@ -76,9 +67,9 @@ public:
 					  int32 OtherBodyIndex);
 	
 	void OnOverlapEnd_Implementation(UPrimitiveComponent* OverlappedComponent,
-			AActor* OtherActor,
-			UPrimitiveComponent* OtherComp,
-			int32 OtherBodyIndex);
+									 AActor* OtherActor,
+									 UPrimitiveComponent* OtherComp,
+									 int32 OtherBodyIndex);
 					  
 	void GetOverlappedEnemy(AActor* OtherActor);
 	//

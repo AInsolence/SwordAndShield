@@ -275,7 +275,7 @@ void UEquipmentComponent::TakeDamageToOverlappedActor(AActor* OverlappedActor)
 	TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
 	FDamageEvent DamageEvent(ValidDamageTypeClass);
 	// Take damage to the overlapped actor
-	OverlappedActor->TakeDamage(Equipment[0]->Damage,
+	OverlappedActor->TakeDamage(Equipment[0]->Damage_Attack01,
 								DamageEvent,
 								GetOwner()->GetInstigatorController(),
 								Owner);

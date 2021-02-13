@@ -56,10 +56,6 @@ void AWeapon::BeginPlay()
 	bAlwaysRelevant = true;
 }
 
-void AWeapon::OnRep_Activated()
-{
-}
-
 void AWeapon::SetOwner(AActor* _Owner)
 {
 	AActor::SetOwner(_Owner);
@@ -85,7 +81,6 @@ void AWeapon::Use()
 {
 	if (HasAuthority())
 	{
-		bActivated = true;
 	}
 }
 
@@ -100,19 +95,19 @@ UImage* AWeapon::GetItemImage()
 }
 
 void AWeapon::OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedComponent, 
-							 AActor* OtherActor,
-							 UPrimitiveComponent* OtherComp,
-						  	 int32 OtherBodyIndex,
-							 bool bFromSweep,
-							 const FHitResult& SweepResult)
+										    AActor* OtherActor,
+										    UPrimitiveComponent* OtherComp,
+						  				    int32 OtherBodyIndex,
+										    bool bFromSweep,
+										    const FHitResult& SweepResult)
 {
 	GetOverlappedEnemy(OtherActor);
 }
 
 void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* OverlappedComponent,
-						   AActor* OtherActor, 
-						   UPrimitiveComponent* OtherComp,
-						   int32 OtherBodyIndex)
+										  AActor* OtherActor, 
+										  UPrimitiveComponent* OtherComp,
+										  int32 OtherBodyIndex)
 {
 	GetOverlappedEnemy(OtherActor);
 }

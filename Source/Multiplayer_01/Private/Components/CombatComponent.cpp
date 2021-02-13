@@ -158,28 +158,28 @@ void UCombatComponent::PlayActionAnimation()
 		if (EquipmentComponent->Equipment[0])
 		{
 			Multicast_PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_01, 0.0f,
-						  EquipmentComponent->Equipment[0]->SpeedOfAttack);
+						  EquipmentComponent->Equipment[0]->SpeedOfAttack01);
 		}
 		break;
 	case EActionType::RightHandAction_02:
 		if (EquipmentComponent->Equipment[0])
 		{
 			Multicast_PlayAnimation(EquipmentComponent->Equipment[0]->UseAnimation_02, 0.0f,
-						  EquipmentComponent->Equipment[0]->SpeedOfAttack);
+						  EquipmentComponent->Equipment[0]->SpeedOfAttack02);
 		}
 		break;
 	case EActionType::LeftHandAction_01:
 		if (EquipmentComponent->Equipment[1])
 		{
 			Multicast_PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_01, 0.0f,
-						  EquipmentComponent->Equipment[1]->SpeedOfAttack);
+						  EquipmentComponent->Equipment[1]->SpeedOfAttack01);
 		}
 		break;
 	case EActionType::LeftHandAction_02:
 		if (EquipmentComponent->Equipment[1])
 		{
 			Multicast_PlayAnimation(EquipmentComponent->Equipment[1]->UseAnimation_02, 0.0f,
-						  EquipmentComponent->Equipment[1]->SpeedOfAttack);
+						  EquipmentComponent->Equipment[1]->SpeedOfAttack02);
 		}
 		break;
 	case EActionType::SwapWeapon:
