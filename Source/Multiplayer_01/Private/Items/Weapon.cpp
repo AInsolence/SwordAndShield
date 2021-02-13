@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "Components/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Multiplayer_01/Multiplayer_01Character.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -27,12 +28,15 @@ AWeapon::AWeapon()
 		DamageCollisionBox->SetupAttachment(WeaponMesh);
 		DamageCollisionBox->SetIsReplicated(true);
 	}
+	// Clear damaged actors list
+	ServerAttackState.DamagedActors.Empty();
 }
 
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
 	if (!DamageCollisionBox)
 	{
 		return;
@@ -52,8 +56,17 @@ void AWeapon::BeginPlay()
 			DamageCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnOverlapEnd);
 		}
 	}
+	//
+	Server_ClearDamagedActors();
 	
 	bAlwaysRelevant = true;
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AWeapon, ServerAttackState, COND_None);
 }
 
 void AWeapon::SetOwner(AActor* _Owner)
@@ -79,9 +92,6 @@ UClass* AWeapon::PickUp()
 
 void AWeapon::Use()
 {
-	if (HasAuthority())
-	{
-	}
 }
 
 USkeletalMeshComponent* AWeapon::GetItemMesh()
@@ -130,7 +140,96 @@ void AWeapon::GetOverlappedEnemy(AActor* OtherActor)
 		// Check is overlap character
 		else if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
 		{
-			OnWeaponOverlap.Broadcast(OtherActor);
+			Server_OnWeaponOverlap(OtherActor);
 		}
+	}
+}
+
+void AWeapon::Server_AddDamagedActors_Implementation(const FString& ActorName)
+{
+	ServerAttackState.DamagedActors.Add(ActorName);
+}
+
+void AWeapon::Server_ClearDamagedActors_Implementation()
+{
+	ServerAttackState.DamagedActors.Empty();
+}
+
+void AWeapon::Server_SetAttack_Implementation(bool IsAttack)
+{
+	ServerAttackState.bIsAttack = IsAttack;
+	Server_ClearDamagedActors();
+}
+
+void AWeapon::Server_OnWeaponOverlap_Implementation(AActor* OverlappedActor)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+	if (ServerAttackState.bIsAttack)
+	{
+		TakeDamageToOverlappedActor(OverlappedActor);
+	}
+}
+
+void AWeapon::TakeDamageToOverlappedActor(AActor* OverlappedActor)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+	if (ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
+	{
+		return;
+	}
+	//// Create a damage event 
+	TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
+	FDamageEvent DamageEvent(ValidDamageTypeClass);
+	auto CurrentDamage = GetCurrentAttackDamage();
+	// Take damage to the overlapped actor
+	OverlappedActor->TakeDamage(CurrentDamage,
+								DamageEvent,
+								GetOwner()->GetInstigatorController(),
+								GetOwner());
+	Server_AddDamagedActors(OverlappedActor->GetName());
+}
+
+EActionType AWeapon::GetOwnerActionType()
+{
+	auto OwnerCharacter = Cast<AMultiplayer_01Character>(GetOwner());
+	if (OwnerCharacter)
+	{
+		if (OwnerCharacter->CombatComponent)
+		{
+			auto CurrentAction = OwnerCharacter->CombatComponent->GetActionType();
+			return CurrentAction;
+		}
+		return EActionType::None;
+	}
+	return EActionType::None;
+}
+
+float AWeapon::GetAttackStaminaCost()
+{
+	if (GetOwnerActionType() == EActionType::RightHandAction_02)
+	{
+		return StaminaCost_Attack02;
+	}
+	else
+	{
+		return StaminaCost_Attack01;
+	}
+}
+
+float AWeapon::GetCurrentAttackDamage()
+{
+	if (GetOwnerActionType() == EActionType::RightHandAction_02)
+	{
+		return Damage_Attack02;
+	}
+	else
+	{
+		return Damage_Attack01;
 	}
 }

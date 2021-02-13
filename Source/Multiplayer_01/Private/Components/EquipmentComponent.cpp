@@ -15,7 +15,6 @@ UEquipmentComponent::UEquipmentComponent()
 	SetIsReplicatedByDefault(true);
 
 	Equipment.Init(nullptr, 4);
-	ServerAttackState.DamagedActors.Empty();
 }
 
 void UEquipmentComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
@@ -59,8 +58,6 @@ void UEquipmentComponent::BeginPlay()
 	{
 		Server_EquipItem(EItemSlot::BackPlaceItem, BackTestWeapon);
 	}
-	
-	Server_ClearDamagedActors();
 }
 
 void UEquipmentComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -68,50 +65,6 @@ void UEquipmentComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UEquipmentComponent, Equipment, COND_None);
-	DOREPLIFETIME_CONDITION(UEquipmentComponent, ServerAttackState, COND_None);
-}
-
-void UEquipmentComponent::Server_AddDamagedActors_Implementation(const FString& ActorName)
-{
-	ServerAttackState.DamagedActors.Add(ActorName);
-}
-
-bool UEquipmentComponent::Server_AddDamagedActors_Validate(const FString& ActorName)
-{
-	return true;
-}
-
-void UEquipmentComponent::Server_ClearDamagedActors_Implementation()
-{
-	ServerAttackState.DamagedActors.Empty();
-}
-
-bool UEquipmentComponent::Server_ClearDamagedActors_Validate()
-{
-	return true;
-}
-
-void UEquipmentComponent::OnRep_ServerAttackStateChanged()
-{
-	if (ServerAttackState.bIsAttack)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack status changed to  = TRUE!!!"))
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack status changed to  = FALSE!!!"))
-	}
-}
-
-void UEquipmentComponent::Server_SetAttack_Implementation(bool IsAttack)
-{
-	ServerAttackState.bIsAttack = IsAttack;
-	Server_ClearDamagedActors();
-}
-
-bool UEquipmentComponent::Server_SetAttack_Validate(bool IsAttack)
-{
-	return true;
 }
 
 void UEquipmentComponent::Server_EquipItem_Implementation(EItemSlot ItemSlot, TSubclassOf<class AWeapon> SlotWeapon)
@@ -249,39 +202,6 @@ void UEquipmentComponent::DropAllItems()
 	ItemSpawner->DestroyNetworkActorHandled();
 }
 
-void UEquipmentComponent::Server_OnWeaponOverlap_Implementation(AActor* OverlappedActor)
-{
-	if (!Owner->HasAuthority())
-	{
-		return;
-	}
-	if (ServerAttackState.bIsAttack)
-	{
-		TakeDamageToOverlappedActor(OverlappedActor);
-	}
-}
-
-void UEquipmentComponent::TakeDamageToOverlappedActor(AActor* OverlappedActor)
-{
-	if (!Owner->HasAuthority())
-	{
-		return;
-	}
-	if (ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
-	{
-		return;
-	}
-	//// Create a damage event 
-	TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
-	FDamageEvent DamageEvent(ValidDamageTypeClass);
-	// Take damage to the overlapped actor
-	OverlappedActor->TakeDamage(Equipment[0]->Damage_Attack01,
-								DamageEvent,
-								GetOwner()->GetInstigatorController(),
-								Owner);
-	Server_AddDamagedActors(OverlappedActor->GetName());
-}
-
 AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, 
 												   FName SocketName)
 {
@@ -291,9 +211,5 @@ AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponCl
 							SocketName);
 	// Set weapon owner
 	Item->SetOwner(GetOwner());
-	if (SocketName == FName("RightHandWeaponSocket"))
-	{
-		Item->OnWeaponOverlap.AddDynamic(this, &UEquipmentComponent::Server_OnWeaponOverlap);
-	}
 	return Item;
 }
