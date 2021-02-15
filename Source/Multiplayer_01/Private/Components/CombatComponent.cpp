@@ -75,12 +75,16 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
 {
-	if (!Owner)
+	if (ServerActionState.ActionType == EActionType::Death || !Owner)
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Combat component: return from server_act cause death anim played"));
+		}
 		return;
 	}
 	// Hitted and Death animations break other animations
-	if (_ActionType == EActionType::Hitted || _ActionType == EActionType::Death)
+	if (_ActionType == EActionType::Death || _ActionType == EActionType::Hitted)
 	{
 		auto PrepareToChangeState = CreateServerActionState(false, _ActionType);		
 		SetServerActionState(PrepareToChangeState);
@@ -94,11 +98,6 @@ void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
 		// Play animation on the server for this client
 		PlayActionAnimation();
 	}
-}
-
-bool UCombatComponent::Server_Act_Validate(EActionType _ActionType)
-{
-	return true; // TODO anti-cheat implementation
 }
 
 void UCombatComponent::Server_SetBlocking_Implementation(bool IsBlocking)
@@ -215,11 +214,6 @@ void UCombatComponent::Multicast_PlayAnimation_Implementation(UAnimMontage* Acti
 	}
 }
 
-bool UCombatComponent::Multicast_PlayAnimation_Validate(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate)
-{
-	return true;
-}
-
 void UCombatComponent::Roll()
 {
 	Server_Act(EActionType::Roll);
@@ -262,6 +256,10 @@ void UCombatComponent::Blocked()
 
 void UCombatComponent::Death(AController* InstigatedBy)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Combat component: death called"));
+	}
 	Server_Act(EActionType::Death);
 }
 

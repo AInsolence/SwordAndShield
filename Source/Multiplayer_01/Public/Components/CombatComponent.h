@@ -40,7 +40,7 @@ struct FServerActionState
 
 public:
 
-	UPROPERTY(VisibleAnywhere, Category = "ServerActionState")
+	UPROPERTY(EditAnywhere, Category = "ServerActionState")
 	bool bCanAct = true;
 	UPROPERTY(EditAnywhere, Category = "ServerActionState")
 	EActionType ActionType = EActionType::None;
@@ -59,20 +59,18 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	//
-	UPROPERTY(ReplicatedUsing = OnRep_ServerActionState, VisibleAnywhere, Category = "ServerActionState")
+	UPROPERTY(ReplicatedUsing = OnRep_ServerActionState, EditAnywhere, Category = "ServerActionState")
 	FServerActionState ServerActionState;
 	UFUNCTION(BlueprintCallable, Category = "Replication")
 	void OnRep_ServerActionState();
 	//
-	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
+	UFUNCTION(Server, Reliable, Category = "Replication")
 	void Server_Act(EActionType _ActionType);
 	void Server_Act_Implementation(EActionType _ActionType);
-	bool Server_Act_Validate(EActionType _ActionType);
 	//
-	UFUNCTION(NetMulticast, Reliable, WithValidation, Category = "Replication")
+	UFUNCTION(NetMulticast, Reliable, Category = "Replication")
 	void Multicast_PlayAnimation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
 	void Multicast_PlayAnimation_Implementation(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
-	bool Multicast_PlayAnimation_Validate(UAnimMontage* ActionAnimation, float StartTime, float InPlayRate = 1.0f);
 	//
 	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
 	void Server_SetBlocking(bool IsBlocking);

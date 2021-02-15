@@ -67,6 +67,10 @@ void UHealthComponent::OnRep_StateChanged()
 
 void UHealthComponent::RespawnPlayer()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Respawn called"));
+	}
 	// Update HUD with 100% state
 	if (GetPlayerHUD() != nullptr)
 	{
@@ -119,15 +123,21 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AActor* DamageCauser)
 {
 	// Check if the character already dead
-	if (bIsDead)
+	if (bIsDead && GetCurrentHealth() <= 0.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP actor is dead"));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Take damage return: actor is dead"));
+		}
 		return;
 	}
 	// Character may be invulnerable e.g. while rolling or use protection magic
 	if (HealthServerState.bIsInvulnerable && GetCurrentHealth() > 0.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HEALTHCOMP actor is invulnerable"));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Take damage return: actor is invulnerable"));
+		}
 		return;
 	}
 	//
@@ -163,6 +173,10 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	// Check if the character has 0 health points
 	if (GetCurrentHealth() <= 0.0f)
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Take damage return: Death delegate broadcast"));
+		}
 		DeathEvent.Broadcast(InstigatedBy);
 		bIsDead = true;
 		return;
