@@ -90,11 +90,12 @@ void AMultiplayer_01Character::BeginPlay()
 	}
 	bAlwaysRelevant = true;
 	// Bind Delegates
-	if (HealthComponent && AudioFXComponent)
+	if (HealthComponent && AudioFXComponent && EquipmentComponent)
 	{
 		HealthComponent->OnHitted.AddDynamic(AudioFXComponent, &UAudioFXComponent::Server_PlaySoundFX);
 		HealthComponent->OnBlocked.AddDynamic(AudioFXComponent, &UAudioFXComponent::Blocked);
 		HealthComponent->DeathEvent.AddDynamic(AudioFXComponent, &UAudioFXComponent::Death);
+		HealthComponent->DeathEvent.AddDynamic(EquipmentComponent, &UEquipmentComponent::Server_DropAllItems);
 	}
 	if (InteractionComponent && AudioFXComponent)
 	{

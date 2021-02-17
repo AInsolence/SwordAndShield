@@ -161,7 +161,7 @@ void UEquipmentComponent::SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocati
 	Weapon->DestroyNetworkActorHandled();
 }
 
-void UEquipmentComponent::Server_DropAllItems_Implementation()
+void UEquipmentComponent::Server_DropAllItems_Implementation(AController* InstigatedBy)
 {
 	DropAllItems();
 }

@@ -125,7 +125,7 @@ void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* OverlappedCompone
 void AWeapon::GetOverlappedEnemy(AActor* OtherActor)
 {
 	// Check if overlap event calls on the server 
-	if (!HasAuthority())
+	if (!HasAuthority() || !OtherActor)
 	{
 		return;
 	}

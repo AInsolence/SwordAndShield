@@ -67,45 +67,34 @@ void UHealthComponent::OnRep_StateChanged()
 
 void UHealthComponent::RespawnPlayer()
 {
-	if (GEngine)
+	// Get random start position
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundActors);
+	auto RandomStartPlaceIndex = FMath::RandRange(0, FoundActors.Num() - 1);
+	auto PlayerStart = Cast<APlayerStart>(FoundActors[RandomStartPlaceIndex]);
+	// Unpossess an old pawn
+	auto PlayerController = Owner->GetController();
+	PlayerController->UnPossess();
+	// Spawn new pawn
+	auto PlayerClass = Owner->GetClass();
+	auto NewCharacter = GetWorld()->SpawnActor<AActor>(PlayerClass, PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
+	//GetWorld()->GetAuthGameMode()->RestartPlayerAtPlayerStart(PlayerController, PlayerStart);
+
+	// Possess new pawn if exists
+	if (NewCharacter)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Respawn called"));
-	}
-	// Update HUD with 100% state
-	if (GetPlayerHUD() != nullptr)
-	{
-		GetPlayerHUD()->UpdateHealthState(GetDefaultHealth());
-	}
-	if (!Owner->HasAuthority())
-	{
-		return;
-	}
-	if (Owner)
-	{
-		// Get random start position
-		TArray<AActor*> FoundActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), FoundActors);
-		auto RandomStartPlaceIndex = FMath::RandRange(0, FoundActors.Num() - 1);
-		auto PlayerStart = Cast<APlayerStart>(FoundActors[RandomStartPlaceIndex]);
-		// Unpossess an old pawn
-		auto PlayerController = Owner->GetController();
-		PlayerController->UnPossess();
-		// Spawn new pawn
-		auto PlayerClass = Owner->GetClass();
-		auto NewCharacter = GetWorld()->SpawnActor<AActor>(PlayerClass, PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
-		//GetWorld()->GetAuthGameMode()->RestartPlayerAtPlayerStart(PlayerController, PlayerStart);
-		
-		// Possess new pawn if exists
-		if (NewCharacter)
+		auto CharacterToPossess = Cast<ACharacter>(NewCharacter);
+		if (CharacterToPossess)
 		{
-			auto CharacterToPossess = Cast<ACharacter>(NewCharacter);
-			if (CharacterToPossess)
-			{
-				PlayerController->Possess(CharacterToPossess);
-				Owner->Destroy();
-			}
+			PlayerController->Possess(CharacterToPossess);
+			Owner->Destroy();
 		}
 	}
+}
+
+void UHealthComponent::Server_SetDeadState_Implementation(bool isDead)
+{
+	HealthServerState.bIsDead = isDead;
 }
 
 void UHealthComponent::SetVulnerability(bool IsInvulnerable)
@@ -123,7 +112,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 									AActor* DamageCauser)
 {
 	// Check if the character already dead
-	if (bIsDead && GetCurrentHealth() <= 0.0f)
+	if (HealthServerState.bIsDead && GetCurrentHealth() <= 0.0f)
 	{
 		if (GEngine)
 		{
@@ -178,7 +167,17 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Take damage return: Death delegate broadcast"));
 		}
 		DeathEvent.Broadcast(InstigatedBy);
-		bIsDead = true;
+		Server_SetDeadState(true);
+		if (!Owner->HasAuthority())
+		{
+			return;
+		}
+		FTimerHandle    handle;
+		float delayTime = 3.5f;
+		GetWorld()->GetTimerManager().SetTimer(handle, [this]() {
+			RespawnPlayer();
+		}, delayTime, false);
+		
 		return;
 	}
 }

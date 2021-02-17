@@ -63,8 +63,8 @@ public:
 	void DropAllItems();
 	//
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Equipment")
-	void Server_DropAllItems();
-	void Server_DropAllItems_Implementation();
+	void Server_DropAllItems(AController* InstigatedBy);
+	void Server_DropAllItems_Implementation(AController* InstigatedBy);
 
 protected:
 	// Called when the game starts

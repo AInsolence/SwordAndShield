@@ -27,6 +27,9 @@ public:
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	bool bIsInvulnerable = false;
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	bool bIsDead = false;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam (FOnDeath, AController*, InstigatedBy);
@@ -64,6 +67,9 @@ public:
 	// API
 	FORCEINLINE float GetDefaultHealth() const { return HealthServerState.DefaultHealth; };
 	float GetCurrentHealth() const { return HealthServerState.CurrentHealth; };
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "HealthProperty")
+	void Server_SetDeadState(bool isDead);
+	void Server_SetDeadState_Implementation(bool isDead);
 	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void RespawnPlayer();
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
@@ -77,6 +83,5 @@ private:
 	class ACharacter* Owner = nullptr;
 	class UCombatComponent* CombatComponent = nullptr;
 	float LocalCurrentHealth;
-	bool bIsDead = false;
 	class AHUD_Multiplayer* GetPlayerHUD();
 };
