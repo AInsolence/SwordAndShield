@@ -23,7 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float DefaultHealth = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float CurrentHealth;
+	float CurrentHealth = 100.f;
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	bool bIsInvulnerable = false;
@@ -67,9 +67,15 @@ public:
 	// API
 	FORCEINLINE float GetDefaultHealth() const { return HealthServerState.DefaultHealth; };
 	float GetCurrentHealth() const { return HealthServerState.CurrentHealth; };
+
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "HealthProperty")
 	void Server_SetDeadState(bool isDead);
 	void Server_SetDeadState_Implementation(bool isDead);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "HealthProperty")
+	void Server_UpdateHealth(float HealthValue);
+	void Server_UpdateHealth_Implementation(float HealthValue);
+
 	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void RespawnPlayer();
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
@@ -82,6 +88,6 @@ public:
 private:
 	class ACharacter* Owner = nullptr;
 	class UCombatComponent* CombatComponent = nullptr;
-	float LocalCurrentHealth;
+	float LocalCurrentHealth = 0.0;
 	class AHUD_Multiplayer* GetPlayerHUD();
 };

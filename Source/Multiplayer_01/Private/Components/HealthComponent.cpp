@@ -22,7 +22,6 @@ UHealthComponent::UHealthComponent()
 	SetIsReplicatedByDefault(true);
 
 	HealthServerState.CurrentHealth = HealthServerState.DefaultHealth;
-	LocalCurrentHealth = HealthServerState.CurrentHealth;
 }
 
 // Called when the game starts
@@ -43,6 +42,9 @@ void UHealthComponent::BeginPlay()
 			CombatComponent = Cast<UCombatComponent>(CombatCompObject);
 		}
 	}
+
+	// Update health points
+	Server_UpdateHealth(HealthServerState.DefaultHealth);
 }
 
 void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -61,7 +63,6 @@ void UHealthComponent::OnRep_StateChanged()
 			GetPlayerHUD()->UpdateHealthState(GetCurrentHealth() / GetDefaultHealth());
 			LocalCurrentHealth = HealthServerState.CurrentHealth;
 		}
-
 	}
 }
 
@@ -77,19 +78,29 @@ void UHealthComponent::RespawnPlayer()
 	PlayerController->UnPossess();
 	// Spawn new pawn
 	auto PlayerClass = Owner->GetClass();
-	auto NewCharacter = GetWorld()->SpawnActor<AActor>(PlayerClass, PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
+	auto NewCharacter = GetWorld()->SpawnActor<AActor>(PlayerClass, PlayerStart->GetActorLocation(), FRotator::ZeroRotator);
 	//GetWorld()->GetAuthGameMode()->RestartPlayerAtPlayerStart(PlayerController, PlayerStart);
 
 	// Possess new pawn if exists
 	if (NewCharacter)
 	{
-		auto CharacterToPossess = Cast<ACharacter>(NewCharacter);
+		auto CharacterToPossess = Cast<AMultiplayer_01Character>(NewCharacter);
 		if (CharacterToPossess)
 		{
 			PlayerController->Possess(CharacterToPossess);
+			if (CharacterToPossess->HealthComponent)
+			{// Change health to be updated with HUD after respawn
+				CharacterToPossess->HealthComponent->Server_UpdateHealth(0.0);
+			}
+			// Destroy old pawn
 			Owner->Destroy();
 		}
 	}
+}
+
+void UHealthComponent::Server_UpdateHealth_Implementation(float HealthValue)
+{
+	HealthServerState.CurrentHealth = HealthValue;
 }
 
 void UHealthComponent::Server_SetDeadState_Implementation(bool isDead)
@@ -114,19 +125,11 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	// Check if the character already dead
 	if (HealthServerState.bIsDead && GetCurrentHealth() <= 0.0f)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Take damage return: actor is dead"));
-		}
 		return;
 	}
 	// Character may be invulnerable e.g. while rolling or use protection magic
 	if (HealthServerState.bIsInvulnerable && GetCurrentHealth() > 0.0f)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Take damage return: actor is invulnerable"));
-		}
 		return;
 	}
 	//
@@ -162,22 +165,22 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 	// Check if the character has 0 health points
 	if (GetCurrentHealth() <= 0.0f)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Take damage return: Death delegate broadcast"));
-		}
 		DeathEvent.Broadcast(InstigatedBy);
 		Server_SetDeadState(true);
 		if (!Owner->HasAuthority())
 		{
 			return;
 		}
+		// Set timer to respawn after a death animation
 		FTimerHandle    handle;
 		float delayTime = 3.5f;
-		GetWorld()->GetTimerManager().SetTimer(handle, [this]() {
-			RespawnPlayer();
-		}, delayTime, false);
-		
+		GetWorld()->GetTimerManager().SetTimer(handle, 
+											   [this]()
+											   {
+												   RespawnPlayer();
+											   },
+											   delayTime, 
+											   false);
 		return;
 	}
 }
