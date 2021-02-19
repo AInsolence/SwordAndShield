@@ -104,7 +104,7 @@ UImage* AWeapon::GetItemImage()
 	return nullptr;
 }
 
-void AWeapon::OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedComponent, 
+void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 										    AActor* OtherActor,
 										    UPrimitiveComponent* OtherComp,
 						  				    int32 OtherBodyIndex,
@@ -114,7 +114,7 @@ void AWeapon::OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedCompo
 	GetOverlappedEnemy(OtherActor);
 }
 
-void AWeapon::OnOverlapEnd_Implementation(UPrimitiveComponent* OverlappedComponent,
+void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
 										  AActor* OtherActor, 
 										  UPrimitiveComponent* OtherComp,
 										  int32 OtherBodyIndex)
