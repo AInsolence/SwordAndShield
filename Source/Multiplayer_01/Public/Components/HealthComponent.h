@@ -23,7 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float DefaultHealth = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float CurrentHealth = 100.f;
+	float CurrentHealth = 99.f;
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	bool bIsInvulnerable = false;
@@ -72,9 +72,9 @@ public:
 	void Server_SetDeadState(bool isDead);
 	void Server_SetDeadState_Implementation(bool isDead);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "HealthProperty")
-	void Server_UpdateHealth(float HealthValue);
-	void Server_UpdateHealth_Implementation(float HealthValue);
+	UFUNCTION(Client, Reliable, BlueprintCallable, Category = "HealthProperty")
+	void Client_UpdateHealthBar();
+	void Client_UpdateHealthBar_Implementation();
 
 	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
 	void RespawnPlayer();

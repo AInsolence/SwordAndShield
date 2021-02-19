@@ -43,8 +43,8 @@ void UHealthComponent::BeginPlay()
 		}
 	}
 
-	// Update health points
-	Server_UpdateHealth(HealthServerState.DefaultHealth);
+	// Update health points for client (begin play + respawn)
+	Client_UpdateHealthBar();
 }
 
 void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -87,10 +87,12 @@ void UHealthComponent::RespawnPlayer()
 		auto CharacterToPossess = Cast<AMultiplayer_01Character>(NewCharacter);
 		if (CharacterToPossess)
 		{
+			// Possess after respawn
 			PlayerController->Possess(CharacterToPossess);
-			if (CharacterToPossess->HealthComponent)
-			{// Change health to be updated with HUD after respawn
-				CharacterToPossess->HealthComponent->Server_UpdateHealth(0.0);
+			// Update HUD after respawn for listen-client
+			if (CharacterToPossess->HealthComponent && CharacterToPossess->HasAuthority())
+			{
+				CharacterToPossess->HealthComponent->Client_UpdateHealthBar();
 			}
 			// Destroy old pawn
 			Owner->Destroy();
@@ -98,9 +100,12 @@ void UHealthComponent::RespawnPlayer()
 	}
 }
 
-void UHealthComponent::Server_UpdateHealth_Implementation(float HealthValue)
+void UHealthComponent::Client_UpdateHealthBar_Implementation()
 {
-	HealthServerState.CurrentHealth = HealthValue;
+	if (GetPlayerHUD())
+	{
+		GetPlayerHUD()->UpdateHealthState(1);
+	}
 }
 
 void UHealthComponent::Server_SetDeadState_Implementation(bool isDead)
