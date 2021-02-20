@@ -77,10 +77,6 @@ void UCombatComponent::Server_Act_Implementation(EActionType _ActionType)
 {
 	if (ServerActionState.ActionType == EActionType::Death || !Owner)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Combat component: return from server_act cause death anim played"));
-		}
 		return;
 	}
 	// Hitted and Death animations break other animations
@@ -256,10 +252,6 @@ void UCombatComponent::Blocked()
 
 void UCombatComponent::Death(AController* InstigatedBy)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Combat component: death called"));
-	}
 	Server_Act(EActionType::Death);
 }
 

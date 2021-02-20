@@ -36,7 +36,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 
-	// Weapon Stats
+	// Weapon stats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
 	float Damage_Attack01 = 20.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
@@ -49,68 +49,6 @@ public:
 	float StaminaCost_Attack01 = 20.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
 	float StaminaCost_Attack02 = 30.0f;
-
-	// Interactable interface implementation
-	virtual void SetOwner(AActor* _Owner);
-	virtual AActor* GetOwner() override;
-	virtual UClass* PickUp() override;
-	virtual void Use() override;
-	virtual class USkeletalMeshComponent* GetItemMesh() override;
-	virtual class UImage* GetItemImage() override;
-
-	/** Called when a weapon hits something */
-	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
-						AActor* OtherActor,
-						UPrimitiveComponent* OtherComp,
-						int32 OtherBodyIndex,
-						bool bFromSweep,
-						const FHitResult& SweepResult);
-	//void OnOverlapBegin_Implementation(UPrimitiveComponent* OverlappedComponent,
-	//								   AActor* OtherActor,
-	//								   UPrimitiveComponent* OtherComp,
-	//								   int32 OtherBodyIndex,
-	//								   bool bFromSweep,
-	//								   const FHitResult& SweepResult);
-	//
-	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
-					  AActor* OtherActor, 
-					  UPrimitiveComponent* OtherComp,
-					  int32 OtherBodyIndex);
-	/*void OnOverlapEnd_Implementation(UPrimitiveComponent* OverlappedComponent,
-									 AActor* OtherActor,
-									 UPrimitiveComponent* OtherComp,
-									 int32 OtherBodyIndex);*/
-
-	//
-	void GetOverlappedEnemy(AActor* OtherActor);
-	//
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Replication")
-	void Server_SetAttack(bool IsAttack);
-	void Server_SetAttack_Implementation(bool IsAttack);
-	//
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Equipment")
-	void Server_OnWeaponOverlap(AActor* OverlappedActor);
-	void Server_OnWeaponOverlap_Implementation(AActor* OverlappedActor);
-	//
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Replication")
-	void Server_AddDamagedActors(const FString& ActorName);
-	void Server_AddDamagedActors_Implementation(const FString& ActorName);
-	//
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Replication")
-	void Server_ClearDamagedActors();
-	void Server_ClearDamagedActors_Implementation();
-	//
-	void TakeDamageToOverlappedActor(AActor* OverlappedActor);
-
-	// Get current action type
-	EActionType GetOwnerActionType();
-	// Get stamina cost depends on attack type
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	float GetAttackStaminaCost();
-	// Get damage depends on attack type
-	float GetCurrentAttackDamage();
 
 	// Weapon using animations
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
@@ -130,10 +68,31 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	class USoundBase* Unshealth_SoundFX;
 
+	/** API */
+	// Interactable interface implementation
+	virtual void SetOwner(AActor* _Owner);
+	virtual AActor* GetOwner() override;
+	virtual UClass* PickUp() override;
+	virtual void Use() override;
+	virtual class USkeletalMeshComponent* GetItemMesh() override;
+	virtual class UImage* GetItemImage() override;
+	// Get current action type
+	EActionType GetOwnerActionType();
+	// Get stamina cost depends on attack type
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	float GetAttackStaminaCost();
+	// Get damage depends on attack type
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	float GetCurrentAttackDamage();
+	/** API END*/
+
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Replication")
+	void Server_SetAttack(bool IsAttack);
+	void Server_SetAttack_Implementation(bool IsAttack);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	// Weapon components
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WeaponComponents")
 	class USkeletalMeshComponent* WeaponMesh = nullptr;
@@ -145,4 +104,29 @@ protected:
 private:
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "ServerAttackState")
 	FServerAttackState ServerAttackState;
+	//
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Replication")
+	void Server_AddDamagedActors(const FString& ActorName);
+	void Server_AddDamagedActors_Implementation(const FString& ActorName);
+	//
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Replication")
+	void Server_ClearDamagedActors();
+	void Server_ClearDamagedActors_Implementation();
+	//
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Replication")
+	void TakeDamageToOverlappedActor(AActor* OverlappedActor);
+	void TakeDamageToOverlappedActor_Implementation(AActor* OverlappedActor);
+	//
+	void GetOverlappedEnemy(AActor* OtherActor);
+	void OnWeaponOverlap(AActor* OverlappedActor);
+
+	/** Called when a weapon hits something */
+	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+						bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+					  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

@@ -26,7 +26,6 @@ AWeapon::AWeapon()
 	{
 		PickUpCollisionBox->SetupAttachment(WeaponMesh);
 		DamageCollisionBox->SetupAttachment(WeaponMesh);
-		DamageCollisionBox->SetIsReplicated(true);
 	}
 	// Clear damaged actors list
 	ServerAttackState.DamagedActors.Empty();
@@ -124,8 +123,7 @@ void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
 
 void AWeapon::GetOverlappedEnemy(AActor* OtherActor)
 {
-	// Check if overlap event calls on the server 
-	if (!HasAuthority() || !OtherActor)
+	if (!OtherActor)
 	{
 		return;
 	}
@@ -138,9 +136,9 @@ void AWeapon::GetOverlappedEnemy(AActor* OtherActor)
 			return;
 		}
 		// Check is overlap character
-		else if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
+		if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
 		{
-			Server_OnWeaponOverlap(OtherActor);
+			OnWeaponOverlap(OtherActor);
 		}
 	}
 }
@@ -161,24 +159,16 @@ void AWeapon::Server_SetAttack_Implementation(bool IsAttack)
 	Server_ClearDamagedActors();
 }
 
-void AWeapon::Server_OnWeaponOverlap_Implementation(AActor* OverlappedActor)
+void AWeapon::OnWeaponOverlap(AActor* OverlappedActor)
 {
-	if (!GetOwner()->HasAuthority())
-	{
-		return;
-	}
 	if (ServerAttackState.bIsAttack)
 	{
 		TakeDamageToOverlappedActor(OverlappedActor);
 	}
 }
 
-void AWeapon::TakeDamageToOverlappedActor(AActor* OverlappedActor)
+void AWeapon::TakeDamageToOverlappedActor_Implementation(AActor* OverlappedActor)
 {
-	if (!GetOwner()->HasAuthority())
-	{
-		return;
-	}
 	if (ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
 	{
 		return;
