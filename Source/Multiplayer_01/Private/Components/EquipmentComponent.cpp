@@ -113,34 +113,34 @@ void UEquipmentComponent::Server_EquipItem_Implementation(EItemSlot ItemSlot, TS
 	}
 }
 
-bool UEquipmentComponent::Server_EquipItem_Validate(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon)
+void UEquipmentComponent::SwapWeapon(uint8 FirstWeaponIndex, uint8 SecondWeaponIndex)
 {
-	return true;
+	if (FirstWeaponIndex < Equipment.Num() ||
+		SecondWeaponIndex < Equipment.Num())
+	{
+		Server_SwapWeapon(FirstWeaponIndex, SecondWeaponIndex);
+	}
 }
 
-void UEquipmentComponent::Server_SwapWeapon_Implementation()
+void UEquipmentComponent::Server_SwapWeapon_Implementation(uint8 FirstWeaponIndex, uint8 SecondWeaponIndex)
 {
-	if (Equipment[0] == nullptr || Equipment[2] == nullptr)
+	if (Equipment[FirstWeaponIndex] == nullptr || Equipment[SecondWeaponIndex] == nullptr)
 	{
 		return;
 	}
-	auto TempWeapon = Equipment[0]->GetClass();
-	//
-	Equipment[0]->Destroy();
-	Equipment[0] = CreateWeaponOnSocket(Equipment[2]->GetClass(), "RightHandWeaponSocket");
-	//
-	Equipment[2]->Destroy();
-	Equipment[2] = CreateWeaponOnSocket(TempWeapon, "BeltWeaponSocket");
-}
+	FName FirstSocketName;
+	FName SecondSocketName;
+	
+	FirstSocketName = FindSocketNameByIndex(FirstWeaponIndex);
+	SecondSocketName = FindSocketNameByIndex(SecondWeaponIndex);
 
-bool UEquipmentComponent::Server_SwapWeapon_Validate()
-{
-	return true;
-}
-
-void UEquipmentComponent::SwapWeapon()
-{
-	Server_SwapWeapon();
+	auto TempWeapon = Equipment[FirstWeaponIndex]->GetClass();
+	//
+	Equipment[FirstWeaponIndex]->Destroy();
+	Equipment[FirstWeaponIndex] = CreateWeaponOnSocket(Equipment[SecondWeaponIndex]->GetClass(), FirstSocketName);
+	//
+	Equipment[SecondWeaponIndex]->Destroy();
+	Equipment[SecondWeaponIndex] = CreateWeaponOnSocket(TempWeapon, SecondSocketName);
 }
 
 void UEquipmentComponent::DropWeapon(FVector SpawnLocation)
@@ -212,4 +212,26 @@ AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponCl
 	// Set weapon owner
 	Item->SetOwner(GetOwner());
 	return Item;
+}
+
+FName UEquipmentComponent::FindSocketNameByIndex(uint8 Index)
+{
+	switch (Index)
+	{
+	case 0:
+		return "RightHandWeaponSocket";
+		break;
+	case 1:
+		return "LeftHandWeaponSocket";
+		break;
+	case 2:
+		return "BeltWeaponSocket";
+		break;
+	case 3:
+		return "BackWeaponSocket";
+		break;
+	default:
+		return "";
+		break;
+	}
 }

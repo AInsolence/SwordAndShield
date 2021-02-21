@@ -32,7 +32,7 @@ class MULTIPLAYER_01_API UEquipmentComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UEquipmentComponent();
-	// Destroy all items if clien disconnects
+	// Destroy all items if client disconnects
 	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 
 	// Weapons array
@@ -40,21 +40,25 @@ public:
 	TArray<AWeapon*> Equipment;
 
 	// API
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	UFUNCTION(BlueprintPure, Category = "Equipment")
 	AWeapon* GetRightHandWeapon(){ return Equipment[0]; }
+	UFUNCTION(BlueprintPure, Category = "Equipment")
+	AWeapon* GetLeftHandWeapon() { return Equipment[1]; }
+	UFUNCTION(BlueprintPure, Category = "Equipment")
+	AWeapon* GetBeltWeapon() { return Equipment[2]; }
+	UFUNCTION(BlueprintPure, Category = "Equipment")
+	AWeapon* GetBackWeapon() { return Equipment[3]; }
 	//
-	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
+	UFUNCTION(Server, Reliable, Category = "Replication")
 	void Server_EquipItem(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
 	void Server_EquipItem_Implementation(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
-	bool Server_EquipItem_Validate(EItemSlot ItemSlot, TSubclassOf<AWeapon> SlotWeapon);
 	// Swap item(s)
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	void SwapWeapon();
+	void SwapWeapon(uint8 FirstWeaponIndex, uint8 SecondWeaponIndex);
 	//
-	UFUNCTION(Server, Reliable, WithValidation, Category = "Replication")
-	void Server_SwapWeapon();
-	void Server_SwapWeapon_Implementation();
-	bool Server_SwapWeapon_Validate();
+	UFUNCTION(Server, Reliable, Category = "Replication")
+	void Server_SwapWeapon(uint8 FirstWeaponIndex, uint8 SecondWeaponIndex);
+	void Server_SwapWeapon_Implementation(uint8 FirstWeaponIndex, uint8 SecondWeaponIndex);
 	// Drop item(s)
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void DropWeapon(FVector SpawnLocation);
@@ -85,4 +89,5 @@ private:
 	// Helpers
 	AWeapon* CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponClass, FName SocketName);
 	void SpawnItemInAWorld(AWeapon* Weapon, FVector SpawnLocation);
+	FName FindSocketNameByIndex(uint8 Index);
 };
