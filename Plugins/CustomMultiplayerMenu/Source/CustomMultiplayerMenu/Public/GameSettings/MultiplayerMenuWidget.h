@@ -40,38 +40,47 @@ public:
 
 protected:
 
-    UPROPERTY(EditAnywhere, Category = "MainMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "MainMultiplayerMenu", meta = (BindWidget))
     class UWidget* MainMultiplayerMenu;
 
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
     class UWidgetSwitcher* MultiplayerMenuSwitcher;
 
     // Host menu
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
     class UWidget* HostMenu;
-    UPROPERTY(EditAnywhere, Category = "MainMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "MainMultiplayerMenu", meta = (BindWidget))
     class UButton* HostButton;
-    UPROPERTY(EditAnywhere, Category = "MainMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "HostMultiplayerMenu", meta = (BindWidget))
     class UButton* HostGameButton;
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "HostMultiplayerMenu", meta = (BindWidget))
     class UButton* CancelHostMenuButton;
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "HostMultiplayerMenu", meta = (BindWidget))
     class UEditableText* ServerNameEditableField;
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "HostMultiplayerMenu", meta = (BindWidget))
     class UEditableText* MaxPlayersEditableField;
+	UPROPERTY(VisibleAnywhere, Category = "HostMultiplayerMenu", meta = (BindWidget))
+	class UComboBoxString* LevelsComboBox;
+	UPROPERTY(VisibleAnywhere, Category = "HostMultiplayerMenu", meta = (BindWidget))
+	class UImage* Level_Image;
+
+	UPROPERTY(EditAnywhere, Category = "HostMultiplayerMenu")
+	class UTexture2D* LevelImgPlaceholder;
+	UPROPERTY(EditAnywhere, Category = "HostMultiplayerMenu")
+	TMap<FName, UTexture2D*> LevelsToHost;
 
     // Join menu
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
     class UWidget* JoinMenu;
-    UPROPERTY(EditAnywhere, Category = "MainMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "MainMultiplayerMenu", meta = (BindWidget))
     class UButton* JoinButton;
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
     class UButton* JoinInnerMenuButton;
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
     class UScrollBox* ServerListScrollBox;
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu")
+    UPROPERTY(VisibleAnywhere, Category = "JoinMultiplayerMenu")
     TSubclassOf<class UServerSessionRow> ServerSessionRowClass;
-    UPROPERTY(EditAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
+    UPROPERTY(VisibleAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))
     class UButton* CancelJoinMenuButton;
 
 private:
@@ -83,13 +92,15 @@ private:
     void HostOnClicked();
     UFUNCTION(Category = "MainMultiplayerMenu")
     void HostGameOnClicked();
+    UFUNCTION(Category = "MainMultiplayerMenu")
+    void ChangeLevelImage(FString SelectedItem, ESelectInfo::Type SelectionType);
 
     // Join menu functions
     UFUNCTION(Category = "MainMultiplayerMenu")
     void JoinOnClicked();
     UFUNCTION(Category = "MainMultiplayerMenu")
     void JoinInnerMenuButtonOnClicked();
-    // For both menuse is the same cancel logic
+    // For both menus is the same cancel logic
     UFUNCTION(Category = "MainMultiplayerMenu")
     void CancelButtonOnClicked();
     //

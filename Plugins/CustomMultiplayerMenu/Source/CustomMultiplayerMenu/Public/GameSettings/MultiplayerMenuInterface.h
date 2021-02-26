@@ -22,7 +22,7 @@ class CUSTOMMULTIPLAYERMENU_API IMultiplayerMenuInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void Host(FString ServerName, uint16 MaxPlayersNumber) = 0;
+	virtual void Host(FString ServerName, uint16 MaxPlayersNumber, FString LevelName) = 0;
 	virtual void Join(uint32 SessionIndex) = 0;
 	virtual void RefreshServerList() = 0;
 	virtual void StartSession() = 0;

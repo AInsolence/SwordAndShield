@@ -9,6 +9,8 @@
 #include "GameSettings/ServerSessionRow.h"
 #include "Components/TextBlock.h"
 #include "Components/EditableText.h"
+#include "Components/ComboBoxString.h"
+#include "Components/Image.h"
 
 #include "Misc/DefaultValueHelper.h"
 
@@ -60,6 +62,19 @@ void UMultiplayerMenuWidget::NativeConstruct()
 		CancelJoinMenuButton->OnClicked.AddDynamic(this,
 			&UMultiplayerMenuWidget::CancelButtonOnClicked);
 	}
+	if(LevelsComboBox)
+	{
+		LevelsComboBox->OnSelectionChanged.AddDynamic(this, 
+				&UMultiplayerMenuWidget::ChangeLevelImage);
+		if (LevelsToHost.Num() > 0)
+		{
+			for (auto level : LevelsToHost)
+			{
+				LevelsComboBox->AddOption(level.Key.ToString());
+			}
+			LevelsComboBox->SetSelectedOption("Level_01");
+		}
+	}
 }
 
 void UMultiplayerMenuWidget::HostGameOnClicked()
@@ -72,17 +87,35 @@ void UMultiplayerMenuWidget::HostGameOnClicked()
 		{
 			auto ServerName = ServerNameEditableField->GetText().ToString();
 			auto NumOfPlayersString = MaxPlayersEditableField->GetText().ToString();
+			auto LevelName = LevelsComboBox->GetSelectedOption();
+			if (LevelName.IsEmpty())
+			{
+				LevelName = "Level_01";
+			}
 			int32 OutNumOfPlayers;
 			if(FDefaultValueHelper::ParseInt(NumOfPlayersString, OutNumOfPlayers))
 			{
-				MenuInterface->Host(ServerName, OutNumOfPlayers);
+				MenuInterface->Host(ServerName, OutNumOfPlayers, LevelName);
 			}
 			else
 			{// call with default max number of players
-				MenuInterface->Host(ServerName, DefaultMaxNumberOfPlayers);
+				MenuInterface->Host(ServerName, DefaultMaxNumberOfPlayers, LevelName);
 			}
 			
 		}
+	}
+}
+
+void UMultiplayerMenuWidget::ChangeLevelImage(FString SelectedItem, ESelectInfo::Type SelectionType)
+{
+	auto LevelImg = *LevelsToHost.Find(FName(SelectedItem));
+	if (LevelImg)
+	{
+		Level_Image->SetBrushFromTexture(LevelImg);
+	}
+	else if (LevelImgPlaceholder)
+	{
+		Level_Image->SetBrushFromTexture(LevelImgPlaceholder);
 	}
 }
 

@@ -22,7 +22,7 @@ public:
 
 	// Menu interface implementation
 	UFUNCTION(Exec, Category = "Multiplayer")
-	virtual void Host(FString ServerNameToSet, uint16 MaxPlayersNumber) override;
+	virtual void Host(FString ServerNameToSet, uint16 MaxPlayersNumber, FString LevelName) override;
 	UFUNCTION(Exec, Category = "Multiplayer")
 	virtual void Join(uint32 SessionIndex) override;
 	UFUNCTION(Exec, Category = "Multiplayer")
@@ -62,4 +62,6 @@ public:
 
 	// Session search object using in a Find session process
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+	//
+	FString NextLevelName = "Level_01";
 };

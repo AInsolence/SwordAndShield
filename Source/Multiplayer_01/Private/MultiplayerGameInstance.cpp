@@ -46,12 +46,13 @@ void UMultiplayerGameInstance::Init()
 	}
 }
 
-void UMultiplayerGameInstance::Host(FString ServerNameToSet, uint16 MaxPlayersNumber)
+void UMultiplayerGameInstance::Host(FString ServerNameToSet, uint16 MaxPlayersNumber, FString LevelName)
 {
 	if (OnlineSessionInstance.IsValid())
 	{
 		ServerName = ServerNameToSet;
 		MaxNumberOfPlayers = MaxPlayersNumber;
+		NextLevelName = LevelName;
 		auto ExistingSession = OnlineSessionInstance->GetNamedSession(NAME_GameSession);
 		if (ExistingSession != nullptr)
 		{
@@ -182,7 +183,7 @@ void UMultiplayerGameInstance::OnCreateSessionComplete(FName SessionName, bool S
 	UWorld* World = GetWorld();
 	if (ensure(World))
 	{
-		World->ServerTravel("/Game/Maps/Level_01?listen");
+		World->ServerTravel("/Game/Maps/" + NextLevelName + "?listen");
 		auto PlayerController = GetFirstLocalPlayerController(World);
 		if (ensure(PlayerController))
 		{// Set input mode game only and hide mouse cursor in the game
