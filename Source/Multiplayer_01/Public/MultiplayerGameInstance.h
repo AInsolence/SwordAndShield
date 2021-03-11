@@ -39,6 +39,8 @@ public:
 	TSubclassOf<class UMainMenu> MainMenuClass;
 	UPROPERTY(BlueprintReadWrite, Category = "Multiplayer")
 	UMainMenu* MainMenu = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Multiplayer")
+	FString DefaultLevelName = "DefaultLevel";
 
 	// Online session related data and methods
 	IOnlineSessionPtr OnlineSessionInstance;
@@ -63,5 +65,4 @@ public:
 	// Session search object using in a Find session process
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 	//
-	FString NextLevelName = "Level_01";
 };

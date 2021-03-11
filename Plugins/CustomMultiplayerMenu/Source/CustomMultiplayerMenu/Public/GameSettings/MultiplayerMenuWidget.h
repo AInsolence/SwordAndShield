@@ -68,6 +68,8 @@ protected:
 	class UTexture2D* LevelImgPlaceholder;
 	UPROPERTY(EditAnywhere, Category = "HostMultiplayerMenu")
 	TMap<FName, UTexture2D*> LevelsToHost;
+	UPROPERTY(EditAnywhere, Category = "HostMultiplayerMenu")
+	FString DefaultLevel = "DefaultLevel";
 
     // Join menu
     UPROPERTY(VisibleAnywhere, Category = "JoinMultiplayerMenu", meta = (BindWidget))

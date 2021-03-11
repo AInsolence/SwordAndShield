@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
 	bool bIsSprinting = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
-	float BaseWalkingSpeed = 500.f;
+	float BaseWalkingSpeed = 600.f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -50,7 +50,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float BaseSprintMultiplier = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
-	float MaxSprintMultiplier = 1.5f;
+	float MaxSprintMultiplier = 1.8f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float TimeToMaxSprintSpeed = 2.0f;
 

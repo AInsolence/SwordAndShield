@@ -24,7 +24,7 @@ void AHUD_Multiplayer::BeginPlay()
 			PlayerStateInfoWidget->AddToViewport();
 			// Hide player status widget in main menu
 			auto LevelName = GetWorld()->GetName();
-			if (LevelName == "MainMenu")
+			if (LevelName == "MainMenu" || LevelName == "TransitionMap")
 			{
 				PlayerStateInfoWidget->SetVisibility(ESlateVisibility::Hidden);
 			}

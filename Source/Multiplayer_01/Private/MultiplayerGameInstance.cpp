@@ -52,7 +52,7 @@ void UMultiplayerGameInstance::Host(FString ServerNameToSet, uint16 MaxPlayersNu
 	{
 		ServerName = ServerNameToSet;
 		MaxNumberOfPlayers = MaxPlayersNumber;
-		NextLevelName = LevelName;
+		DefaultLevelName = LevelName;
 		auto ExistingSession = OnlineSessionInstance->GetNamedSession(NAME_GameSession);
 		if (ExistingSession != nullptr)
 		{
@@ -183,7 +183,7 @@ void UMultiplayerGameInstance::OnCreateSessionComplete(FName SessionName, bool S
 	UWorld* World = GetWorld();
 	if (ensure(World))
 	{
-		World->ServerTravel("/Game/Maps/" + NextLevelName + "?listen");
+		World->ServerTravel("/Game/Maps/" + DefaultLevelName + "?listen");
 		auto PlayerController = GetFirstLocalPlayerController(World);
 		if (ensure(PlayerController))
 		{// Set input mode game only and hide mouse cursor in the game

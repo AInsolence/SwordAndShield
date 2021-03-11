@@ -72,7 +72,7 @@ void UMultiplayerMenuWidget::NativeConstruct()
 			{
 				LevelsComboBox->AddOption(level.Key.ToString());
 			}
-			LevelsComboBox->SetSelectedOption("Level_01");
+			LevelsComboBox->SetSelectedOption(DefaultLevel);
 		}
 	}
 }
@@ -90,7 +90,7 @@ void UMultiplayerMenuWidget::HostGameOnClicked()
 			auto LevelName = LevelsComboBox->GetSelectedOption();
 			if (LevelName.IsEmpty())
 			{
-				LevelName = "Level_01";
+				LevelName = "Barbican";
 			}
 			int32 OutNumOfPlayers;
 			if(FDefaultValueHelper::ParseInt(NumOfPlayersString, OutNumOfPlayers))

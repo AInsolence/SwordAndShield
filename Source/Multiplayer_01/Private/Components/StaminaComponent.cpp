@@ -50,7 +50,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		BaseSprintMultiplier += RampThisFrame;
 		// change stamina bar percentage
-		ChangeCurrentStaminaTo(-30.0f * DeltaTime);
+		ChangeCurrentStaminaTo(-25.0f * DeltaTime);
 	}
 	else
 	{	

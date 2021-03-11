@@ -37,6 +37,6 @@ void ALobbyGameMode::StartSession()
 	if (ensure(World))
 	{
 		bUseSeamlessTravel = true;
-		World->ServerTravel("/Game/Maps/Level_01?listen");
+		World->ServerTravel("/Game/Maps/Barbican?listen");
 	}
 }
