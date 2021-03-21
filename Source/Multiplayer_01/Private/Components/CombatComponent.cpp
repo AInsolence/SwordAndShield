@@ -141,7 +141,7 @@ void UCombatComponent::PlayActionAnimation()
 	case EActionType::None:
 		break;
 	case EActionType::Roll:
-		Multicast_PlayAnimation(RollAnimation, 0.5f);
+		Multicast_PlayAnimation(RollAnimation, 0.6f);
 		break;
 	case EActionType::Interact:
 		break;
@@ -230,7 +230,7 @@ void UCombatComponent::Block01(bool IsBlocking)
 	Server_SetBlocking(IsBlocking);
 }
 
-void UCombatComponent::Block02()
+void UCombatComponent::SpecialAttack()
 {
 	Server_Act(EActionType::LeftHandAction_02);
 }

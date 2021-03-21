@@ -10,7 +10,7 @@ UInteractionComponent::UInteractionComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
-	SetRelativeScale3D(FVector(3.0f));
+	SetRelativeScale3D(FVector(3.5f));
 }
 
 // Called when the game starts
@@ -50,11 +50,6 @@ void UInteractionComponent::Server_PickUp_Implementation()
 			EquipmentComponent->Server_EquipItem(EItemSlot::RightHandItem, ItemClass);
 		}
 	}
-}
-
-bool UInteractionComponent::Server_PickUp_Validate()
-{
-	return true; // TODO set anti-cheat protection
 }
 
 void UInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 

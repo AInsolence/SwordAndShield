@@ -13,7 +13,7 @@ UStaminaComponent::UStaminaComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 	//
-	StaminaServerState.CurrentStamina = StaminaServerState.DefaultStamina;
+	StaminaServerState.CurrentStamina = DefaultStamina;
 }
 
 void UStaminaComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -38,7 +38,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	/**  Sprint logic */
-	if (!Owner)
+	if (!Owner || !Owner->HasAuthority())
 	{
 		return;
 	}
@@ -56,7 +56,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{	
 		BaseSprintMultiplier -= RampThisFrame;
 		
-		if (StaminaServerState.CurrentStamina == StaminaServerState.DefaultStamina)
+		if (StaminaServerState.CurrentStamina == DefaultStamina)
 		{// Stamina full
 			return;
 		}
@@ -66,19 +66,15 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		}
 	}
 	BaseSprintMultiplier = FMath::Clamp(BaseSprintMultiplier, 1.0f, MaxSprintMultiplier);
-	Owner->GetCharacterMovement()->MaxWalkSpeed = StaminaServerState.BaseWalkingSpeed * BaseSprintMultiplier;
+	Owner->GetCharacterMovement()->MaxWalkSpeed = BaseWalkingSpeed * BaseSprintMultiplier;
 	/**  Sprint logic end */
 }
 
 void UStaminaComponent::ChangeCurrentStaminaTo(float StaminaCost)
 {
-	if (Owner->IsLocallyControlled())
+	if (Owner->HasAuthority())
 	{
 		Server_SetCurrentStamina(StaminaCost);
-	}
-	if (GetPlayerHUD() != nullptr)
-	{
-		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
 	}
 }
 
@@ -97,8 +93,10 @@ void UStaminaComponent::SetIsSprinting(bool IsSprinting)
 
 void UStaminaComponent::OnRep_StateChanged()
 {
-	// TODO try to get stamina update out of tick
-
+	if (GetPlayerHUD() != nullptr)
+	{
+		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
+	}
 }
 
 void UStaminaComponent::Server_ChangeState_Implementation(bool IsSprinting)
@@ -113,12 +111,12 @@ bool UStaminaComponent::Server_ChangeState_Validate(bool IsSprinting)
 
 void UStaminaComponent::Server_SetCurrentStamina_Implementation(float StaminaCost)
 {
-	StaminaServerState.CurrentStamina = FMath::Clamp(StaminaServerState.CurrentStamina + StaminaCost, 0.0f, StaminaServerState.DefaultStamina);
+	StaminaServerState.CurrentStamina = FMath::Clamp(StaminaServerState.CurrentStamina + StaminaCost, 0.0f, DefaultStamina);
 }
 
 bool UStaminaComponent::Server_SetCurrentStamina_Validate(float StaminaCost)
 {
-	if (StaminaCost > StaminaServerState.DefaultStamina)
+	if (StaminaCost > DefaultStamina)
 	{
 		return false;
 	}

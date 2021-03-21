@@ -15,6 +15,8 @@ AWeapon::AWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+	NetUpdateFrequency = 2;
+	bNetUseOwnerRelevancy = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
@@ -55,10 +57,6 @@ void AWeapon::BeginPlay()
 			DamageCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnOverlapEnd);
 		}
 	}
-	//
-	Server_ClearDamagedActors();
-	
-	bAlwaysRelevant = true;
 }
 
 void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -169,20 +167,19 @@ void AWeapon::OnWeaponOverlap(AActor* OverlappedActor)
 
 void AWeapon::TakeDamageToOverlappedActor_Implementation(AActor* OverlappedActor)
 {
-	if (ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
+	if (!ServerAttackState.DamagedActors.Contains(OverlappedActor->GetName()))
 	{
-		return;
+		//// Create a damage event 
+		TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
+		FDamageEvent DamageEvent(ValidDamageTypeClass);
+		auto CurrentDamage = GetCurrentAttackDamage();
+		// Take damage to the overlapped actor
+		OverlappedActor->TakeDamage(CurrentDamage,
+									DamageEvent,
+									GetOwner()->GetInstigatorController(),
+									GetOwner());
+		Server_AddDamagedActors(OverlappedActor->GetName());
 	}
-	//// Create a damage event 
-	TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
-	FDamageEvent DamageEvent(ValidDamageTypeClass);
-	auto CurrentDamage = GetCurrentAttackDamage();
-	// Take damage to the overlapped actor
-	OverlappedActor->TakeDamage(CurrentDamage,
-								DamageEvent,
-								GetOwner()->GetInstigatorController(),
-								GetOwner());
-	Server_AddDamagedActors(OverlappedActor->GetName());
 }
 
 EActionType AWeapon::GetOwnerActionType()

@@ -21,16 +21,11 @@ struct FStaminaServerState
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float DefaultStamina = 100.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
 	float CurrentStamina;
-
 	// Sprint variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
 	bool bIsSprinting = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
-	float BaseWalkingSpeed = 600.f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -47,6 +42,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	// Sprint helper variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float DefaultStamina = 100.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	float BaseWalkingSpeed = 600.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
 	float BaseSprintMultiplier = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Sprint")
@@ -74,7 +73,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	//API
-	FORCEINLINE float GetDefaultStamina() const { return StaminaServerState.DefaultStamina; };
+	FORCEINLINE float GetDefaultStamina() const { return DefaultStamina; };
 	float GetCurrentStamina() const { return StaminaServerState.CurrentStamina; };
 	UFUNCTION(BlueprintCallable, Category = "StaminaProperty")
 	void ChangeCurrentStaminaTo(float StaminaCost);

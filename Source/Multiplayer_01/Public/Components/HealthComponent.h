@@ -72,7 +72,7 @@ public:
 	void Server_SetDeadState(bool isDead);
 	void Server_SetDeadState_Implementation(bool isDead);
 
-	UFUNCTION(Client, Reliable, BlueprintCallable, Category = "HealthProperty")
+	UFUNCTION(Client, Unreliable, BlueprintCallable, Category = "HealthProperty")
 	void Client_UpdateHealthBar();
 	void Client_UpdateHealthBar_Implementation();
 

@@ -56,7 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void SwapWeapon(uint8 FirstWeaponIndex, uint8 SecondWeaponIndex);
 	//
-	UFUNCTION(Server, Reliable, Category = "Replication")
+	UFUNCTION(Server, Unreliable, Category = "Replication")
 	void Server_SwapWeapon(uint8 FirstWeaponIndex, uint8 SecondWeaponIndex);
 	void Server_SwapWeapon_Implementation(uint8 FirstWeaponIndex, uint8 SecondWeaponIndex);
 	// Drop item(s)

@@ -211,6 +211,15 @@ AWeapon* UEquipmentComponent::CreateWeaponOnSocket(TSubclassOf<AWeapon> WeaponCl
 							SocketName);
 	// Set weapon owner
 	Item->SetOwner(GetOwner());
+	// Update net update frequency for weapon
+	if (SocketName == "RightHandWeaponSocket")
+	{
+		Item->NetUpdateFrequency = 100;
+	}
+	else
+	{
+		Item->NetUpdateFrequency = 2;
+	}
 	return Item;
 }
 

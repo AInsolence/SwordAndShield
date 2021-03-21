@@ -103,7 +103,7 @@ public:
 	void Attack01();
 	void Attack02();
 	void Block01(bool IsBlocking);
-	void Block02();
+	void SpecialAttack();
 	void SwapWeapon();
 	void Hitted();
 	void Blocked();

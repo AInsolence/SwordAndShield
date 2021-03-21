@@ -15,6 +15,7 @@
 #include "Components/HealthComponent.h"
 #include "Components/StaminaComponent.h"
 #include "Components/InteractionComponent.h"
+#include "Components/MagicCastingComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/StatisticsComponent.h"
 #include "Components/AudioFXComponent.h"
@@ -29,7 +30,8 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-	GetCapsuleComponent()->SetIsReplicated(true);
+	GetCapsuleComponent()->SetIsReplicated(false);
+	NetUpdateFrequency = 30;
 
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
@@ -63,6 +65,7 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
 	StaminaComponent = CreateDefaultSubobject<UStaminaComponent>("StaminaComponent");
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
+	MagicCastingComponent = CreateDefaultSubobject<UMagicCastingComponent>("MagicCastingComponent");
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>("HealthBarComponent");
 	StatisticsComponent = CreateDefaultSubobject<UStatisticsComponent>("StatisticsComponent");
 	AudioFXComponent = CreateDefaultSubobject<UAudioFXComponent>("AudioFXComponent");
@@ -171,7 +174,7 @@ void AMultiplayer_01Character::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Attack02", IE_Pressed, this, &AMultiplayer_01Character::Attack02);
 	PlayerInputComponent->BindAction("Block01", IE_Pressed, this, &AMultiplayer_01Character::Block01);
 	PlayerInputComponent->BindAction("Block01", IE_Released, this, &AMultiplayer_01Character::UnBlock01);
-	PlayerInputComponent->BindAction("Block02", IE_Pressed, this, &AMultiplayer_01Character::Block02);
+	PlayerInputComponent->BindAction("SpecialAttack", IE_Pressed, this, &AMultiplayer_01Character::SpecialAttack);
 	PlayerInputComponent->BindAction("SwapWeapon", IE_Pressed, this, &AMultiplayer_01Character::SwapWeapon);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMultiplayer_01Character::Interact);
 	PlayerInputComponent->BindAction("Statistic", IE_Pressed, this, &AMultiplayer_01Character::ShowStatistic);
@@ -328,16 +331,13 @@ void AMultiplayer_01Character::UnBlock01()
 	}
 }
 
-void AMultiplayer_01Character::Block02()
+void AMultiplayer_01Character::SpecialAttack()
 {
-	if (!CombatComponent)
+	if (!MagicCastingComponent || !CombatComponent)
 	{
 		return;
 	}
-	if (bIsActionPossible(20.0f))
-	{
-		CombatComponent->Block02();
-	}
+	CombatComponent->SpecialAttack();
 }
 
 void AMultiplayer_01Character::SwapWeapon()

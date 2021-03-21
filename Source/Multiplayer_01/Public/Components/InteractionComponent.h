@@ -32,7 +32,6 @@ protected:
 	UFUNCTION(Server, Reliable, Category = "Interaction")
 	void Server_PickUp();
 	void Server_PickUp_Implementation();
-	bool Server_PickUp_Validate();
 
 	/** Called when a interaction sphere start overlaps something */
 	UFUNCTION(BlueprintCallable, Category = "Interaction")

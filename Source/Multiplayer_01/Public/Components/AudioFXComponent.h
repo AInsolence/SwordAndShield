@@ -17,11 +17,11 @@ public:
 	UAudioFXComponent();
 
 	// API
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Audio Component")
+	UFUNCTION(Server, Unreliable, BlueprintCallable, Category = "Audio Component")
 	void Server_PlaySoundFX(USoundBase* SoundFX);
 	void Server_PlaySoundFX_Implementation(USoundBase* SoundFX);
 	//
-	UFUNCTION(NetMulticast, Reliable, Category = "Audio Component")
+	UFUNCTION(NetMulticast, Unreliable, Category = "Audio Component")
 	void Multicast_PlaySoundFX(USoundBase* SoundFX);
 	void Multicast_PlaySoundFX_Implementation(USoundBase* SoundFX);
 	//
