@@ -19,9 +19,6 @@ struct FHealthServerState
 	GENERATED_BODY()
 
 public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float DefaultHealth = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float CurrentHealth = 99.f;
 	//
@@ -48,6 +45,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float DefaultHealth = 100.f;
+
 	UPROPERTY(ReplicatedUsing = OnRep_StateChanged, EditDefaultsOnly, BlueprintReadWrite, Category = "ServerState")
 	FHealthServerState HealthServerState;
 	UFUNCTION(BlueprintCallable, Category = "Replication")
@@ -65,7 +65,7 @@ protected:
 
 public:
 	// API
-	FORCEINLINE float GetDefaultHealth() const { return HealthServerState.DefaultHealth; };
+	FORCEINLINE float GetDefaultHealth() const { return DefaultHealth; };
 	float GetCurrentHealth() const { return HealthServerState.CurrentHealth; };
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "HealthProperty")

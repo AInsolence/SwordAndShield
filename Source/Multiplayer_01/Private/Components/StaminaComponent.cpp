@@ -37,7 +37,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	/**  Sprint logic */
+	/**  Sprint logic server-side*/
 	if (!Owner || !Owner->HasAuthority())
 	{
 		return;
@@ -74,7 +74,7 @@ void UStaminaComponent::ChangeCurrentStaminaTo(float StaminaCost)
 {
 	if (Owner->HasAuthority())
 	{
-		Server_SetCurrentStamina(StaminaCost);
+		SetCurrentStamina(StaminaCost);
 	}
 }
 
@@ -104,23 +104,13 @@ void UStaminaComponent::Server_ChangeState_Implementation(bool IsSprinting)
 	StaminaServerState.bIsSprinting = IsSprinting;
 }
 
-bool UStaminaComponent::Server_ChangeState_Validate(bool IsSprinting)
-{
-	return true; // Change to anti-cheat function
-}
-
-void UStaminaComponent::Server_SetCurrentStamina_Implementation(float StaminaCost)
+void UStaminaComponent::SetCurrentStamina(float StaminaCost)
 {
 	StaminaServerState.CurrentStamina = FMath::Clamp(StaminaServerState.CurrentStamina + StaminaCost, 0.0f, DefaultStamina);
-}
-
-bool UStaminaComponent::Server_SetCurrentStamina_Validate(float StaminaCost)
-{
-	if (StaminaCost > DefaultStamina)
+	if (GetPlayerHUD() != nullptr)
 	{
-		return false;
+		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
 	}
-	return true;
 }
 
 AHUD_Multiplayer* UStaminaComponent::GetPlayerHUD()

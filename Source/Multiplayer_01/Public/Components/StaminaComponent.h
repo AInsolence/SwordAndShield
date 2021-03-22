@@ -58,15 +58,12 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Replication")
 	void OnRep_StateChanged();
 
-	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "ServerState")
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "ServerState")
 	void Server_ChangeState(bool IsSprinting);
 	void Server_ChangeState_Implementation(bool IsSprinting);
-	bool Server_ChangeState_Validate(bool IsSprinting);
 
-	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "ServerState")
-	void Server_SetCurrentStamina(float StaminaCost);
-	void Server_SetCurrentStamina_Implementation(float StaminaCost);
-	bool Server_SetCurrentStamina_Validate(float StaminaCost);
+	UFUNCTION(BlueprintCallable, Category = "ServerState")
+	void SetCurrentStamina(float StaminaCost);
 
 public:	
 	// Called every frame

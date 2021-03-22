@@ -21,7 +21,7 @@ UHealthComponent::UHealthComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 
-	HealthServerState.CurrentHealth = HealthServerState.DefaultHealth;
+	HealthServerState.CurrentHealth = DefaultHealth;
 }
 
 // Called when the game starts
@@ -152,7 +152,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		else
 		{
 			// Update HP if character was damaged
-			HealthServerState.CurrentHealth = FMath::Clamp(HealthServerState.CurrentHealth - Damage, 0.0f, HealthServerState.DefaultHealth);
+			HealthServerState.CurrentHealth = FMath::Clamp(HealthServerState.CurrentHealth - Damage, 0.0f, DefaultHealth);
 			auto HitSound = Cast<AMultiplayer_01Character>(InstigatedBy->GetPawn())->GetActiveWeaponHitSound();
 			OnHitted.Broadcast(HitSound);
 			//Update HUD health status
