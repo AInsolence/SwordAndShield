@@ -108,6 +108,10 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 										    bool bFromSweep,
 										    const FHitResult& SweepResult)
 {
+	if (!GetOwner() || !Cast<APawn>(GetOwner())->IsLocallyControlled())
+	{
+		return;
+	}
 	GetOverlappedEnemy(OtherActor);
 }
 
@@ -116,6 +120,10 @@ void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
 										  UPrimitiveComponent* OtherComp,
 										  int32 OtherBodyIndex)
 {
+	if (!GetOwner() || !Cast<APawn>(GetOwner())->IsLocallyControlled())
+	{
+		return;
+	}
 	GetOverlappedEnemy(OtherActor);
 }
 
