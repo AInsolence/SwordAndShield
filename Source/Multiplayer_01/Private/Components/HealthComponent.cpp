@@ -143,10 +143,11 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor,
 		// Check if the character is blocking
 		float AngleBetweenActors = FMath::RadiansToDegrees(acosf(FVector::DotProduct(Owner->GetActorForwardVector(), 
 													InstigatedBy->GetPawn()->GetActorForwardVector())));
-		if (AngleBetweenActors > 90 && CombatComponent->bIsBlocking())
+		if (AngleBetweenActors > 90 && CombatComponent->bIsBlocking() && !InstigatedBy->ActorHasTag("MagicDamage"))
 		{// TODO Set appropriate stamina cost
 			CombatComponent->Blocked();
 			OnBlocked.Broadcast();
+			OnBlockedStaminaCost.Broadcast(20.f);
 			return;
 		}
 		else

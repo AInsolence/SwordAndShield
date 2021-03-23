@@ -104,6 +104,16 @@ void AMultiplayer_01Character::BeginPlay()
 	{
 		InteractionComponent->OnPickUp.AddDynamic(AudioFXComponent, &UAudioFXComponent::PickUp);
 	}
+	if (MagicCastingComponent && AudioFXComponent)
+	{
+		MagicCastingComponent->OnMagicCast.AddDynamic(AudioFXComponent, &UAudioFXComponent::Server_PlaySoundFX);
+	}
+	if (HealthComponent && StaminaComponent)
+	{
+		HealthComponent->OnBlockedStaminaCost.AddDynamic(StaminaComponent, &UStaminaComponent::ChangeCurrentStaminaTo);
+	}
+	// Set mesh sockets update!
+	GetMesh()->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
 }
 
 void AMultiplayer_01Character::Tick(float DeltaTime)

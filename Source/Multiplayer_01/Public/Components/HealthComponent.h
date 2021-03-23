@@ -31,12 +31,14 @@ public:
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam (FOnDeath, AController*, InstigatedBy);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHitted, USoundBase*, SoundBase);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBlockedStaminaCost, float, StaminaCost);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBlocked);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MULTIPLAYER_01_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
 public:	
 	// Sets default values for this component's properties
 	UHealthComponent();
@@ -84,6 +86,8 @@ public:
 	FOnHitted OnHitted;
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 	FOnBlocked OnBlocked;
+	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
+	FOnBlockedStaminaCost OnBlockedStaminaCost;
 
 private:
 	class ACharacter* Owner = nullptr;

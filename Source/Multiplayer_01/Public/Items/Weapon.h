@@ -49,6 +49,8 @@ public:
 	float StaminaCost_Attack01 = 20.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
 	float StaminaCost_Attack02 = 30.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponStats")
+	TSubclassOf<class AMagicProjectile> MagicProjectile;
 
 	// Weapon using animations
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
