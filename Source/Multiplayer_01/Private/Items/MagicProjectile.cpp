@@ -24,8 +24,10 @@ AMagicProjectile::AMagicProjectile()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(20.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-	CollisionComp->OnComponentHit.AddDynamic(this, &AMagicProjectile::OnHit);// set up a notification for when this component hits something blocking
-
+	if (CollisionComp)
+	{
+		CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AMagicProjectile::OnOverlapBegin);
+	}
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
@@ -53,36 +55,45 @@ void AMagicProjectile::Tick(float DeltaTime)
 	}
 }
 
-void AMagicProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AMagicProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+										UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
+										bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("HIT 1"))
-	if (ExplosionParticles) //bIsExplosiveRound && ExplosionParticles)
+	if (!OtherActor)
 	{
-		// create explosion particle effect
-		auto Explosion = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionParticles, GetActorLocation());
-		if (true) //InflictDamageToThisClass)
+		return;
+	}
+	//
+	if (GetOwner())
+	{
+		// Check for self-overlapping
+		if (GetOwner() == OtherActor)
 		{
-			if (true) //OtherActor->GetClass()->IsChildOf(InflictDamageToThisClass))
+			return;
+		}
+		// Check is overlap character
+		if (OtherActor->GetClass()->IsChildOf(ACharacter::StaticClass()))
+		{
+			if (ExplosionParticles)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("HIT 2"))
+				// create explosion particle effect
+				auto Explosion = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionParticles, GetActorLocation());
 				// Create a damage event  
 				TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
 				FDamageEvent DamageEvent(ValidDamageTypeClass);
-
 				if (GetWorld())
 				{
 					if (GetWorld()->GetFirstPlayerController())
 					{
-						UE_LOG(LogTemp, Warning, TEXT("HIT to: %s"), *OtherActor->GetName())
-						OtherActor->TakeDamage(DamageAmount,
-												DamageEvent,
-												GetWorld()->GetFirstPlayerController(),
-												this);
+							OtherActor->TakeDamage(DamageAmount,
+													DamageEvent,
+													Cast<APawn>(GetOwner())->GetController(),
+													this);
 					}
-				}
+			}
+			// destroy projectile
+			Destroy();
 			}
 		}
-		// destroy projectile
-		Destroy();
 	}
 }

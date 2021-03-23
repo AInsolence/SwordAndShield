@@ -33,11 +33,12 @@ void UMagicCastingComponent::Server_CreateMagicProjectile_Implementation(TSubcla
 				FActorSpawnParameters ActorSpawnParams;
 				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 				// spawn the projectile at the place
-				World->SpawnActor<AMagicProjectile>(
-												Projectile,
-												MagicCastingLocation,
-												MagicCastingRotation,
-												ActorSpawnParams);
+				auto MagicProj = World->SpawnActor<AMagicProjectile>(
+																	Projectile,
+																	MagicCastingLocation,
+																	MagicCastingRotation,
+																	ActorSpawnParams);
+				MagicProj->SetOwner(GetOwner());
 				// Play magic cast audio
 				OnMagicCast.Broadcast(MagicCast_AudioFX);
 			}

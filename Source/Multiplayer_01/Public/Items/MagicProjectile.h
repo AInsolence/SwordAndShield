@@ -39,16 +39,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	float DamageAmount = 30.0f;
 
-	/** Explosion effect */
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class ACharacter> InflictDamageToThisClass;
 
-	/** called when projectile hits something */
-	UFUNCTION(BlueprintCallable)
-	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-	/** Returns CollisionComp subobject **/
-	FORCEINLINE class USphereComponent* GetCollisionComp() const { return CollisionComp; }
-	/** Returns ProjectileMovement subobject **/
-	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+private:
+	/** Called when a weapon hits something */
+	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+						bool bFromSweep, const FHitResult& SweepResult);
 };
