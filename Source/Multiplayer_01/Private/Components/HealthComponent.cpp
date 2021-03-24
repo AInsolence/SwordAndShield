@@ -105,6 +105,7 @@ void UHealthComponent::Client_UpdateHealthBar_Implementation()
 	if (GetPlayerHUD())
 	{
 		GetPlayerHUD()->UpdateHealthState(1);
+		GetPlayerHUD()->UpdateManaState(1);
 	}
 }
 

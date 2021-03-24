@@ -51,7 +51,7 @@ void AMagicProjectile::Tick(float DeltaTime)
 {
 	if (ProjectileParticles)
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ProjectileParticles, GetActorLocation());
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ProjectileParticles, GetActorLocation(), FRotator::ZeroRotator, FVector(SlashParticleScale));
 	}
 }
 
@@ -77,7 +77,7 @@ void AMagicProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 			if (ExplosionParticles)
 			{
 				// create explosion particle effect
-				auto Explosion = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionParticles, GetActorLocation());
+				auto Explosion = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionParticles, GetActorLocation(), FRotator::ZeroRotator, FVector(ImpactParticleScale));
 				// Create a damage event  
 				TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
 				FDamageEvent DamageEvent(ValidDamageTypeClass);

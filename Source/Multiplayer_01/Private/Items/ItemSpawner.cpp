@@ -22,6 +22,17 @@ AItemSpawner::AItemSpawner()
 void AItemSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+	if (HasAuthority() && ActorToSpawnByTimer)
+	{
+		// Set timer to respawn after a death animation
+		GetWorld()->GetTimerManager().SetTimer(TimerHandler,
+												[this]()
+												{
+													SpawnActorByTimer(ActorToSpawnByTimer);
+												},
+												TimeStep,
+												true);
+	}
 }
 
 UClass* AItemSpawner::SpawnItemInRandomLocation(UClass* Item)
@@ -44,6 +55,20 @@ UClass* AItemSpawner::SpawnItemInFrontOf(UClass* Item, float Distance)
 	{
 		FVector Location = GetActorLocation() + GetActorForwardVector() * Distance;
 		auto SpawnedItem = GetWorld()->SpawnActor<AActor>(Item, Location, FRotator::ZeroRotator);
+		return SpawnedItem->GetClass();
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+UClass* AItemSpawner::SpawnActorByTimer(UClass* Item)
+{
+	if (!ActorSpawned->IsValidLowLevel() || ActorSpawned->IsPendingKill())
+	{
+		auto SpawnedItem = GetWorld()->SpawnActor<AActor>(Item, GetActorLocation(), FRotator::ZeroRotator);
+		ActorSpawned = SpawnedItem; // Store spawned actor to avoid multispawn
 		return SpawnedItem->GetClass();
 	}
 	else

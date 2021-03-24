@@ -13,9 +13,8 @@ struct FManaServerState
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mana")
-	float CurrentMana;
+	float CurrentMana = 99.f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

@@ -39,6 +39,7 @@ void UInteractionComponent::Server_PickUp_Implementation()
 	{
 		if (InteractableItem->GetOwner() != nullptr)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Cannot pickup cause of owner"))
 			return;
 		}
 		auto ItemClass = InteractableItem->PickUp();
