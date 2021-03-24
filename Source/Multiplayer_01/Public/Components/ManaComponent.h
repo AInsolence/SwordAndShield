@@ -39,9 +39,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Replication")
 	void OnRep_StateChanged();
 
-	UFUNCTION(BlueprintCallable, Category = "ServerState")
-	void SetCurrentMana(float ManaCost);
-
 public:
 	//API
 	FORCEINLINE float GetDefaultStamina() const { return DefaultMana; };

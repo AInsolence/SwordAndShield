@@ -18,7 +18,7 @@ public:
 	UClass* SpawnItemInRandomLocation(UClass* Item);
 	UClass* SpawnItemInFrontOf(UClass* Item, float Distance);
 	UFUNCTION(BlueprintCallable, Category = "ItemSpawner")
-	UClass* SpawnActorByTimer(UClass* Item);
+	void SpawnActorByTimer(UClass* Item);
 	//
 	AActor* ActorSpawned = nullptr;
 

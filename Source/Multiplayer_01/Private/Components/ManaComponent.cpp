@@ -31,14 +31,6 @@ void UManaComponent::BeginPlay()
 	Owner = Cast<ACharacter>(GetOwner());
 }
 
-void UManaComponent::ChangeCurrentManaTo(float ManaCost)
-{
-	if (Owner->HasAuthority())
-	{
-		SetCurrentMana(ManaCost);
-	}
-}
-
 void UManaComponent::NotEnoughMana()
 {
 	if (GetPlayerHUD() != nullptr)
@@ -55,8 +47,12 @@ void UManaComponent::OnRep_StateChanged()
 	}
 }
 
-void UManaComponent::SetCurrentMana(float ManaCost)
+void UManaComponent::ChangeCurrentManaTo(float ManaCost)
 {
+	if (!Owner->HasAuthority())
+	{
+		return;
+	}
 	ManaServerState.CurrentMana = FMath::Clamp(ManaServerState.CurrentMana + ManaCost, 0.0f, DefaultMana);
 	// Change mana on listen-server client HUD
 	if (GetPlayerHUD() != nullptr)

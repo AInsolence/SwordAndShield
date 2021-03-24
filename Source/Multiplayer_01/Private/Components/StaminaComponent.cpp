@@ -74,7 +74,12 @@ void UStaminaComponent::ChangeCurrentStaminaTo(float StaminaCost)
 {
 	if (Owner->HasAuthority())
 	{
-		SetCurrentStamina(StaminaCost);
+		StaminaServerState.CurrentStamina = FMath::Clamp(StaminaServerState.CurrentStamina + StaminaCost, 0.0f, DefaultStamina);
+		// Change stamina on listen-server client HUD
+		if (GetPlayerHUD() != nullptr)
+		{
+			GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
+		}
 	}
 }
 
@@ -102,16 +107,6 @@ void UStaminaComponent::OnRep_StateChanged()
 void UStaminaComponent::Server_ChangeState_Implementation(bool IsSprinting)
 {
 	StaminaServerState.bIsSprinting = IsSprinting;
-}
-
-void UStaminaComponent::SetCurrentStamina(float StaminaCost)
-{
-	StaminaServerState.CurrentStamina = FMath::Clamp(StaminaServerState.CurrentStamina + StaminaCost, 0.0f, DefaultStamina);
-	// Change stamina on listen-server client HUD
-	if (GetPlayerHUD() != nullptr)
-	{
-		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());
-	}
 }
 
 AHUD_Multiplayer* UStaminaComponent::GetPlayerHUD()

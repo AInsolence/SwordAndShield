@@ -92,6 +92,16 @@ public:
 	void Server_SetAttack(bool IsAttack);
 	void Server_SetAttack_Implementation(bool IsAttack);
 
+	/** Called when a weapon hits something */
+	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+						bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -121,14 +131,4 @@ private:
 	//
 	void GetOverlappedEnemy(AActor* OtherActor);
 	void OnWeaponOverlap(AActor* OverlappedActor);
-
-	/** Called when a weapon hits something */
-	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-						bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION(BlueprintCallable, Category = "WeaponUsing")
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-					  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

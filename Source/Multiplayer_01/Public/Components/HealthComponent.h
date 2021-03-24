@@ -70,6 +70,9 @@ public:
 	FORCEINLINE float GetDefaultHealth() const { return DefaultHealth; };
 	float GetCurrentHealth() const { return HealthServerState.CurrentHealth; };
 
+	UFUNCTION(BlueprintCallable, Category = "HealthProperty")
+	void ChangeCurrentHealthTo(float HealthPoints);
+
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "HealthProperty")
 	void Server_SetDeadState(bool isDead);
 	void Server_SetDeadState_Implementation(bool isDead);

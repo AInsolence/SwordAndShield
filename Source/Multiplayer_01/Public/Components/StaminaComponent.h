@@ -62,9 +62,6 @@ protected:
 	void Server_ChangeState(bool IsSprinting);
 	void Server_ChangeState_Implementation(bool IsSprinting);
 
-	UFUNCTION(BlueprintCallable, Category = "ServerState")
-	void SetCurrentStamina(float StaminaCost);
-
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

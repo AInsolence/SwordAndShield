@@ -109,6 +109,16 @@ void UHealthComponent::Client_UpdateHealthBar_Implementation()
 	}
 }
 
+void UHealthComponent::ChangeCurrentHealthTo(float HealthPoints)
+{
+	HealthServerState.CurrentHealth = FMath::Clamp(HealthServerState.CurrentHealth + HealthPoints, 0.0f, DefaultHealth);
+	// Change stamina on listen-server client HUD
+	if (GetPlayerHUD() != nullptr)
+	{
+		GetPlayerHUD()->UpdateHealthState(GetCurrentHealth() / DefaultHealth);
+	}
+}
+
 void UHealthComponent::Server_SetDeadState_Implementation(bool isDead)
 {
 	HealthServerState.bIsDead = isDead;
