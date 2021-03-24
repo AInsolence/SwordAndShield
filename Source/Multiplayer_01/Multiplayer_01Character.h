@@ -59,7 +59,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UHealthComponent* HealthComponent;
 
-	/** Health component */
+	/** Mana component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UManaComponent* ManaComponent;
+
+	/** Stamina component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UStaminaComponent* StaminaComponent;
 
@@ -122,6 +126,7 @@ protected:
 	void HideStatistic();
 
 	bool bIsActionPossible(float StaminaCost);
+	bool bIsMagicActionPossible(float ManaCost);
 
 	/** 
 	 * Called via input to turn at a given rate. 

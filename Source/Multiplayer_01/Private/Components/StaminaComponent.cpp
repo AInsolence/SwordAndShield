@@ -107,6 +107,7 @@ void UStaminaComponent::Server_ChangeState_Implementation(bool IsSprinting)
 void UStaminaComponent::SetCurrentStamina(float StaminaCost)
 {
 	StaminaServerState.CurrentStamina = FMath::Clamp(StaminaServerState.CurrentStamina + StaminaCost, 0.0f, DefaultStamina);
+	// Change stamina on listen-server client HUD
 	if (GetPlayerHUD() != nullptr)
 	{
 		GetPlayerHUD()->UpdateStaminaState(GetCurrentStamina() / GetDefaultStamina());

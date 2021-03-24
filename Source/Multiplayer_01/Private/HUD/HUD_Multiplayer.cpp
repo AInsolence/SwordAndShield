@@ -62,6 +62,14 @@ void AHUD_Multiplayer::UpdateStaminaState(float CurrentStamina)
 	}
 }
 
+void AHUD_Multiplayer::UpdateManaState(float CurrentMana)
+{
+	if (PlayerStateInfoWidget)
+	{
+		PlayerStateInfoWidget->UpdateManaState(CurrentMana);
+	}
+}
+
 void AHUD_Multiplayer::SetPickUpTipVisibility(bool Show)
 {
 	if (PlayerStateInfoWidget)
@@ -75,6 +83,14 @@ void AHUD_Multiplayer::NotEnoughStamina()
 	if (PlayerStateInfoWidget)
 	{
 		PlayerStateInfoWidget->NotEnoughStamina();
+	}
+}
+
+void AHUD_Multiplayer::NotEnoughMana()
+{
+	if (PlayerStateInfoWidget)
+	{
+		PlayerStateInfoWidget->NotEnoughMana();
 	}
 }
 

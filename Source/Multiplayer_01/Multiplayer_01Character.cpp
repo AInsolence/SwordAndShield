@@ -13,6 +13,7 @@
 #include "Components/CombatComponent.h"
 #include "Components/EquipmentComponent.h"
 #include "Components/HealthComponent.h"
+#include "Components/ManaComponent.h"
 #include "Components/StaminaComponent.h"
 #include "Components/InteractionComponent.h"
 #include "Components/MagicCastingComponent.h"
@@ -63,6 +64,7 @@ AMultiplayer_01Character::AMultiplayer_01Character()
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>("CombatComponent");
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>("EquipmentComponent");
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
+	ManaComponent = CreateDefaultSubobject<UManaComponent>("ManaComponent");
 	StaminaComponent = CreateDefaultSubobject<UStaminaComponent>("StaminaComponent");
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>("InteractionComponent");
 	MagicCastingComponent = CreateDefaultSubobject<UMagicCastingComponent>("MagicCastingComponent");
@@ -347,7 +349,10 @@ void AMultiplayer_01Character::SpecialAttack()
 	{
 		return;
 	}
-	CombatComponent->SpecialAttack();
+	if (bIsMagicActionPossible(20.f))
+	{
+		CombatComponent->SpecialAttack();
+	}
 }
 
 void AMultiplayer_01Character::SwapWeapon()
@@ -421,6 +426,26 @@ bool AMultiplayer_01Character::bIsActionPossible(float StaminaCost)
 	}
 	else
 	{// Always possible without HealthComponent
+		return true;
+	}
+}
+
+bool AMultiplayer_01Character::bIsMagicActionPossible(float ManaCost)
+{
+	if (ManaComponent)
+	{
+		if (ManaComponent->GetCurrentMana() < ManaCost)
+		{
+			ManaComponent->NotEnoughMana();
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	else
+	{// Always possible without ManaComponent
 		return true;
 	}
 }

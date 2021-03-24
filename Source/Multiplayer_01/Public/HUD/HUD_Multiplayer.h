@@ -33,10 +33,14 @@ public:
     void UpdateHealthState(float CurrentHealth);
     UFUNCTION(BlueprintCallable, Category = "HUD API")
     void UpdateStaminaState(float CurrentStamina);
+	UFUNCTION(BlueprintCallable, Category = "HUD API")
+	void UpdateManaState(float CurrentMana);
     UFUNCTION(BlueprintCallable, Category = "HUD API")
     void SetPickUpTipVisibility(bool Show);
     UFUNCTION(BlueprintCallable, Category = "HUD API")
     void NotEnoughStamina();
+	UFUNCTION(BlueprintCallable, Category = "HUD API")
+    void NotEnoughMana();
     UFUNCTION(BlueprintCallable, Category = "HUD API")
     void ShowMatchStats();
     UFUNCTION(BlueprintCallable, Category = "HUD API")

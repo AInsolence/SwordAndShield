@@ -24,7 +24,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UProgressBar* HealthBar;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UProgressBar* ManaBar;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UProgressBar* StaminaBar;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UImage* Blood;
 	UPROPERTY(meta = (BindWidget))
@@ -45,6 +48,10 @@ public:
 	//API
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
 	void UpdateHealthState(float CurrentHealth);
+	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
+	void UpdateManaState(float CurrentMana);
+	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
+	void NotEnoughMana();
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
 	void UpdateStaminaState(float CurrentStamina);
 	UFUNCTION(BlueprintCallable, Category = "PlayerStateInfo")
@@ -69,5 +76,9 @@ private:
 	UWidgetAnimation* StaminaBarAnimation = nullptr;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	UWidgetAnimation* LowStaminaAnimation = nullptr;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	UWidgetAnimation* ManaBarAnimation = nullptr;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	UWidgetAnimation* LowManaAnimation = nullptr;
 
 };
