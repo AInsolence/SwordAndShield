@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Net/UnrealNetwork.h"
 #include "Potion.generated.h"
 
 UCLASS()
@@ -20,6 +21,11 @@ public:
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 						bool bFromSweep, const FHitResult& SweepResult);
+	// Client call pick up soundFX
+	UFUNCTION(NetMulticast, Unreliable, BlueprintCallable, Category = "AudioFX")
+	void Client_PotionPickUpSoundFXPlay();
+	void Client_PotionPickUpSoundFXPlay_Implementation();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,6 +36,9 @@ protected:
 	class UStaticMeshComponent* PotionMesh = nullptr;
 
 	// Potion stats
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio Component")
+	class USoundBase* PickUpSoundFX;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PotionStats")
 	int32 HealthPoints = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PotionStats")

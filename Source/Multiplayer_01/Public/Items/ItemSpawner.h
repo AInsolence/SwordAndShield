@@ -39,4 +39,5 @@ private:
 	FVector GetRandomPointInVolume();
 
 	FTimerHandle TimerHandler;
+	FTimerDelegate TimerDelegate;
 };

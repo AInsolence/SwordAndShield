@@ -25,12 +25,11 @@ void AItemSpawner::BeginPlay()
 	Super::BeginPlay();
 	if (HasAuthority() && ActorToSpawnByTimer)
 	{
+		//Binding the function with specific values
+		TimerDelegate.BindUFunction(this, FName("SpawnActorByTimer"), ActorToSpawnByTimer);
 		// Set timer to respawn after a death animation
 		GetWorld()->GetTimerManager().SetTimer(TimerHandler,
-												[this]()
-												{
-													SpawnActorByTimer(ActorToSpawnByTimer);
-												},
+												TimerDelegate,
 												TimeStep,
 												true);
 	}
