@@ -115,7 +115,8 @@ void AMultiplayer_01Character::BeginPlay()
 		HealthComponent->OnBlockedStaminaCost.AddDynamic(StaminaComponent, &UStaminaComponent::ChangeCurrentStaminaTo);
 	}
 	// Set mesh sockets update!
-	GetMesh()->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
+	GetMesh()->bEnableUpdateRateOptimizations = false; // prevent anim frame skipping optimization based on visibility etc
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones; // update animation even when mesh is not visible
 }
 
 void AMultiplayer_01Character::Tick(float DeltaTime)
