@@ -15,6 +15,8 @@ class MULTIPLAYER_01_API APotion : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APotion();
+	// Callde every frame
+	void Tick(float DeltaTime) override;
 
 	/** Called when a weapon hits something */
 	UFUNCTION(BlueprintCallable, Category = "Potion")
@@ -48,8 +50,6 @@ protected:
 
 	// Rotation stats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotationStats")
-	int32 TimesInSecond = 60;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotationStats")
 	float Roll = 0.0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RotationStats")
 	float Pitch = 1.0;
@@ -57,6 +57,5 @@ protected:
 	float Yaw = 0.0;
 
 private:
-	FTimerHandle TimerHandler;
 	void PotionAnimation();
 };

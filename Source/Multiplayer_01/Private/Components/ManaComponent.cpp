@@ -14,13 +14,13 @@ UManaComponent::UManaComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
 	//
-	ManaServerState.CurrentMana = DefaultMana;
+	CurrentMana = DefaultMana;
 }
 
 void UManaComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME_CONDITION(UManaComponent, ManaServerState, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UManaComponent, CurrentMana, COND_OwnerOnly);
 }
 
 // Called when the game starts
@@ -53,7 +53,7 @@ void UManaComponent::ChangeCurrentManaTo(float ManaCost)
 	{
 		return;
 	}
-	ManaServerState.CurrentMana = FMath::Clamp(ManaServerState.CurrentMana + ManaCost, 0.0f, DefaultMana);
+	CurrentMana = FMath::Clamp(CurrentMana + ManaCost, 0.0f, DefaultMana);
 	// Change mana on listen-server client HUD
 	if (GetPlayerHUD() != nullptr)
 	{

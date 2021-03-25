@@ -14,7 +14,7 @@
 APotion::APotion()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	NetUpdateFrequency = 2;
 
@@ -31,14 +31,10 @@ APotion::APotion()
 void APotion::BeginPlay()
 {
 	Super::BeginPlay();
-	PickUpCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &APotion::OnOverlapBegin);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandler,
-											[this]()
-											{
-												PotionAnimation();
-											},
-											1.f/TimesInSecond,
-											true);
+	if (PickUpCollisionBox)
+	{
+		PickUpCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &APotion::OnOverlapBegin);
+	}
 }
 
 void APotion::PotionAnimation()
@@ -47,7 +43,12 @@ void APotion::PotionAnimation()
 }
 
 
-void APotion::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+void APotion::Tick(float DeltaTime)
+{
+	PotionAnimation();
+}
+
+void APotion::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 							 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
 							 bool bFromSweep, const FHitResult& SweepResult)
 {
