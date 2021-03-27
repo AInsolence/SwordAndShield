@@ -67,7 +67,11 @@ UClass* AItemSpawner::SpawnItemInFrontOf(UClass* Item, float Distance)
 
 void AItemSpawner::SpawnActorByTimer(UClass* Item)
 {
-	if (!ActorSpawned->IsValidLowLevel() || ActorSpawned->IsPendingKill())
+	if (!Item)
+	{
+		return;
+	}
+	if (!ActorSpawned || !ActorSpawned->IsValidLowLevel() || ActorSpawned->IsPendingKill())
 	{
 		auto SpawnedItem = GetWorld()->SpawnActor<AActor>(Item, GetActorLocation(), FRotator::ZeroRotator);
 		ActorSpawned = SpawnedItem; // Store spawned actor to avoid multispawn

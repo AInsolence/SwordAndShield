@@ -33,9 +33,9 @@ public:
 	class UNiagaraSystem* ExplosionParticles = nullptr;
 	// Particles scale multiplier
 	UPROPERTY(EditAnywhere, Category = Projectile)
-	float SlashParticleScale = 1.0f;
+	float SlashParticleScale = 10.0f;
 	UPROPERTY(EditAnywhere, Category = Projectile)
-	float ImpactParticleScale = 1.0f;
+	float ImpactParticleScale = 0.2f;
 
 	// Set damage value
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)

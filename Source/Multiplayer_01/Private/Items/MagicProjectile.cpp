@@ -38,8 +38,8 @@ AMagicProjectile::AMagicProjectile()
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
-	ProjectileMovement->InitialSpeed = 3000.f;
-	ProjectileMovement->MaxSpeed = 5000.f;
+	ProjectileMovement->InitialSpeed = 10000.f;
+	ProjectileMovement->MaxSpeed = 15000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 
@@ -51,7 +51,15 @@ void AMagicProjectile::Tick(float DeltaTime)
 {
 	if (ProjectileParticles)
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ProjectileParticles, GetActorLocation(), FRotator::ZeroRotator, FVector(SlashParticleScale));
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), 
+														ProjectileParticles,
+														GetActorLocation(),
+														FRotator::ZeroRotator,
+														FVector(SlashParticleScale),
+														true,
+														true,
+														ENCPoolMethod::AutoRelease,
+														true);
 	}
 }
 
@@ -77,7 +85,15 @@ void AMagicProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 			if (ExplosionParticles)
 			{
 				// create explosion particle effect
-				auto Explosion = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionParticles, GetActorLocation(), FRotator::ZeroRotator, FVector(ImpactParticleScale));
+				auto Explosion = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), 
+																				ExplosionParticles,
+																				GetActorLocation(),
+																				FRotator::ZeroRotator,
+																				FVector(ImpactParticleScale),
+																				true,
+																				true,
+																				ENCPoolMethod::AutoRelease,
+																				true);
 				// Create a damage event  
 				TSubclassOf<UDamageType> const ValidDamageTypeClass = TSubclassOf<UDamageType>(UDamageType::StaticClass());
 				FDamageEvent DamageEvent(ValidDamageTypeClass);
