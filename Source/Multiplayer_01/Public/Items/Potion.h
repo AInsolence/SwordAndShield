@@ -15,7 +15,7 @@ class MULTIPLAYER_01_API APotion : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APotion();
-	// Callde every frame
+	// Called every frame
 	void Tick(float DeltaTime) override;
 
 	/** Called when a weapon hits something */
@@ -23,12 +23,6 @@ public:
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 						bool bFromSweep, const FHitResult& SweepResult);
-	// Client call pick up soundFX
-	UFUNCTION(NetMulticast, Unreliable, BlueprintCallable, Category = "AudioFX")
-	void Client_PotionPickUpSoundFXPlay();
-	void Client_PotionPickUpSoundFXPlay_Implementation();
-
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

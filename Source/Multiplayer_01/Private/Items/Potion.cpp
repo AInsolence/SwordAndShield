@@ -8,6 +8,7 @@
 #include "Components/HealthComponent.h"
 #include "Components/ManaComponent.h"
 #include "Components/StaminaComponent.h"
+#include "Components/AudioFXComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -86,17 +87,16 @@ void APotion::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 					StaminaComponent->ChangeCurrentStaminaTo(StaminaPoints);
 				}
 			}
-			Client_PotionPickUpSoundFXPlay();
+			auto AudioFXComponent = Character->AudioFXComponent;
+			if (AudioFXComponent)
+			{
+				if (PickUpSoundFX)
+				{
+					AudioFXComponent->Server_PlaySoundFX_Implementation(PickUpSoundFX);
+				}
+			}
 			// Destroy potion after pick up
 			Destroy();
 		}
-	}
-}
-
-void APotion::Client_PotionPickUpSoundFXPlay_Implementation()
-{
-	if (PickUpSoundFX)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, PickUpSoundFX, GetActorLocation());
 	}
 }

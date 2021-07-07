@@ -72,7 +72,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 void UStaminaComponent::ChangeCurrentStaminaTo(float StaminaCost)
 {
-	if (Owner->HasAuthority())
+	if (Owner && Owner->HasAuthority())
 	{
 		StaminaServerState.CurrentStamina = FMath::Clamp(StaminaServerState.CurrentStamina + StaminaCost, 0.0f, DefaultStamina);
 		// Change stamina on listen-server client HUD
